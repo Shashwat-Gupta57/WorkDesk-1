@@ -1,0 +1,352 @@
+# WorkDesk UI Context
+
+Product Name:
+WorkDesk
+
+Organization:
+GoBitsNBytes Prayagraj
+
+Purpose:
+
+WorkDesk is a knowledge archive, collaboration workspace, and organizational operating system.
+
+The product serves as the permanent institutional memory of the organization.
+
+Primary users are:
+
+* Marketing Leads
+* Creative Leads
+* Developers
+* Team Members
+* Administrators
+
+The interface should feel like a blend of:
+
+* Linear
+* Notion
+* Obsidian
+* GitHub
+* Google Drive
+
+Avoid copying any product directly.
+
+---
+
+# Design Philosophy
+
+Professional
+
+Focused
+
+Dense but not cluttered
+
+Fast
+
+Information-first
+
+Minimal visual noise
+
+Built for daily usage
+
+No playful startup aesthetics.
+
+No excessive gradients.
+
+No glassmorphism.
+
+No neumorphism.
+
+The UI should feel like a serious productivity application.
+
+---
+
+# Visual Identity
+
+Theme:
+
+Dark Only (V1)
+
+Primary Background:
+#0D1117
+
+Secondary Background:
+#161B22
+
+Elevated Surfaces:
+#1C2128
+
+Borders:
+#30363D
+
+Primary Text:
+#E6EDF3
+
+Secondary Text:
+#8B949E
+
+Accent:
+#58A6FF
+
+Success:
+#3FB950
+
+Warning:
+#D29922
+
+Danger:
+#F85149
+
+---
+
+# Typography
+
+Font:
+
+Inter
+
+Hierarchy:
+
+Page Title
+Section Title
+Card Title
+Body
+Caption
+
+Use strong hierarchy.
+
+Avoid oversized typography.
+
+---
+
+# Layout Principles
+
+Application Shell Layout
+
+Persistent Left Sidebar
+
+Main Content Area
+
+Optional Right Context Panel
+
+Desktop First
+
+Responsive Mobile Support
+
+---
+
+# Sidebar Structure
+
+Logo
+
+Dashboard
+
+Archive
+
+Library
+
+Messages
+
+Bulletin
+
+Mail Hub
+
+Graph View
+
+Settings
+
+Profile
+
+Bottom Area:
+
+Storage Usage
+
+User Profile
+
+---
+
+# Core Product Concepts
+
+Set
+
+Acts like a folder.
+
+Artifact
+
+Acts like a document.
+
+Version
+
+Historical snapshot.
+
+Library
+
+Published artifact repository.
+
+Message
+
+Reference-based communication.
+
+---
+
+# Explorer Interaction Rules
+
+Single Click:
+Select
+
+Double Click:
+Open
+
+Right Click:
+Context Menu
+
+Multi Select:
+Supported
+
+Drag and Drop:
+Supported
+
+---
+
+# Artifact Workspace
+
+When an artifact is opened:
+
+Left:
+Artifact Navigation
+
+Center:
+Editor
+
+Right:
+Metadata Panel
+
+Top:
+Version Controls
+
+Actions:
+
+Save
+
+Commit Version
+
+Restore Version
+
+Publish
+
+Share
+
+---
+
+# Library Philosophy
+
+Looks like a curated knowledge repository.
+
+Not a file dump.
+
+Should encourage discovery.
+
+---
+
+# Messaging Philosophy
+
+Looks similar to Slack or Discord.
+
+Cleaner and more focused.
+
+Artifact sharing should be visually prominent.
+
+---
+
+# Bulletin Philosophy
+
+School notice board meets project management.
+
+Supports:
+
+Announcements
+
+Countdowns
+
+Deadlines
+
+Status tracking
+
+---
+
+# Mail Hub Philosophy
+
+Looks like a modern unified inbox.
+
+Support:
+
+Multiple Accounts
+
+Tags
+
+Sender Labels
+
+Search
+
+Color Coding
+
+---
+
+# Graph View Philosophy
+
+Inspired by Obsidian Graph.
+
+Nodes:
+
+Sets
+
+Artifacts
+
+Library Sections
+
+Relationships:
+
+Belongs To
+
+Published In
+
+Related To
+
+Derived From
+
+Must remain readable at scale.
+
+---
+
+# UX Requirements
+
+Keyboard Friendly
+
+Fast Navigation
+
+Minimal Clicks
+
+Consistent Actions
+
+Clear Status Indicators
+
+Auto Save Visibility
+
+Loading States
+
+Empty States
+
+Error States
+
+---
+
+# Deliverables
+
+Generate complete UI designs.
+
+Generate reusable design system.
+
+Generate reusable components.
+
+Generate responsive layouts.
+
+Prioritize usability over visual novelty.

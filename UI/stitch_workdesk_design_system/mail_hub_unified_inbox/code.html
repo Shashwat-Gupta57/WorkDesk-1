@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WorkDesk Mail Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D1117;
+            color: #E6EDF3;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #30363D;
+            border-radius: 2px;
+        }
+        .mail-row:hover .mail-actions {
+            opacity: 1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary": "#2c3138",
+                      "surface-primary": "#0D1117",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#2d3137",
+                      "on-background": "#dfe2eb",
+                      "primary": "#a2c9ff",
+                      "on-tertiary": "#432c00",
+                      "status-warning": "#D29922",
+                      "border-default": "#30363D",
+                      "surface-dim": "#10141a",
+                      "surface-secondary": "#161B22",
+                      "on-error-container": "#ffdad6",
+                      "text-primary": "#E6EDF3",
+                      "tertiary-fixed-dim": "#ffba42",
+                      "surface-tint": "#a2c9ff",
+                      "surface-container-low": "#181c22",
+                      "surface": "#10141a",
+                      "status-success": "#3FB950",
+                      "secondary-container": "#42474f",
+                      "primary-container": "#58a6ff",
+                      "on-error": "#690005",
+                      "tertiary-container": "#da9600",
+                      "inverse-surface": "#dfe2eb",
+                      "tertiary": "#ffba42",
+                      "background": "#10141a",
+                      "on-tertiary-container": "#4f3400",
+                      "surface-container-lowest": "#0a0e14",
+                      "tertiary-fixed": "#ffddaf",
+                      "outline-variant": "#414752",
+                      "surface-bright": "#353940",
+                      "on-primary-container": "#003a6b",
+                      "on-secondary-container": "#b1b5bf",
+                      "outline": "#8b919d",
+                      "on-secondary-fixed-variant": "#42474f",
+                      "on-primary-fixed": "#001c38",
+                      "on-primary-fixed-variant": "#004882",
+                      "surface-container-highest": "#31353c",
+                      "secondary-fixed": "#dee2ec",
+                      "on-tertiary-fixed": "#281800",
+                      "on-surface": "#dfe2eb",
+                      "surface-container-high": "#262a31",
+                      "secondary": "#c2c7d0",
+                      "error-container": "#93000a",
+                      "on-primary": "#00315c",
+                      "surface-container": "#1c2026",
+                      "text-secondary": "#8B949E",
+                      "surface-variant": "#31353c",
+                      "primary-fixed": "#d3e4ff",
+                      "on-surface-variant": "#c0c7d4",
+                      "surface-elevated": "#1C2128",
+                      "status-danger": "#F85149",
+                      "on-tertiary-fixed-variant": "#614000",
+                      "on-secondary-fixed": "#171c23",
+                      "inverse-primary": "#0060aa",
+                      "secondary-fixed-dim": "#c2c7d0",
+                      "primary-fixed-dim": "#a2c9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "input-height": "32px",
+                      "container-margin": "24px",
+                      "gutter": "16px",
+                      "touch-target": "40px",
+                      "sidebar-width": "260px",
+                      "unit": "4px",
+                      "context-panel-width": "300px"
+              },
+              "fontFamily": {
+                      "card-title": ["Inter"],
+                      "caption": ["Inter"],
+                      "page-title": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "mono": ["Inter"],
+                      "body-md": ["Inter"],
+                      "section-title": ["Inter"]
+              },
+              "fontSize": {
+                      "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                      "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="flex h-screen overflow-hidden bg-surface-primary">
+<!-- Sidebar Navigation -->
+<aside class="w-sidebar-width h-screen fixed left-0 top-0 bg-surface-secondary border-r border-border-default flex flex-col py-4 px-2 z-30">
+<div class="px-4 mb-6 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">mail</span>
+</div>
+<div>
+<h2 class="font-section-title text-section-title text-text-primary leading-tight">Global Workspace</h2>
+<p class="font-label-md text-label-md text-text-secondary">Pro Plan</p>
+</div>
+</div>
+<button class="mx-2 mb-6 h-touch-target bg-primary text-on-primary font-label-md text-label-md rounded flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">edit</span>
+<span>Create New Item</span>
+</button>
+<nav class="flex-1 space-y-1 overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-surface-container-high text-primary font-semibold transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-label-md">Tasks</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">cloud_queue</span>
+<span class="font-label-md text-label-md">Files</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Insights</span>
+</a>
+<div class="pt-6 pb-2 px-3">
+<span class="font-caption text-caption text-text-secondary uppercase tracking-wider">Accounts</span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center justify-between px-3 py-2 rounded hover:bg-surface-container cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-status-success"></div>
+<span class="font-label-md text-label-md text-text-primary">Personal</span>
+</div>
+<span class="font-caption text-caption text-text-secondary">12</span>
+</div>
+<div class="flex items-center justify-between px-3 py-2 rounded hover:bg-surface-container cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary-container"></div>
+<span class="font-label-md text-label-md text-text-primary">Work</span>
+</div>
+<span class="font-caption text-caption text-text-secondary">48</span>
+</div>
+</div>
+</nav>
+<div class="mt-auto border-t border-border-default pt-4 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-md text-label-md">Storage</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-sidebar-width flex flex-col min-w-0 h-screen">
+<!-- Top Navigation Bar -->
+<header class="h-touch-target bg-surface border-b border-border-default flex items-center justify-between px-gutter w-full z-20">
+<div class="flex items-center flex-1 max-w-xl">
+<div class="relative w-full group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full h-8 bg-surface-secondary border border-border-default rounded px-10 font-body-sm text-body-sm text-text-primary focus:outline-none focus:border-primary transition-all" placeholder="Search in Unified Inbox..." type="text"/>
+<div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container-highest border border-border-default font-caption text-caption text-text-secondary">⌘</kbd>
+<kbd class="px-1.5 py-0.5 rounded bg-surface-container-highest border border-border-default font-caption text-caption text-text-secondary">K</kbd>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1">
+<button class="p-2 text-text-secondary hover:bg-surface-variant rounded transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-text-secondary hover:bg-surface-variant rounded transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-2 text-text-secondary hover:bg-surface-variant rounded transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<div class="h-8 w-px bg-border-default mx-1"></div>
+<div class="flex items-center gap-2 cursor-pointer hover:bg-surface-variant p-1 rounded transition-colors">
+<img alt="User profile avatar" class="w-8 h-8 rounded-full border border-border-default" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDz71c6NuK0ADROGHt1UBjjbYMVxRF6cmMoamCugWIUAJIwhDzrkQXtxgn2SQE990QyYxO79DsOtsZdvz2TzNaaH9L03cKphgIa3ApDAuU_61m_jtXTL6nIcpzHuDTcBVkUUH4kRyQCFDtMl4Ij-mhPi5wQ436RhzpacD4YjDZFRRk9aO0gSMJUjlAEz4gGayZ9InLBt2j6TqrIaOYOaun5TVSachJAtWrLbC1f7CMylqwuLxVfKP1DelEumJTzpu2TRPbe3gthEsE"/>
+<span class="material-symbols-outlined text-text-secondary text-[16px]">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Inbox Grid Layout -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Email List Column -->
+<section class="w-[420px] bg-surface flex flex-col border-r border-border-default shrink-0">
+<div class="p-4 border-b border-border-default flex items-center justify-between bg-surface-secondary">
+<div class="flex items-center gap-2">
+<h1 class="font-card-title text-card-title text-text-primary">Unified Inbox</h1>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/20 text-primary font-caption text-caption">64 New</span>
+</div>
+<button class="p-1 text-text-secondary hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<!-- Mail Item: Active -->
+<div class="mail-row p-4 border-b border-border-default bg-surface-container-high cursor-pointer relative group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-card-title text-card-title text-primary">Alex Rivera</span>
+<span class="font-caption text-caption text-text-secondary">14:22</span>
+</div>
+<h3 class="font-body-md text-body-md text-text-primary font-semibold mb-1 truncate">Q3 Product Roadmap Review &amp; Feedback</h3>
+<p class="font-body-sm text-body-sm text-text-secondary line-clamp-2">Hey team, I've attached the latest iteration of the Q3 roadmap for the design system update. Please take a look at the...</p>
+<div class="mt-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-status-success/20 text-status-success border border-status-success/30">Priority</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-primary-container/20 text-primary border border-primary-container/30">Work</span>
+</div>
+<div class="mail-actions absolute right-4 bottom-4 opacity-0 flex gap-1 transition-opacity">
+<button class="p-1.5 bg-surface rounded border border-border-default hover:border-primary text-text-secondary hover:text-primary"><span class="material-symbols-outlined text-sm">archive</span></button>
+<button class="p-1.5 bg-surface rounded border border-border-default hover:border-status-danger text-text-secondary hover:text-status-danger"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+</div>
+<!-- Mail Item -->
+<div class="mail-row p-4 border-b border-border-default hover:bg-surface-container cursor-pointer transition-colors relative group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-card-title text-card-title text-text-primary">Sarah Chen</span>
+<span class="font-caption text-caption text-text-secondary">12:05</span>
+</div>
+<h3 class="font-body-md text-body-md text-text-primary mb-1 truncate">Design System: Token audit required</h3>
+<p class="font-body-sm text-body-sm text-text-secondary line-clamp-2">We noticed some inconsistencies in the color tokens for the dark mode implementation in the dashboard...</p>
+<div class="mt-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-status-warning/20 text-status-warning border border-status-warning/30">Pending</span>
+</div>
+</div>
+<!-- Mail Item -->
+<div class="mail-row p-4 border-b border-border-default hover:bg-surface-container cursor-pointer transition-colors relative group">
+<div class="flex justify-between items-start mb-1">
+<span class="font-card-title text-card-title text-text-primary">Figma Notifications</span>
+<span class="font-caption text-caption text-text-secondary">09:12</span>
+</div>
+<h3 class="font-body-md text-body-md text-text-primary mb-1 truncate">New comments in 'WorkDesk Mobile Core'</h3>
+<p class="font-body-sm text-body-sm text-text-secondary line-clamp-2">Marcus left 4 new comments in your file. "This looks great, but let's check the contrast on the active tab..."</p>
+<div class="mt-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-secondary-container/20 text-secondary border border-secondary-container/30">Social</span>
+</div>
+</div>
+<!-- Repeated Items for Scroll -->
+<div class="mail-row p-4 border-b border-border-default hover:bg-surface-container cursor-pointer transition-colors relative group opacity-70">
+<div class="flex justify-between items-start mb-1">
+<span class="font-card-title text-card-title text-text-primary">AWS Support</span>
+<span class="font-caption text-caption text-text-secondary">Yesterday</span>
+</div>
+<h3 class="font-body-md text-body-md text-text-primary mb-1 truncate">Case ID 10928374: Instance limit increase</h3>
+<p class="font-body-sm text-body-sm text-text-secondary line-clamp-2">Your request to increase the vCPU limit in us-east-1 has been processed and approved. You should see...</p>
+<div class="mt-3 flex items-center gap-2">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-tertiary-container/20 text-tertiary border border-tertiary-container/30">Infrastructure</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Reading Experience Column -->
+<section class="flex-1 bg-surface-primary flex flex-col min-w-0">
+<!-- Toolbar -->
+<div class="h-12 border-b border-border-default px-6 flex items-center justify-between shrink-0 bg-surface">
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-surface-container-high text-text-secondary hover:text-text-primary transition-all">
+<span class="material-symbols-outlined text-sm">reply</span>
+<span class="font-label-md text-label-md">Reply</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded hover:bg-surface-container-high text-text-secondary hover:text-text-primary transition-all">
+<span class="material-symbols-outlined text-sm">forward</span>
+<span class="font-label-md text-label-md">Forward</span>
+</button>
+<div class="w-px h-6 bg-border-default"></div>
+<button class="p-2 text-text-secondary hover:bg-surface-container-high rounded transition-colors"><span class="material-symbols-outlined text-sm">archive</span></button>
+<button class="p-2 text-text-secondary hover:bg-surface-container-high rounded transition-colors"><span class="material-symbols-outlined text-sm">report</span></button>
+<button class="p-2 text-text-secondary hover:bg-surface-container-high rounded transition-colors"><span class="material-symbols-outlined text-sm">delete</span></button>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-text-secondary hover:bg-surface-container-high rounded transition-colors"><span class="material-symbols-outlined text-sm">more_vert</span></button>
+</div>
+</div>
+<!-- Email Content Area -->
+<div class="flex-1 overflow-y-auto custom-scrollbar p-10 max-w-4xl mx-auto w-full">
+<div class="mb-8">
+<h1 class="font-page-title text-page-title text-text-primary mb-6 leading-tight">Q3 Product Roadmap Review &amp; Feedback</h1>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<img alt="Sender avatar" class="w-10 h-10 rounded-lg border border-border-default" data-alt="A professional headshot of a creative director in his late 30s, featuring sharp focus, studio lighting with a soft key light. He wears a dark charcoal turtleneck against a minimalist grey background, embodying a modern corporate aesthetic. The overall mood is focused, professional, and authoritative, matching a high-end productivity application style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQInUm31M6A4iGmCvh8l6k5jALk6JJTmdWSL4OZkZvwzldEsrr3crivpIsrlaAl2LEioJ3i7BdFeWdS4AsGQGcGZ0ohz2dS8kTaRIqU7hk3Q7IX_gOdI4jhO1YP46_bmFyC96LQTLexAfCe3Hhg3lts4qbmHyNc4JTWDIBSsArOYlmapieWCw_e44N9cwIzhbf7WsC1z1AHkYvCOviH7R_sRbP34Y3mNh4RtNdv3CkntKqc_vlFXBV9vqWUAduR_kK04EhYsYkHNU"/>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-section-title text-section-title text-text-primary">Alex Rivera</span>
+<span class="font-caption text-caption text-text-secondary">&lt;arivera@workdesk.io&gt;</span>
+</div>
+<div class="font-caption text-caption text-text-secondary mt-0.5">
+                                        to me, Sarah, Marcus +2 others
+                                    </div>
+</div>
+</div>
+<div class="text-right">
+<div class="font-caption text-caption text-text-secondary">Jul 12, 2023, 14:22 (2 hours ago)</div>
+</div>
+</div>
+</div>
+<div class="font-body-md text-body-md text-text-primary space-y-4 leading-relaxed">
+<p>Hi Team,</p>
+<p>I hope you're all having a productive week. I've just finished compiling the feedback from last month's user research sessions and integrated the key findings into our <strong>Q3 Product Roadmap</strong>.</p>
+<p>Main areas of focus for this iteration include:</p>
+<ul class="list-disc pl-5 space-y-2 text-text-secondary">
+<li>Complete overhaul of the mobile navigation system (Material 3 alignment).</li>
+<li>Introduction of high-density "Bento" layouts for the data dashboard.</li>
+<li>Performance optimizations for the real-time collaboration engine.</li>
+<li>New "Dark Mode" aesthetic refinement (focusing on tonal layering vs heavy shadows).</li>
+</ul>
+<div class="my-8 p-4 rounded-xl border border-border-default bg-surface-secondary flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-status-danger" style="font-variation-settings: 'FILL' 1;">picture_as_pdf</span>
+</div>
+<div>
+<div class="font-card-title text-card-title text-text-primary">WorkDesk_Q3_Roadmap_V2.pdf</div>
+<div class="font-caption text-caption text-text-secondary">4.8 MB • PDF Document</div>
+</div>
+</div>
+<button class="p-2 text-text-secondary group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+<p>Please review the attached PDF and drop your comments directly into the Figma file by EOD tomorrow. We'll have a brief sync on Thursday to finalize the sprint plan.</p>
+<p>Best,<br/>Alex</p>
+</div>
+<div class="mt-12 pt-8 border-t border-border-default">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-text-secondary">reply</span>
+</div>
+<span class="font-label-md text-label-md text-text-secondary">Click here to <span class="text-primary cursor-pointer">Reply</span> or <span class="text-primary cursor-pointer">Forward</span></span>
+</div>
+</div>
+</div>
+</section>
+<!-- Metadata/Context Panel -->
+<section class="w-context-panel-width bg-surface-secondary border-l border-border-default hidden xl:flex flex-col">
+<div class="p-4 border-b border-border-default">
+<h3 class="font-section-title text-section-title text-text-primary">Contact Info</h3>
+</div>
+<div class="p-6 flex flex-col items-center text-center">
+<img alt="Large avatar" class="w-24 h-24 rounded-2xl border-2 border-border-default mb-4" data-alt="A high-resolution close-up portrait of a professional male designer. The lighting is cinematic with deep contrast, emphasizing a clean-shaven face and structured features. He is positioned in a modern office environment with blurred computer screens in the background. The visual style is crisp, using the WorkDesk dark theme palette of deep slates and subtle blues." src="https://lh3.googleusercontent.com/aida-public/AB6AXuChZTjGxCCr2GXxE7X1MqHQkTt5OoRepgamAP4XryHmmsqxMHworg7mNzCOQRv1KTyKTaGhmwEx5YTBZ8P6q1ObJ9kfBT8jomVRGZccgYYjl6CmCshm5bC1ZwggUeAu4qUGCG14pYpHgMlQ9byuschtFr564UQtJCyP44r0L0PilKfrly67unt_T6zdbFHsGASTN-AMGXUfosVLe1cRsiAOYLA8XATDYJIZiezI-zry36PzLctwp6TfU0vZcs0anxq6gnu0Rn3qYVQ"/>
+<h2 class="font-page-title text-page-title text-text-primary">Alex Rivera</h2>
+<p class="font-body-sm text-body-sm text-text-secondary">Design Lead @ WorkDesk</p>
+<div class="mt-4 flex gap-2">
+<button class="p-2 rounded-lg bg-surface-container-high border border-border-default hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined">chat</span></button>
+<button class="p-2 rounded-lg bg-surface-container-high border border-border-default hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined">videocam</span></button>
+<button class="p-2 rounded-lg bg-surface-container-high border border-border-default hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined">calendar_today</span></button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar px-6">
+<div class="mb-6">
+<h4 class="font-label-md text-label-md text-text-secondary uppercase tracking-widest mb-3">Recent Interactions</h4>
+<div class="space-y-4">
+<div class="flex gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-primary-container mt-1.5"></div>
+<div>
+<p class="font-body-sm text-body-sm text-text-primary">Sent: Logo iterations for mobile app</p>
+<span class="font-caption text-caption text-text-secondary">3 days ago</span>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-status-success mt-1.5"></div>
+<div>
+<p class="font-body-sm text-body-sm text-text-primary">Meeting: Sprint planning session</p>
+<span class="font-caption text-caption text-text-secondary">1 week ago</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mb-6">
+<h4 class="font-label-md text-label-md text-text-secondary uppercase tracking-widest mb-3">Shared Files (12)</h4>
+<div class="space-y-2">
+<div class="p-2 rounded bg-surface-container-low border border-border-default flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container">description</span>
+<span class="font-body-sm text-body-sm text-text-primary truncate">brand_guide_v1.pdf</span>
+</div>
+<div class="p-2 rounded bg-surface-container-low border border-border-default flex items-center gap-3">
+<span class="material-symbols-outlined text-status-warning">image</span>
+<span class="font-body-sm text-body-sm text-text-primary truncate">hero_banner_final.png</span>
+</div>
+<button class="w-full py-2 text-center font-label-md text-label-md text-primary hover:underline">View All Files</button>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-border-default">
+<button class="w-full h-touch-target border border-border-default rounded font-label-md text-label-md text-text-primary hover:bg-surface-variant transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">block</span>
+                        Block Contact
+                    </button>
+</div>
+</section>
+</div>
+</main>
+<!-- Micro-interaction: Keyboard Shortcut Modal (Mockup) -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50" id="keyboard-modal">
+<div class="bg-surface-elevated border border-border-default w-[400px] rounded-xl shadow-2xl p-6">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-section-title text-section-title text-text-primary">Quick Actions</h2>
+<button class="text-text-secondary hover:text-text-primary" onclick="document.getElementById('keyboard-modal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="space-y-4">
+<div class="flex justify-between items-center">
+<span class="text-text-secondary font-body-md">New Email</span>
+<kbd class="px-2 py-1 rounded bg-surface-container-highest border border-border-default text-text-primary">C</kbd>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-text-secondary font-body-md">Search</span>
+<kbd class="px-2 py-1 rounded bg-surface-container-highest border border-border-default text-text-primary">S</kbd>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-text-secondary font-body-md">Mark as Read</span>
+<kbd class="px-2 py-1 rounded bg-surface-container-highest border border-border-default text-text-primary">R</kbd>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-text-secondary font-body-md">Delete Thread</span>
+<kbd class="px-2 py-1 rounded bg-surface-container-highest border border-border-default text-text-primary">D</kbd>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Simple micro-interactions
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                document.getElementById('keyboard-modal').classList.remove('hidden');
+            }
+            if (e.key === 'Escape') {
+                document.getElementById('keyboard-modal').classList.add('hidden');
+            }
+        });
+
+        // Inbox item selection simulation
+        const mailRows = document.querySelectorAll('.mail-row');
+        mailRows.forEach(row => {
+            row.addEventListener('click', () => {
+                mailRows.forEach(r => r.classList.remove('bg-surface-container-high'));
+                row.classList.add('bg-surface-container-high');
+                // Normally here you would load content
+            });
+        });
+    </script>
+</body></html>

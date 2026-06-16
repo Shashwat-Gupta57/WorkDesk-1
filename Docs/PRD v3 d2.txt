@@ -1,0 +1,89 @@
+WorkDesk V3 — Collaboration Workspace
+Vision
+
+Enable internal collaboration around artifacts.
+
+Internal Messaging
+
+Features:
+
+Direct Messages
+Conversation Search
+Attachment References
+
+No file duplication.
+
+Artifact Sharing
+
+Users share references only.
+
+Ownership preserved.
+
+Permissions respected.
+
+Visibility Model
+
+States:
+
+Private
+Shared
+Public
+Comments
+
+Artifact Discussions
+
+Features:
+
+Comments
+Mentions
+Resolved Threads
+Review Workflow
+
+Artifact States:
+
+Draft
+In Review
+Approved
+Published
+Archived
+Activity Feed
+
+Tracks:
+
+Artifact Creation
+Publishing
+Sharing
+Version Commits
+Comments
+Notifications
+
+Triggers:
+
+Shares
+Mentions
+Reviews
+Publications
+
+Delivery:
+
+In-App
+Push
+Notification Center
+
+Functions:
+
+Read
+Unread
+Filter
+Mark All Read
+Bulk Operations
+
+Supports:
+
+Move
+Delete
+Publish
+Share
+Success Criteria
+
+Internal collaboration occurs inside WorkDesk.

@@ -1,0 +1,137 @@
+# PRODUCT REQUIREMENTS DOCUMENT (PRD)
+
+# WorkDesk V3 & V4 — Communication Hub & Ecosystem
+
+## Objective
+
+Create a unified operational environment connecting communication channels and productivity tools.
+
+---
+
+# Mail Hub
+
+Users may connect:
+
+* Gmail
+* Outlook
+
+Capabilities:
+
+* Unified Inbox
+* Multi-Mailbox View
+* Sender Tags
+* Color Coding
+* Search
+* Filtering
+
+---
+
+# Tool Dock
+
+Persistent shortcut bar.
+
+Supported Services:
+
+* ChatGPT
+* Claude
+* Stitch
+* Canva
+* Figma
+* GitHub
+
+Functions:
+
+* Quick Launch
+* Open in New Tab
+
+---
+
+# Artifact Workspace Flow
+
+User creates artifact.
+
+User launches external tool.
+
+User works externally.
+
+User returns to WorkDesk.
+
+User imports or pastes results.
+
+User versions and commits work.
+
+---
+
+# Graph View
+
+Alternative archive visualization.
+
+Requirements:
+
+* Node-Based Visualization
+* Set Clustering
+* Search
+* Zoom
+* Filtering
+
+Nodes:
+
+* Sets
+* Artifacts
+
+Relationships:
+
+* Belongs To
+* Published In
+
+---
+
+# Discord Integration
+
+Users may:
+
+* Connect Discord Account
+
+Capabilities:
+
+* Share Artifact References
+* Post WorkDesk Links
+* Generate Share Links
+
+Files remain stored in WorkDesk.
+
+External systems receive references only.
+
+---
+
+# Future Integrations
+
+Potential:
+
+* Google Drive
+* GitHub Repositories
+* Figma Import
+* Stitch Import
+* Canva Import
+
+---
+
+# Non-Goals
+
+The platform will NOT:
+
+* Contain AI assistants
+* Automatically generate content
+* Replace specialized external tools
+
+WorkDesk remains an organizational operating system, not an AI platform.
+
+---
+
+# Success Metrics
+
+* Single-entry point for organizational work
+* Reduced context switching
+* Increased artifact reuse
+* Faster team onboarding
+* Complete organizational knowledge retention

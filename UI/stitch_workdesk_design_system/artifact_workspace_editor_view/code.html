@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WorkDesk Artifact Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20; font-size: 18px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #30363D; border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: #414752; }
+        .editor-canvas:focus { outline: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#58a6ff",
+                        "error-container": "#93000a",
+                        "on-secondary": "#2c3138",
+                        "primary-fixed-dim": "#a2c9ff",
+                        "on-background": "#dfe2eb",
+                        "on-primary-fixed": "#001c38",
+                        "tertiary-container": "#da9600",
+                        "tertiary": "#ffba42",
+                        "surface-secondary": "#161B22",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#dee2ec",
+                        "secondary-container": "#42474f",
+                        "surface-container-lowest": "#0a0e14",
+                        "status-success": "#3FB950",
+                        "tertiary-fixed-dim": "#ffba42",
+                        "on-surface": "#dfe2eb",
+                        "on-surface-variant": "#c0c7d4",
+                        "outline-variant": "#414752",
+                        "on-secondary-fixed": "#171c23",
+                        "surface-primary": "#0D1117",
+                        "inverse-surface": "#dfe2eb",
+                        "status-warning": "#D29922",
+                        "on-primary": "#00315c",
+                        "surface-dim": "#10141a",
+                        "surface-elevated": "#1C2128",
+                        "primary": "#a2c9ff",
+                        "surface-container-low": "#181c22",
+                        "secondary": "#c2c7d0",
+                        "background": "#10141a",
+                        "surface-tint": "#a2c9ff",
+                        "surface-container-highest": "#31353c",
+                        "outline": "#8b919d",
+                        "on-primary-container": "#003a6b",
+                        "on-error-container": "#ffdad6",
+                        "inverse-on-surface": "#2d3137",
+                        "on-secondary-container": "#b1b5bf",
+                        "text-secondary": "#8B949E",
+                        "tertiary-fixed": "#ffddaf",
+                        "border-default": "#30363D",
+                        "on-primary-fixed-variant": "#004882",
+                        "status-danger": "#F85149",
+                        "on-tertiary-fixed-variant": "#614000",
+                        "text-primary": "#E6EDF3",
+                        "surface-bright": "#353940",
+                        "surface-variant": "#31353c",
+                        "secondary-fixed-dim": "#c2c7d0",
+                        "on-tertiary-fixed": "#281800",
+                        "inverse-primary": "#0060aa",
+                        "surface-container-high": "#262a31",
+                        "surface": "#10141a",
+                        "surface-container": "#1c2026",
+                        "on-tertiary": "#432c00",
+                        "on-secondary-fixed-variant": "#42474f",
+                        "on-error": "#690005",
+                        "primary-fixed": "#d3e4ff",
+                        "on-tertiary-container": "#4f3400"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "context-panel-width": "300px",
+                        "container-margin": "24px",
+                        "touch-target": "40px",
+                        "input-height": "32px",
+                        "unit": "4px",
+                        "sidebar-width": "260px"
+                    },
+                    "fontFamily": {
+                        "mono": ["Inter"],
+                        "label-md": ["Inter"],
+                        "page-title": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "section-title": ["Inter"],
+                        "card-title": ["Inter"],
+                        "body-md": ["Inter"],
+                        "caption": ["Inter"]
+                    },
+                    "fontSize": {
+                        "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-primary text-text-primary h-screen flex flex-col overflow-hidden selection:bg-primary/30">
+<!-- TopNavBar -->
+<header class="bg-surface border-b border-border-default h-touch-target flex items-center justify-between px-gutter w-full z-30">
+<div class="flex items-center gap-4">
+<span class="font-page-title text-page-title text-primary">WorkDesk</span>
+<div class="h-4 w-[1px] bg-border-default mx-2"></div>
+<div class="flex items-center gap-2 px-2 py-1 rounded bg-surface-container-high border border-border-default">
+<span class="material-symbols-outlined text-text-secondary">description</span>
+<span class="font-label-md text-label-md">Q4_Market_Analysis.md</span>
+<span class="font-label-md text-label-md px-1.5 py-0.5 rounded bg-status-success/10 text-status-success uppercase tracking-wider text-[10px]">Published</span>
+</div>
+<div class="flex items-center gap-2 ml-4">
+<div class="w-2 h-2 rounded-full bg-status-success"></div>
+<span class="text-[11px] font-mono text-text-secondary uppercase tracking-widest">Auto-saved 2m ago</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2 mr-4">
+<img class="w-7 h-7 rounded-full border-2 border-surface-primary" data-alt="A professional headshot avatar of a collaborator with a neutral expression, set against a solid dark grey background to match the modern corporate aesthetic. The lighting is crisp and studio-quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiSWQTtgodEwG8kWfXcEr48k3tzQtYFuCy4vURJMBGlmX9ybs85FBUge-BaBNfDSJ8iUZU8f6gqb88ASfAf_0J-sbYGrs_kpwl0WMb4z2FS_1H0MEy-ucgTo6m7STASrdRe3p8LIXbtIqbEL5RVlN_tgztiYaf62a-_4LKuqBmNUNs6qZTcJryGM5h43dVBc4Q6kzxK-Atz1N5P5w0mzlvBWw8MzAUiF-IWLBLhEeTe1LVaH7qXZaC-sfm1Yuinfn_1nRFfzwOlQo"/>
+<img class="w-7 h-7 rounded-full border-2 border-surface-primary" data-alt="A professional headshot avatar of a female collaborator with a subtle smile, rendered in a high-fidelity digital style with soft, directional lighting that emphasizes facial features. Dark theme consistency is maintained." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLAAToiRTPynfteXUFCSb8nik81N6Qv0_TBTuqnezCYqU2KrMCPT9uQTESRpdvCGjLSI0fO7x5c79VEsOvzGaj_DR2EeBN8JWPf-9JEARe1MrkAzo6QEoWO8_cPiAtkbXgUi2bdP6AIsu2kUMrof2RlF9mF1zqw8rH6GJ3DsHOi97bAw9nJPkHmNnjZA9QBR9nSL3gtdub9VFz21mVY8S-NJJh76a8PjrYkKUeK4-TKK3ZMApWtOh6dzsAk_5GdzYGEfvozD-DmKc"/>
+<div class="w-7 h-7 rounded-full border-2 border-surface-primary bg-surface-container-highest flex items-center justify-center text-[10px] font-bold">+3</div>
+</div>
+<div class="flex items-center gap-1 bg-surface-container px-1 py-1 rounded">
+<button class="px-3 py-1 text-label-md font-label-md hover:bg-surface-container-high transition-colors rounded">History</button>
+<button class="px-3 py-1 text-label-md font-label-md hover:bg-surface-container-high transition-colors rounded flex items-center gap-1">
+<span class="material-symbols-outlined !text-sm">restore</span> Restore
+                </button>
+</div>
+<button class="bg-primary text-on-primary px-4 py-1 rounded font-label-md text-label-md hover:opacity-90 active:opacity-80 transition-all">Publish</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary p-1.5 rounded hover:bg-surface-variant transition-colors">settings</button>
+</div>
+</header>
+<main class="flex-1 flex overflow-hidden">
+<!-- Left Sidebar: SideNavBar & Navigation Tree -->
+<aside class="w-sidebar-width bg-surface-secondary border-r border-border-default flex flex-col z-20">
+<div class="p-4 border-b border-border-default">
+<div class="flex items-center justify-between mb-4">
+<span class="font-section-title text-section-title text-text-primary">Global Workspace</span>
+<span class="material-symbols-outlined text-text-secondary cursor-pointer hover:text-text-primary">unfold_more</span>
+</div>
+<button class="w-full bg-surface-elevated border border-border-default text-text-primary py-1.5 px-3 rounded text-label-md font-label-md flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined !text-sm">add</span> Create New Item
+                </button>
+</div>
+<!-- Nav Tree -->
+<div class="flex-1 overflow-y-auto p-2 space-y-1">
+<div class="px-2 py-1.5 text-[11px] font-bold text-text-secondary uppercase tracking-widest mt-2 mb-1">Navigation</div>
+<div class="flex items-center gap-2 p-2 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer transition-all">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</div>
+<div class="flex items-center gap-2 p-2 rounded bg-surface-container-high text-primary font-semibold border-l-2 border-primary transition-all">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-md text-label-md">Projects</span>
+</div>
+<div class="ml-4 space-y-1 mt-1">
+<div class="flex items-center gap-2 p-1.5 rounded text-text-secondary hover:text-text-primary cursor-pointer border-l border-border-default pl-4">
+<span class="font-label-md text-label-md">Market Research</span>
+</div>
+<div class="flex items-center gap-2 p-1.5 rounded text-text-primary bg-surface-container cursor-pointer border-l border-primary pl-4 font-medium">
+<span class="font-label-md text-label-md">Q4 Analysis</span>
+</div>
+</div>
+<div class="flex items-center gap-2 p-2 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer transition-all">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-label-md">Tasks</span>
+</div>
+<div class="px-2 py-1.5 text-[11px] font-bold text-text-secondary uppercase tracking-widest mt-6 mb-1">Document Outline</div>
+<div class="space-y-1 px-2 text-text-secondary">
+<div class="text-[12px] hover:text-primary cursor-pointer py-1">Executive Summary</div>
+<div class="text-[12px] hover:text-primary cursor-pointer py-1 ml-3">Key Performance Metrics</div>
+<div class="text-[12px] hover:text-primary cursor-pointer py-1 ml-3">Growth Projections</div>
+<div class="text-[12px] hover:text-primary cursor-pointer py-1">Competitive Landscape</div>
+<div class="text-[12px] hover:text-primary cursor-pointer py-1 ml-3">SWOT Analysis</div>
+</div>
+</div>
+<!-- Footer Tabs -->
+<div class="p-2 border-t border-border-default space-y-1">
+<div class="flex items-center gap-2 p-2 rounded text-text-secondary hover:bg-surface-container transition-all cursor-pointer">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-md text-label-md">Storage</span>
+</div>
+<div class="flex items-center gap-2 p-2 rounded text-text-secondary hover:bg-surface-container transition-all cursor-pointer">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</div>
+</div>
+</aside>
+<!-- Center Panel: Editor -->
+<section class="flex-1 bg-surface-primary flex flex-col relative overflow-hidden">
+<!-- Pinned Editor Toolbar -->
+<div class="h-10 border-b border-border-default flex items-center px-4 gap-4 bg-surface-primary/80 backdrop-blur-sm z-10 sticky top-0">
+<div class="flex items-center gap-0.5">
+<button class="p-1 hover:bg-surface-elevated rounded transition-colors"><span class="material-symbols-outlined !text-sm">format_bold</span></button>
+<button class="p-1 hover:bg-surface-elevated rounded transition-colors"><span class="material-symbols-outlined !text-sm">format_italic</span></button>
+<button class="p-1 hover:bg-surface-elevated rounded transition-colors"><span class="material-symbols-outlined !text-sm">format_strikethrough</span></button>
+</div>
+<div class="w-[1px] h-4 bg-border-default"></div>
+<div class="flex items-center gap-0.5">
+<button class="p-1 hover:bg-surface-elevated rounded transition-colors"><span class="material-symbols-outlined !text-sm">format_list_bulleted</span></button>
+<button class="p-1 hover:bg-surface-elevated rounded transition-colors"><span class="material-symbols-outlined !text-sm">format_list_numbered</span></button>
+<button class="p-1 hover:bg-surface-elevated rounded transition-colors"><span class="material-symbols-outlined !text-sm">check_box</span></button>
+</div>
+<div class="w-[1px] h-4 bg-border-default"></div>
+<div class="flex items-center gap-0.5">
+<button class="p-1 hover:bg-surface-elevated rounded transition-colors"><span class="material-symbols-outlined !text-sm">link</span></button>
+<button class="p-1 hover:bg-surface-elevated rounded transition-colors"><span class="material-symbols-outlined !text-sm">image</span></button>
+<button class="p-1 hover:bg-surface-elevated rounded transition-colors"><span class="material-symbols-outlined !text-sm">code</span></button>
+</div>
+<div class="flex-1"></div>
+<div class="flex items-center gap-4 text-text-secondary">
+<span class="text-[11px] font-mono">1,420 words</span>
+<span class="text-[11px] font-mono">8,432 chars</span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto pt-16 pb-32 px-12 lg:px-24">
+<div class="max-w-3xl mx-auto space-y-8">
+<h1 class="font-page-title text-4xl text-text-primary tracking-tight leading-tight outline-none" contenteditable="true">Q4 Market Analysis and Strategic Growth Projections</h1>
+<div class="flex items-center gap-4 py-4 border-y border-border-default">
+<div class="flex items-center gap-2">
+<span class="text-[11px] text-text-secondary uppercase font-bold tracking-widest">Assignee</span>
+<div class="flex items-center gap-2 bg-surface-elevated px-2 py-1 rounded border border-border-default">
+<img class="w-4 h-4 rounded-full" data-alt="A sharp, minimalist circular avatar of a business executive for a professional dark-mode UI. The portrait uses deep blue tones and cool lighting to maintain a serious, high-utility aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAw7OMKkj8eQSOo76M033YfAmRArTdRQ-x47W5S8te_1JsvA0dn7TjjaKQ8cNxuA0pL6Rav_xLa2wRUuhhBHW-WpH-sVmpIDAW8nk2C8io4aA1cHsqcBEGHYlFESjjfYwNIxPyfF2mz5fVmvEGr-1i_0RecL2fe1XBabLVdH48lGeN5sSb0s2gK7vslyh364B44d5nNXG8widJLBqyk2xcBZDyghXGfIBa3ZJzMz3s9wNsF55bp5Rv_Mf-DG0hBTEMN2U4-jZpuOxU"/>
+<span class="text-xs">Marcus Thorne</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[11px] text-text-secondary uppercase font-bold tracking-widest">Due Date</span>
+<span class="text-xs bg-surface-elevated px-2 py-1 rounded border border-border-default">Nov 15, 2024</span>
+</div>
+</div>
+<div class="editor-canvas prose prose-invert max-w-none text-text-primary/90 font-body-md text-lg leading-relaxed space-y-6" contenteditable="true">
+<p>In the fourth quarter of 2023, the digital collaboration market saw a significant shift towards high-density organizational operating systems. Users are increasingly rejecting the fragmented app landscape in favor of unified, "Information-First" environments that prioritize professional focus over aesthetic trendiness.</p>
+<h2 class="text-2xl font-section-title text-text-primary mt-12 mb-4">Executive Summary</h2>
+<p>Our research indicates that the primary friction point for knowledge workers is the cognitive load of switching contexts. By implementing a fixed shell with fluid content, platforms can reduce this friction by 40%. The core pillars of this shift are:</p>
+<ul class="list-disc pl-5 space-y-3">
+<li><strong>Utilitarian Density:</strong> Maximizing vertical real estate without compromising legibility.</li>
+<li><strong>Tonal Layering:</strong> Using subtle shade shifts rather than heavy shadows to communicate depth.</li>
+<li><strong>Stability:</strong> Providing a consistent UI structure that acts as a mental anchor.</li>
+</ul>
+<div class="bg-surface-elevated border-l-4 border-primary p-4 rounded-r mt-8">
+<p class="italic text-text-secondary font-body-md text-base">"The interface should not be noticed. It should be an extension of the user's intent, invisible until needed." — Design Philosophy 2024</p>
+</div>
+<h2 class="text-2xl font-section-title text-text-primary mt-12 mb-4">Key Performance Metrics</h2>
+<div class="grid grid-cols-2 gap-4 my-8">
+<div class="bg-surface-container p-4 border border-border-default rounded">
+<span class="text-[10px] text-text-secondary uppercase font-bold tracking-widest block mb-2">User Retention</span>
+<span class="text-2xl font-bold text-status-success">84.2%</span>
+<span class="text-[11px] text-text-secondary block mt-1">+12.4% from Q3</span>
+</div>
+<div class="bg-surface-container p-4 border border-border-default rounded">
+<span class="text-[10px] text-text-secondary uppercase font-bold tracking-widest block mb-2">Avg Session Length</span>
+<span class="text-2xl font-bold text-primary">54m</span>
+<span class="text-[11px] text-text-secondary block mt-1">+4m from Q3</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Shortcut Hints -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-4 pointer-events-none">
+<div class="bg-surface-elevated border border-border-default px-3 py-1.5 rounded flex items-center gap-2 text-text-secondary shadow-xl">
+<kbd class="bg-surface-container-highest px-1.5 py-0.5 rounded text-[10px] font-mono border border-border-default">CMD + S</kbd>
+<span class="text-[10px] font-bold uppercase tracking-wider">Save</span>
+</div>
+<div class="bg-surface-elevated border border-border-default px-3 py-1.5 rounded flex items-center gap-2 text-text-secondary shadow-xl">
+<kbd class="bg-surface-container-highest px-1.5 py-0.5 rounded text-[10px] font-mono border border-border-default">CMD + /</kbd>
+<span class="text-[10px] font-bold uppercase tracking-wider">Search</span>
+</div>
+</div>
+</section>
+<!-- Right Panel: Metadata & Comments -->
+<aside class="w-context-panel-width bg-surface-secondary border-l border-border-default flex flex-col z-20">
+<div class="flex border-b border-border-default">
+<button class="flex-1 py-3 text-[11px] font-bold uppercase tracking-widest text-primary border-b-2 border-primary">Properties</button>
+<button class="flex-1 py-3 text-[11px] font-bold uppercase tracking-widest text-text-secondary hover:text-text-primary transition-colors">History</button>
+</div>
+<div class="flex-1 overflow-y-auto">
+<!-- Properties Section -->
+<div class="p-4 space-y-6">
+<div class="space-y-3">
+<label class="text-[10px] text-text-secondary uppercase font-bold tracking-widest">Artifact Metadata</label>
+<div class="space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="text-text-secondary">Created</span>
+<span>Oct 12, 2023</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-text-secondary">Owner</span>
+<span class="text-primary hover:underline cursor-pointer">@design_lead</span>
+</div>
+<div class="flex items-center justify-between text-xs">
+<span class="text-text-secondary">Visibility</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined !text-[12px]">public</span> Team-wide</span>
+</div>
+</div>
+</div>
+<div class="space-y-3">
+<label class="text-[10px] text-text-secondary uppercase font-bold tracking-widest">Labels</label>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded text-[10px] font-bold uppercase">Report</span>
+<span class="px-2 py-0.5 bg-status-warning/10 text-status-warning border border-status-warning/20 rounded text-[10px] font-bold uppercase">Priority</span>
+<span class="px-2 py-0.5 bg-surface-container-highest text-text-secondary border border-border-default rounded text-[10px] font-bold uppercase">Q4-23</span>
+</div>
+</div>
+<div class="space-y-4 pt-6 border-t border-border-default">
+<label class="text-[10px] text-text-secondary uppercase font-bold tracking-widest">Discussion (4)</label>
+<div class="space-y-4">
+<div class="flex gap-3">
+<img class="w-6 h-6 rounded-full" data-alt="A small circular avatar of a technical collaborator with glasses and a professional look. The style is consistent with a high-end corporate dark-mode dashboard, emphasizing sharp details and subdued colors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAenTB-AJ5Y6epBq9cRRvdDuHyF_gx7ddJIFb78zuF4D-E88hk8CEcC_5m-gB36qseuMXnzm4S6eFlnFJdqTRQm7cbl5QQ-FAdYzUCOTxNaqeNVme6B9x5GT1Zis5_wRvNiUPUpr7pCyJoxo22Am4R05qwn34Biut4ZUdrrLegRBvDyfDEdBGcD-WjulOq-h-vykLm_4-maapLz4uPrXhDoWXD2lemvJn0bWMxg5by_un2PaVZzgm_DsCVxeAZVRSA0Pcon7a68Yl8"/>
+<div class="flex-1 space-y-1">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold">Alex Rivera</span>
+<span class="text-[9px] text-text-secondary">1h ago</span>
+</div>
+<p class="text-xs text-text-secondary leading-normal">Should we include the mobile retention data here or in the Appendix?</p>
+</div>
+</div>
+<div class="flex gap-3">
+<img class="w-6 h-6 rounded-full" data-alt="A professional avatar of a project manager with a calm expression, designed for a dark UI environment. The image is clean, sharp, and uses high-key lighting on the subject to provide contrast against the interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw-gI13g81lm0F5o6sCQZ2X4s67dVx_T20DKfD1yx1BUXIIbTd-GpDJeCORHEifAOORaUDfaVstHchrg4Rbu1k--87AWYyJ76cDqtjQnwynzAO6kwj2iRCGtPL1nN1MCa_vnND6yYy8HVRCKZhzDvAX-goDAP4mJ4Hd8c-q448G7t2L8PES2us-VM3ya42DvUOaUJj1AtwkQ-q6FJJzUy-aqCPQ8f-PBgyPT-VWwFC6t1GkAiXiEreEfLkHjLfZngkr8J3S6mF2Q8"/>
+<div class="flex-1 space-y-1">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold">Sarah Chen</span>
+<span class="text-[9px] text-text-secondary">45m ago</span>
+</div>
+<p class="text-xs text-text-secondary leading-normal">Let's keep it in the main report under Key Metrics.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Comment Input -->
+<div class="p-4 border-t border-border-default bg-surface-container-low">
+<div class="relative">
+<textarea class="w-full bg-surface-primary border border-border-default rounded p-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none resize-none transition-all placeholder:text-text-secondary" placeholder="Add a comment..." rows="3"></textarea>
+<div class="flex items-center justify-between mt-2">
+<div class="flex gap-1">
+<button class="p-1 hover:bg-surface-elevated rounded text-text-secondary"><span class="material-symbols-outlined !text-sm">alternate_email</span></button>
+<button class="p-1 hover:bg-surface-elevated rounded text-text-secondary"><span class="material-symbols-outlined !text-sm">mood</span></button>
+</div>
+<button class="bg-primary/10 text-primary px-3 py-1 rounded text-[11px] font-bold uppercase hover:bg-primary/20 transition-colors">Post</button>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Version History Overlay (Hidden by default, can be toggled via JS) -->
+<div class="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" id="version-overlay">
+<div class="w-full max-w-4xl h-[819px] bg-surface-elevated border border-border-default rounded-xl shadow-2xl flex flex-col overflow-hidden">
+<div class="p-4 border-b border-border-default flex items-center justify-between">
+<h3 class="font-section-title text-section-title">Version History</h3>
+<button class="material-symbols-outlined p-1 hover:bg-surface-variant rounded" onclick="toggleHistory()">close</button>
+</div>
+<div class="flex-1 flex overflow-hidden">
+<div class="w-64 border-r border-border-default p-4 space-y-4 overflow-y-auto">
+<div class="space-y-1">
+<div class="text-[10px] text-text-secondary uppercase font-bold tracking-widest mb-2">Today</div>
+<div class="p-3 bg-primary/10 border border-primary/30 rounded cursor-pointer">
+<div class="flex items-center justify-between mb-1">
+<span class="text-xs font-bold">Current Version</span>
+<span class="text-[9px] text-text-secondary">14:22</span>
+</div>
+<div class="text-[10px] text-text-secondary">By Marcus Thorne</div>
+</div>
+<div class="p-3 hover:bg-surface-container rounded cursor-pointer transition-colors mt-2">
+<div class="flex items-center justify-between mb-1">
+<span class="text-xs font-bold">Draft Snapshot</span>
+<span class="text-[9px] text-text-secondary">11:05</span>
+</div>
+<div class="text-[10px] text-text-secondary">By Marcus Thorne</div>
+</div>
+</div>
+<div class="space-y-1 pt-4">
+<div class="text-[10px] text-text-secondary uppercase font-bold tracking-widest mb-2">Yesterday</div>
+<div class="p-3 hover:bg-surface-container rounded cursor-pointer transition-colors">
+<div class="flex items-center justify-between mb-1">
+<span class="text-xs font-bold">Major Revision</span>
+<span class="text-[9px] text-text-secondary">17:40</span>
+</div>
+<div class="text-[10px] text-text-secondary">By Sarah Chen</div>
+</div>
+</div>
+</div>
+<div class="flex-1 bg-surface-container-lowest p-8 overflow-y-auto font-mono text-sm leading-relaxed text-text-secondary">
+<div class="max-w-2xl mx-auto space-y-4">
+<p class="text-status-success">+ Added Executive Summary section with growth pillars.</p>
+<p class="text-status-danger">- Removed redundant charts from market segment analysis.</p>
+<p class="text-status-success">+ Updated user retention metrics for Q4 preliminary results.</p>
+<hr class="border-border-default my-8"/>
+<div class="opacity-50 line-through">
+                            The primary goal of this document was originally to showcase the benefits of glassmorphism.
+                        </div>
+<div>
+                            The primary goal of this document is now to emphasize the shift towards utilitarian, information-dense dark mode interfaces.
+                        </div>
+</div>
+</div>
+</div>
+<div class="p-4 border-t border-border-default flex justify-end gap-3">
+<button class="px-4 py-2 text-xs font-bold uppercase hover:bg-surface-variant rounded transition-colors">Compare versions</button>
+<button class="bg-primary text-on-primary px-4 py-2 rounded text-xs font-bold uppercase">Restore this version</button>
+</div>
+</div>
+</div>
+<script>
+        function toggleHistory() {
+            const overlay = document.getElementById('version-overlay');
+            if (overlay.classList.contains('opacity-0')) {
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        // Attach click listener to History button
+        document.querySelector('button:contains("History")')?.addEventListener('click', toggleHistory);
+        // Workaround for :contains in vanilla JS for this specific demo
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerText.includes('History')) {
+                btn.onclick = toggleHistory;
+            }
+        });
+
+        // Simple Atmospheric effect: Mouse movement light subtle glow
+        document.addEventListener('mousemove', (e) => {
+            const editor = document.querySelector('.editor-canvas');
+            if (!editor) return;
+            const x = e.clientX;
+            const y = e.clientY;
+        });
+
+        // Tab and keyboard listeners for "professional" feel
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+                e.preventDefault();
+                const indicator = document.querySelector('.w-2.h-2.rounded-full');
+                indicator.classList.remove('bg-status-success');
+                indicator.classList.add('bg-status-warning');
+                setTimeout(() => {
+                    indicator.classList.remove('bg-status-warning');
+                    indicator.classList.add('bg-status-success');
+                }, 1000);
+            }
+        });
+    </script>
+</body></html>

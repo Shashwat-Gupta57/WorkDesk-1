@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Archive Explorer | WorkDesk</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+        }
+        .drag-ghost {
+            pointer-events: none;
+            transform: rotate(2deg);
+            opacity: 0.7;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363D;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #414752;
+        }
+        .custom-checkbox:checked {
+            background-color: #a2c9ff;
+            border-color: #a2c9ff;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#58a6ff",
+                        "primary": "#a2c9ff",
+                        "surface-container-high": "#262a31",
+                        "on-surface-variant": "#c0c7d4",
+                        "text-primary": "#E6EDF3",
+                        "primary-fixed-dim": "#a2c9ff",
+                        "on-tertiary-container": "#4f3400",
+                        "on-secondary-container": "#b1b5bf",
+                        "on-secondary-fixed-variant": "#42474f",
+                        "surface-container": "#1c2026",
+                        "status-success": "#3FB950",
+                        "surface-secondary": "#161B22",
+                        "tertiary-container": "#da9600",
+                        "surface-container-lowest": "#0a0e14",
+                        "surface-dim": "#10141a",
+                        "secondary": "#c2c7d0",
+                        "status-warning": "#D29922",
+                        "surface-elevated": "#1C2128",
+                        "secondary-fixed-dim": "#c2c7d0",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-low": "#181c22",
+                        "surface-container-highest": "#31353c",
+                        "outline": "#8b919d",
+                        "surface-tint": "#a2c9ff",
+                        "inverse-on-surface": "#2d3137",
+                        "tertiary-fixed": "#ffddaf",
+                        "surface-bright": "#353940",
+                        "outline-variant": "#414752",
+                        "background": "#10141a",
+                        "surface-variant": "#31353c",
+                        "secondary-container": "#42474f",
+                        "on-error": "#690005",
+                        "on-tertiary": "#432c00",
+                        "secondary-fixed": "#dee2ec",
+                        "tertiary-fixed-dim": "#ffba42",
+                        "text-secondary": "#8B949E",
+                        "on-background": "#dfe2eb",
+                        "surface-primary": "#0D1117",
+                        "border-default": "#30363D",
+                        "primary-fixed": "#d3e4ff",
+                        "on-tertiary-fixed": "#281800",
+                        "on-surface": "#dfe2eb",
+                        "on-secondary-fixed": "#171c23",
+                        "tertiary": "#ffba42",
+                        "on-secondary": "#2c3138",
+                        "status-danger": "#F85149",
+                        "inverse-primary": "#0060aa",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#004882",
+                        "on-primary": "#00315c",
+                        "inverse-surface": "#dfe2eb",
+                        "on-primary-container": "#003a6b",
+                        "on-primary-fixed": "#001c38",
+                        "error-container": "#93000a",
+                        "surface": "#10141a",
+                        "on-tertiary-fixed-variant": "#614000"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "input-height": "32px",
+                        "unit": "4px",
+                        "context-panel-width": "300px",
+                        "touch-target": "40px",
+                        "sidebar-width": "260px",
+                        "gutter": "16px",
+                        "container-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "caption": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono": ["Inter"],
+                        "label-md": ["Inter"],
+                        "section-title": ["Inter"],
+                        "card-title": ["Inter"],
+                        "body-md": ["Inter"],
+                        "page-title": ["Inter"]
+                    },
+                    "fontSize": {
+                        "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-primary text-text-primary font-body-md text-body-md overflow-hidden h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="w-full h-touch-target bg-surface flex items-center justify-between px-gutter border-b border-border-default z-50">
+<div class="flex items-center gap-4">
+<span class="font-page-title text-page-title text-primary select-none">WorkDesk</span>
+<div class="flex items-center bg-surface-secondary border border-border-default rounded h-8 px-2 w-80">
+<span class="material-symbols-outlined text-text-secondary mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-none text-body-sm focus:ring-0 w-full placeholder:text-text-secondary" placeholder="Search Institutional Archive..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-text-secondary hover:bg-surface-variant transition-colors p-1 rounded cursor-pointer" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-text-secondary hover:bg-surface-variant transition-colors p-1 rounded cursor-pointer" data-icon="help">help</button>
+<button class="material-symbols-outlined text-text-secondary hover:bg-surface-variant transition-colors p-1 rounded cursor-pointer" data-icon="settings">settings</button>
+<div class="w-7 h-7 rounded-full bg-primary-container border border-border-default flex items-center justify-center overflow-hidden">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyL0iSMAnPbd2JX79xPD7cMw1z_hwdI7esnGjS1eBn808ICGp4pciaoGgsVNvS0XG3tocu2nK0aF_Vh0Y1zZmgsiFtkq-TEhgS8vGUZe4m9-X3CwJl9FD5ZZfZeXJgHwhB00I4CpwY8AC7pukoRm2N9ZA-JM9NsKKMWPWcqBn_GFTbCFe_nfiOZyJiDuV6b86SADIcxEdfWK5XQYYfoQH4LCOuB6hhS01nuw-ekd0jrmWrLAndSN0tpmXTHYOilysbdSdpob8QMXo"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar / Tree Navigation -->
+<aside class="w-sidebar-width bg-surface-secondary border-r border-border-default flex flex-col py-4 px-2 select-none overflow-y-auto">
+<div class="px-2 mb-4">
+<span class="font-section-title text-section-title text-text-primary block">Global Workspace</span>
+<span class="font-label-md text-label-md text-text-secondary">Pro Plan</span>
+</div>
+<button class="mx-2 mb-6 bg-primary text-surface-primary font-label-md py-2 rounded flex items-center justify-center gap-2 hover:opacity-90 active:opacity-80 transition-all">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+                Create New Item
+            </button>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard / Main Views -->
+<div class="text-text-secondary text-caption uppercase tracking-wider px-2 py-1 mb-1">Main Explorer</div>
+<div class="flex items-center gap-3 px-3 py-1.5 rounded transition-all duration-150 cursor-pointer hover:bg-surface-container hover:text-text-primary text-text-secondary font-label-md">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-1.5 rounded transition-all duration-150 cursor-pointer bg-surface-container-high text-primary font-semibold font-label-md">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span>Archive Explorer</span>
+</div>
+<!-- Tree View Navigation -->
+<div class="text-text-secondary text-caption uppercase tracking-wider px-2 py-1 mt-6 mb-1">Archive Tree</div>
+<div class="space-y-0.5">
+<div class="flex items-center gap-2 px-2 py-1 hover:bg-surface-container rounded cursor-pointer group">
+<span class="material-symbols-outlined text-text-secondary" data-icon="arrow_drop_down">arrow_drop_down</span>
+<span class="material-symbols-outlined text-status-warning" data-icon="folder">folder</span>
+<span class="font-label-md text-text-primary">Institutional Archive</span>
+</div>
+<div class="pl-6 space-y-0.5 border-l border-border-default ml-4">
+<div class="flex items-center gap-2 px-2 py-1 hover:bg-surface-container rounded cursor-pointer">
+<span class="material-symbols-outlined text-text-secondary" data-icon="arrow_right">arrow_right</span>
+<span class="material-symbols-outlined text-text-secondary" data-icon="folder_shared">folder_shared</span>
+<span class="font-label-md text-on-surface-variant">Q4 Strategy</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1 bg-surface-container-low rounded cursor-pointer">
+<span class="material-symbols-outlined text-text-secondary" data-icon="arrow_drop_down">arrow_drop_down</span>
+<span class="material-symbols-outlined text-primary" data-icon="folder_managed">folder_managed</span>
+<span class="font-label-md text-text-primary">Internal Protocols</span>
+</div>
+<div class="pl-6 space-y-0.5 border-l border-border-default ml-4">
+<div class="flex items-center gap-2 px-2 py-1 hover:bg-surface-container rounded cursor-pointer">
+<span class="material-symbols-outlined text-text-secondary" data-icon="description">description</span>
+<span class="font-label-md text-text-secondary">Security_v2.md</span>
+</div>
+<div class="flex items-center gap-2 px-2 py-1 hover:bg-surface-container rounded cursor-pointer">
+<span class="material-symbols-outlined text-text-secondary" data-icon="table_chart">table_chart</span>
+<span class="font-label-md text-text-secondary">Onboarding_Checklist.csv</span>
+</div>
+</div>
+<div class="flex items-center gap-2 px-2 py-1 hover:bg-surface-container rounded cursor-pointer">
+<span class="material-symbols-outlined text-text-secondary" data-icon="arrow_right">arrow_right</span>
+<span class="material-symbols-outlined text-text-secondary" data-icon="archive">archive</span>
+<span class="font-label-md text-on-surface-variant">Legacy Assets</span>
+</div>
+</div>
+</div>
+</nav>
+<div class="mt-auto space-y-1">
+<div class="flex items-center gap-3 px-3 py-1.5 rounded transition-all duration-150 cursor-pointer hover:bg-surface-container hover:text-text-primary text-text-secondary font-label-md">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span>Storage (82%)</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-1.5 rounded transition-all duration-150 cursor-pointer hover:bg-surface-container hover:text-text-primary text-text-secondary font-label-md">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span>Support</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 bg-surface-primary">
+<!-- Header / Breadcrumbs -->
+<div class="px-gutter py-3 flex flex-col gap-4 bg-surface-primary border-b border-border-default">
+<div class="flex items-center gap-2 text-caption">
+<span class="text-text-secondary hover:text-text-primary cursor-pointer">Root</span>
+<span class="material-symbols-outlined text-text-secondary" data-icon="chevron_right" style="font-size: 14px">chevron_right</span>
+<span class="text-text-secondary hover:text-text-primary cursor-pointer">Institutional Archive</span>
+<span class="material-symbols-outlined text-text-secondary" data-icon="chevron_right" style="font-size: 14px">chevron_right</span>
+<span class="text-text-primary font-semibold">Internal Protocols</span>
+</div>
+<div class="flex items-center justify-between">
+<h1 class="font-page-title text-page-title text-text-primary">Internal Protocols</h1>
+<div class="flex items-center gap-2">
+<button class="h-8 px-3 flex items-center gap-2 bg-surface-secondary border border-border-default rounded hover:bg-surface-variant transition-colors text-label-md">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                            Advanced Filters
+                        </button>
+<button class="h-8 px-3 flex items-center gap-2 bg-surface-secondary border border-border-default rounded hover:bg-surface-variant transition-colors text-label-md">
+<span class="material-symbols-outlined" data-icon="view_list">view_list</span>
+</button>
+<button class="h-8 px-3 flex items-center gap-2 bg-surface-container-high border border-border-default rounded text-primary text-label-md">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+</button>
+</div>
+</div>
+<!-- Filters Strip -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 bg-surface-container px-2 py-1 rounded border border-border-default">
+<span class="text-caption text-text-secondary">Type:</span>
+<select class="bg-transparent text-caption text-text-primary border-none p-0 focus:ring-0 cursor-pointer">
+<option>All Types</option>
+<option>Markdown</option>
+<option>PDF Document</option>
+<option>Spreadsheet</option>
+</select>
+</div>
+<div class="flex items-center gap-2 bg-surface-container px-2 py-1 rounded border border-border-default">
+<span class="text-caption text-text-secondary">Owner:</span>
+<select class="bg-transparent text-caption text-text-primary border-none p-0 focus:ring-0 cursor-pointer">
+<option>Everyone</option>
+<option>System Archive</option>
+<option>Current User</option>
+</select>
+</div>
+<div class="flex items-center gap-2 bg-surface-container px-2 py-1 rounded border border-border-default">
+<span class="text-caption text-text-secondary">Last Modified:</span>
+<select class="bg-transparent text-caption text-text-primary border-none p-0 focus:ring-0 cursor-pointer">
+<option>Anytime</option>
+<option>Past 24 hours</option>
+<option>Past Week</option>
+<option>Past Month</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Explorer Grid -->
+<div class="flex-1 overflow-y-auto p-gutter relative">
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+<!-- File Item: PDF -->
+<div class="group relative flex flex-col bg-surface-elevated border border-border-default rounded-lg p-3 hover:border-primary-container transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-2">
+<input class="custom-checkbox w-4 h-4 rounded border-border-default bg-surface text-primary focus:ring-primary-container" type="checkbox"/>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex flex-col items-center py-4">
+<span class="material-symbols-outlined text-status-danger text-5xl" data-icon="picture_as_pdf" style="font-size: 48px">picture_as_pdf</span>
+</div>
+<div class="mt-2 text-center">
+<p class="font-card-title text-card-title text-text-primary truncate">Incident_Response_v1.pdf</p>
+<p class="text-caption text-text-secondary">PDF • 2.4 MB</p>
+</div>
+</div>
+<!-- File Item: Markdown (Active/Right-click target) -->
+<div class="group relative flex flex-col bg-surface-container-high border-2 border-primary rounded-lg p-3 transition-all cursor-pointer ring-4 ring-primary/10">
+<div class="flex items-start justify-between mb-2">
+<input checked="" class="custom-checkbox w-4 h-4 rounded border-border-default bg-surface text-primary focus:ring-primary-container" type="checkbox"/>
+<span class="material-symbols-outlined text-primary" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex flex-col items-center py-4">
+<span class="material-symbols-outlined text-primary-container text-5xl" data-icon="description" style="font-size: 48px">description</span>
+</div>
+<div class="mt-2 text-center">
+<p class="font-card-title text-card-title text-text-primary truncate">Security_Guidelines.md</p>
+<p class="text-caption text-text-secondary">Markdown • 12 KB</p>
+</div>
+<!-- Context Menu (Absolute) -->
+<div class="absolute left-full top-4 ml-2 w-48 bg-surface-elevated border border-border-default rounded-lg shadow-2xl z-50 py-1 overflow-hidden animate-in fade-in zoom-in duration-100">
+<button class="w-full flex items-center gap-3 px-3 py-2 text-label-md text-text-primary hover:bg-primary hover:text-surface-primary transition-colors text-left">
+<span class="material-symbols-outlined" data-icon="open_in_new">open_in_new</span>
+                                Open
+                            </button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-label-md text-text-primary hover:bg-primary hover:text-surface-primary transition-colors text-left">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+                                Version History
+                            </button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-label-md text-text-primary hover:bg-primary hover:text-surface-primary transition-colors text-left border-t border-border-default mt-1">
+<span class="material-symbols-outlined" data-icon="drive_file_move">drive_file_move</span>
+                                Move to...
+                            </button>
+<button class="w-full flex items-center gap-3 px-3 py-2 text-label-md text-status-danger hover:bg-status-danger hover:text-white transition-colors text-left">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+                                Delete
+                            </button>
+</div>
+</div>
+<!-- File Item: Spreadsheet -->
+<div class="group relative flex flex-col bg-surface-elevated border border-border-default rounded-lg p-3 hover:border-primary-container transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-2">
+<input class="custom-checkbox w-4 h-4 rounded border-border-default bg-surface text-primary focus:ring-primary-container" type="checkbox"/>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex flex-col items-center py-4">
+<span class="material-symbols-outlined text-status-success text-5xl" data-icon="table_chart" style="font-size: 48px">table_chart</span>
+</div>
+<div class="mt-2 text-center">
+<p class="font-card-title text-card-title text-text-primary truncate">Onboarding_Logic.xlsx</p>
+<p class="text-caption text-text-secondary">Excel • 442 KB</p>
+</div>
+</div>
+<!-- Drag Ghost Item -->
+<div class="drag-ghost group relative flex flex-col bg-surface-variant border border-primary-container border-dashed rounded-lg p-3 z-40 fixed" style="top: 450px; left: 600px; width: 160px;">
+<div class="flex flex-col items-center py-4">
+<span class="material-symbols-outlined text-text-secondary text-5xl" data-icon="description" style="font-size: 48px">description</span>
+</div>
+<div class="mt-2 text-center">
+<p class="font-card-title text-card-title text-text-secondary truncate">Draft_Protocols.md</p>
+</div>
+</div>
+<!-- Additional Items -->
+<div class="group relative flex flex-col bg-surface-elevated border border-border-default rounded-lg p-3 hover:border-primary-container transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-2">
+<input class="custom-checkbox w-4 h-4 rounded border-border-default bg-surface text-primary focus:ring-primary-container" type="checkbox"/>
+</div>
+<div class="flex flex-col items-center py-4">
+<span class="material-symbols-outlined text-on-surface-variant text-5xl" data-icon="feed" style="font-size: 48px">feed</span>
+</div>
+<div class="mt-2 text-center">
+<p class="font-card-title text-card-title text-text-primary truncate">Terms_Archive.md</p>
+<p class="text-caption text-text-secondary">Markdown • 45 KB</p>
+</div>
+</div>
+<div class="group relative flex flex-col bg-surface-elevated border border-border-default rounded-lg p-3 hover:border-primary-container transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-2">
+<input class="custom-checkbox w-4 h-4 rounded border-border-default bg-surface text-primary focus:ring-primary-container" type="checkbox"/>
+</div>
+<div class="flex flex-col items-center py-4">
+<span class="material-symbols-outlined text-status-danger text-5xl" data-icon="picture_as_pdf" style="font-size: 48px">picture_as_pdf</span>
+</div>
+<div class="mt-2 text-center">
+<p class="font-card-title text-card-title text-text-primary truncate">Compliance_Report.pdf</p>
+<p class="text-caption text-text-secondary">PDF • 5.1 MB</p>
+</div>
+</div>
+<div class="group relative flex flex-col bg-surface-elevated border border-border-default rounded-lg p-3 hover:border-primary-container transition-all cursor-pointer">
+<div class="flex items-start justify-between mb-2">
+<input class="custom-checkbox w-4 h-4 rounded border-border-default bg-surface text-primary focus:ring-primary-container" type="checkbox"/>
+</div>
+<div class="flex flex-col items-center py-4">
+<span class="material-symbols-outlined text-status-success text-5xl" data-icon="table_view" style="font-size: 48px">table_view</span>
+</div>
+<div class="mt-2 text-center">
+<p class="font-card-title text-card-title text-text-primary truncate">Asset_Inventory_2023.csv</p>
+<p class="text-caption text-text-secondary">CSV • 89 KB</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Status Bar / Footer -->
+<footer class="h-8 bg-surface-secondary border-t border-border-default flex items-center justify-between px-gutter select-none">
+<div class="flex items-center gap-4">
+<span class="text-caption text-text-secondary">7 items found in Institutional Archive / Internal Protocols</span>
+<span class="text-caption text-primary">1 item selected</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1 text-caption text-text-secondary">
+<span class="material-symbols-outlined" data-icon="cloud_done" style="font-size: 14px">cloud_done</span>
+                        All assets synced
+                    </span>
+<span class="text-caption text-text-secondary">v4.12.0-stable</span>
+</div>
+</footer>
+</main>
+<!-- Right Metadata Panel (Fixed Context Panel) -->
+<aside class="w-context-panel-width bg-surface-secondary border-l border-border-default hidden xl:flex flex-col p-4 overflow-y-auto">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-section-title text-section-title text-text-primary">Details</h2>
+<button class="material-symbols-outlined text-text-secondary" data-icon="close">close</button>
+</div>
+<div class="aspect-video w-full bg-surface-elevated border border-border-default rounded-lg mb-4 flex flex-col items-center justify-center p-4">
+<span class="material-symbols-outlined text-primary-container text-4xl mb-2" data-icon="description">description</span>
+<span class="text-caption text-text-secondary text-center">Preview not available for markdown source view</span>
+</div>
+<div class="space-y-6">
+<section>
+<h3 class="text-caption text-text-secondary uppercase mb-2">Information</h3>
+<div class="space-y-3">
+<div class="flex justify-between border-b border-border-default pb-1">
+<span class="text-body-sm text-text-secondary">Type</span>
+<span class="text-body-sm text-text-primary">Markdown</span>
+</div>
+<div class="flex justify-between border-b border-border-default pb-1">
+<span class="text-body-sm text-text-secondary">Size</span>
+<span class="text-body-sm text-text-primary">12.4 KB</span>
+</div>
+<div class="flex justify-between border-b border-border-default pb-1">
+<span class="text-body-sm text-text-secondary">Owner</span>
+<div class="flex items-center gap-1">
+<div class="w-4 h-4 rounded-full bg-tertiary-container text-[10px] flex items-center justify-center text-on-tertiary">JD</div>
+<span class="text-body-sm text-text-primary">John Doe</span>
+</div>
+</div>
+<div class="flex justify-between border-b border-border-default pb-1">
+<span class="text-body-sm text-text-secondary">Location</span>
+<span class="text-body-sm text-primary underline">/Archive/Protocols</span>
+</div>
+</div>
+</section>
+<section>
+<h3 class="text-caption text-text-secondary uppercase mb-2">Access Control</h3>
+<div class="flex -space-x-2">
+<img alt="Collaborator 1" class="w-7 h-7 rounded-full border border-surface-secondary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiRKG3tKzFVP29skXBNWq41SecZQ7qtu93NN3sLqa9hiiWqg6-A8tihqpYvqf2creEKMwoDt8YIFJnozSkIFigI3zRSILt3ES6tdxBCR6v0nuXlIufC3rBUWNtVVKBFwunoLF393HMpbUn1A7EI1fVJ7u-l6VJNXGm23qmMOYIw-wAY5Cd4Sx97eXerS8V0a5V6OmC26-6Mb7wkwwmyQtjdrtb8Fs-0FY5Hiyw9_CX_LiyoP9lehvmbv1jywc3iqtsKlp-RqAfJKA"/>
+<img alt="Collaborator 2" class="w-7 h-7 rounded-full border border-surface-secondary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5R72zSSzIPbdmRtWl0dFfI-lelPDldaEN2aYvEmZOBlpy_FLF0JtZUV6DhLwK1dCjG1JsMcAXF-CCygxLwZpcrL6O3diV5ZDGOkFzDNjcPUUGMncCsSxjl6pbXahqwOux7PRVXaZsuPrYX4HMtYQe9KoX5TyeW3upfnJfXmnY2R15VpXDx2umfWVAMhFqNvt7UkNNpaLsbVCf7FKf3FGzuS89KCzaTfaInv-_nz8Z4h1BO5i45F1W6VMJkZMZv6UJWrcQtBGVyBo"/>
+<img alt="Collaborator 3" class="w-7 h-7 rounded-full border border-surface-secondary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiop6g1nynVUo0GD6odd1QRaV0YocLUYHsPiFybXGtze4ZMhUgdvDxELFgJPCQr03dICjACGvKzwlwwO9XgjsYpTu1R9JntbVIp58oO_0-lWS7uyN8IJZguGU8o_El4evRaSRjfPtk2aEkJGPPUp2KtLcaf5qa5qjJYy_L0oEeDWTgmvsPAUjUQ7B3Z7k28fiSyIIlRtttpKn6drSzbpsk_Y7aHo_29NkbTBW2-bw-UUQ2qQjWNJafEPCDYRPux95zlSMwAh6_X94"/>
+<div class="w-7 h-7 rounded-full border border-surface-secondary bg-surface-container-highest flex items-center justify-center text-[10px] text-text-secondary font-bold">+4</div>
+</div>
+<button class="mt-3 w-full border border-border-default py-1.5 rounded text-label-md hover:bg-surface-variant transition-colors">Manage Access</button>
+</section>
+<section>
+<h3 class="text-caption text-text-secondary uppercase mb-2">Activity</h3>
+<div class="space-y-4">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-text-secondary mt-1" data-icon="edit" style="font-size: 16px">edit</span>
+<div>
+<p class="text-body-sm text-text-primary">Edited by John Doe</p>
+<p class="text-caption text-text-secondary">2 hours ago</p>
+</div>
+</div>
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-text-secondary mt-1" data-icon="history" style="font-size: 16px">history</span>
+<div>
+<p class="text-body-sm text-text-primary">Restored from v2.4.0</p>
+<p class="text-caption text-text-secondary">Yesterday, 14:30</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</aside>
+</div>
+</body></html>

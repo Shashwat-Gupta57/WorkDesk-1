@@ -1,0 +1,133 @@
+# PRODUCT REQUIREMENTS DOCUMENT (PRD)
+
+# WorkDesk V2 — Collaboration & Workflow
+
+## Objective
+
+Transform WorkDesk from an archive into a collaborative workspace.
+
+---
+
+# Internal Messaging
+
+Users can:
+
+* Send Messages
+* Receive Messages
+* Search Conversations
+
+---
+
+# Artifact Sharing
+
+Users may send artifacts directly.
+
+Shared artifacts are transmitted as references.
+
+System behavior:
+
+* No file duplication
+* Original ownership preserved
+* Permission-based access
+
+---
+
+# Bulletin Board
+
+Central organizational notice board.
+
+Types:
+
+## Announcement
+
+Examples:
+
+* Client Updates
+* Team Updates
+* Meeting Notices
+
+## Countdown
+
+Examples:
+
+* Project Deadlines
+* Submission Deadlines
+
+---
+
+# Countdown System
+
+Fields:
+
+* Title
+* Description
+* Due Date
+* Target Members
+
+Multiple targets supported.
+
+---
+
+# Completion Workflow
+
+Assigned members must:
+
+Mark Complete
+
+before countdown expiration.
+
+System statuses:
+
+* Pending
+* Completed
+* Overdue
+* Incomplete
+
+---
+
+# Activity Feed
+
+Tracks:
+
+* Artifact Creation
+* Publishing
+* Version Commits
+* Deadline Completion
+
+Visible on dashboard.
+
+---
+
+# Notifications
+
+Triggers:
+
+* Shared Artifact
+* Bulletin Update
+* Deadline Assignment
+* Deadline Reminder
+* Library Requests
+
+Delivery:
+
+* In-App
+* Push Notification
+
+---
+
+# Permissions
+
+Visibility Levels:
+
+* Private
+* Shared
+* Public
+
+Artifact owners control visibility.
+
+---
+
+# Success Metrics
+
+* All internal coordination happens within WorkDesk
+* Reduced dependency on external messaging for organizational assets

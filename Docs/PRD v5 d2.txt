@@ -1,0 +1,56 @@
+WorkDesk V5 — Ecosystem & Integrations
+Vision
+
+Connect WorkDesk to the broader productivity ecosystem.
+
+Google Drive Integration
+
+Capabilities:
+
+Import Files
+Sync References
+GitHub Integration
+
+Capabilities:
+
+Link Repositories
+Archive Releases
+Reference Commits
+Figma Integration
+
+Capabilities:
+
+Import Design References
+Attach Frames
+Canva Integration
+
+Capabilities:
+
+Import Project References
+API Platform
+
+Developer APIs
+
+Supports:
+
+Artifact Access
+Search
+Metadata
+Webhooks
+
+Events:
+
+Artifact Created
+Published
+Shared
+Deadline Created
+Backup System
+
+Features:
+
+Daily Backups
+Weekly Snapshots
+Restore Points
+Success Criteria
+
+WorkDesk becomes the single source of truth while remaining connected to external tools.

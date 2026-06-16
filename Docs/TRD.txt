@@ -1,0 +1,325 @@
+# WorkDesk Technical Requirements Document (TRD)
+
+## Purpose
+
+This document defines the technical architecture, technology stack, domain model, system boundaries, development standards, and implementation principles for WorkDesk.
+
+WorkDesk serves as the permanent knowledge repository and operational workspace of GoBitsNBytes Prayagraj.
+
+---
+
+# Architecture Principles
+
+## Knowledge First
+
+WorkDesk is fundamentally an archival system.
+
+All features revolve around preserving, discovering, and distributing organizational knowledge.
+
+Artifacts are first-class entities.
+
+---
+
+## Reference-Based Sharing
+
+Files must never be duplicated across WorkDesk modules.
+
+Sharing transfers references only.
+
+Ownership remains attached to the original artifact.
+
+---
+
+## Immutable History
+
+No historical version may be permanently overwritten.
+
+Versioning follows append-only principles.
+
+Every modification creates a recoverable historical record.
+
+---
+
+## Modular Development
+
+Every major feature must be independently deployable.
+
+Modules should have minimal coupling.
+
+Examples:
+
+* Authentication
+* Archive
+* Library
+* Messaging
+* Bulletin
+* Mail Hub
+
+Each module owns its own services and UI components.
+
+---
+
+# Technology Stack
+
+Frontend
+
+* Next.js 15
+* TypeScript
+* TailwindCSS
+* shadcn/ui
+* TanStack Query
+
+Backend
+
+* Next.js Route Handlers
+
+Database
+
+* PostgreSQL
+
+ORM
+
+* Prisma
+
+Storage
+
+* Cloudflare R2
+
+Search
+
+Phase 1:
+
+* PostgreSQL Full Text Search
+
+Phase 2:
+
+* Meilisearch
+
+Realtime
+
+* Socket.io
+
+Graph Visualization
+
+* React Flow
+
+Deployment
+
+* Vercel
+* PostgreSQL Hosting
+* Cloudflare R2
+
+---
+
+# Domain Model
+
+User
+Set
+Artifact
+Version
+LibrarySection
+Message
+Notification
+Announcement
+Countdown
+Mailbox
+
+Relationships
+
+User
+├── Sets
+├── Artifacts
+├── Messages
+
+Set
+├── Child Sets
+├── Artifacts
+
+Artifact
+├── Versions
+├── Visibility
+├── Metadata
+
+Version
+├── Content
+├── Author
+├── Timestamp
+
+LibrarySection
+├── Published Artifact References
+
+Message
+├── Sender
+├── Receiver
+├── Artifact References
+
+---
+
+# Visibility Model
+
+Private
+
+Visible only to owner.
+
+Shared
+
+Visible only to explicitly shared users.
+
+Public
+
+Visible through Library.
+
+---
+
+# Storage Architecture
+
+PostgreSQL
+
+Stores:
+
+* Users
+* Metadata
+* Permissions
+* Versions
+* Notifications
+
+Cloudflare R2
+
+Stores:
+
+* Files
+* Images
+* Documents
+* Archives
+
+Redis (Future)
+
+Stores:
+
+* Search cache
+* Session cache
+* Notification cache
+
+---
+
+# Versioning Architecture
+
+Artifact
+├── Version 1
+├── Version 2
+├── Version 3
+
+Versions are immutable.
+
+Restore creates a new version.
+
+No version replacement allowed.
+
+---
+
+# Ownership Architecture
+
+Artifact Creator
+
+Primary owner.
+
+Organization
+
+Permanent archival rights.
+
+Administrator
+
+Transfer authority.
+
+Users leaving the organization must not cause knowledge loss.
+
+---
+
+# Search Architecture
+
+Search Index Sources
+
+* Artifact Titles
+* Descriptions
+* Tags
+* Set Names
+* Artifact Content
+
+Future:
+
+* OCR Content
+* PDF Text Extraction
+
+---
+
+# Security Requirements
+
+Authentication required for all private resources.
+
+Authorization enforced at API level.
+
+Role-Based Access Control:
+
+* Member
+* Administrator
+
+Passwords stored using modern password hashing.
+
+Audit logs maintained for critical actions.
+
+---
+
+# Development Standards
+
+TypeScript strict mode enabled.
+
+No any types.
+
+No duplicated business logic.
+
+Reusable UI components required.
+
+Server-side validation mandatory.
+
+Database transactions required for critical operations.
+
+---
+
+# Testing Requirements
+
+Every feature implementation prompt must conclude with:
+
+* Manual testing instructions
+* Expected outcomes
+* Edge cases
+* Rollback procedure
+
+No feature is considered complete without validation.
+
+---
+
+# PWA Requirements
+
+Installable
+
+Offline asset caching
+
+Responsive layout
+
+Push notification support
+
+Desktop and mobile compatibility
+
+---
+
+# Future Integrations
+
+Discord
+GitHub
+Figma
+Canva
+Google Drive
+Gmail
+Outlook
+
+All integrations must use reference-based workflows whenever possible.

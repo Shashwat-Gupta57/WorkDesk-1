@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WorkDesk Mobile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #30363D;
+            border-radius: 10px;
+        }
+        /* Hide scrollbar for clean mobile look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#dee2ec",
+                        "outline-variant": "#414752",
+                        "tertiary-container": "#da9600",
+                        "on-secondary-fixed-variant": "#42474f",
+                        "primary-fixed-dim": "#a2c9ff",
+                        "on-surface": "#dfe2eb",
+                        "background": "#10141a",
+                        "primary-fixed": "#d3e4ff",
+                        "inverse-primary": "#0060aa",
+                        "on-primary-container": "#003a6b",
+                        "surface-elevated": "#1C2128",
+                        "status-success": "#3FB950",
+                        "tertiary-fixed-dim": "#ffba42",
+                        "on-secondary": "#2c3138",
+                        "secondary": "#c2c7d0",
+                        "on-tertiary-fixed": "#281800",
+                        "surface-container-low": "#181c22",
+                        "surface-secondary": "#161B22",
+                        "text-secondary": "#8B949E",
+                        "surface-variant": "#31353c",
+                        "on-primary-fixed-variant": "#004882",
+                        "surface-container-high": "#262a31",
+                        "border-default": "#30363D",
+                        "surface-dim": "#10141a",
+                        "on-secondary-container": "#b1b5bf",
+                        "secondary-container": "#42474f",
+                        "primary": "#a2c9ff",
+                        "on-tertiary": "#432c00",
+                        "on-primary-fixed": "#001c38",
+                        "status-warning": "#D29922",
+                        "surface-tint": "#a2c9ff",
+                        "status-danger": "#F85149",
+                        "error": "#ffb4ab",
+                        "surface": "#10141a",
+                        "surface-primary": "#0D1117",
+                        "primary-container": "#58a6ff",
+                        "outline": "#8b919d",
+                        "inverse-surface": "#dfe2eb",
+                        "on-primary": "#00315c",
+                        "error-container": "#93000a",
+                        "surface-container": "#1c2026",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#614000",
+                        "on-surface-variant": "#c0c7d4",
+                        "on-background": "#dfe2eb",
+                        "surface-container-highest": "#31353c",
+                        "inverse-on-surface": "#2d3137",
+                        "on-tertiary-container": "#4f3400",
+                        "tertiary-fixed": "#ffddaf",
+                        "text-primary": "#E6EDF3",
+                        "on-error": "#690005",
+                        "surface-bright": "#353940",
+                        "on-secondary-fixed": "#171c23",
+                        "tertiary": "#ffba42",
+                        "secondary-fixed-dim": "#c2c7d0",
+                        "surface-container-lowest": "#0a0e14"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "touch-target": "40px",
+                        "sidebar-width": "260px",
+                        "input-height": "32px",
+                        "gutter": "16px",
+                        "context-panel-width": "300px",
+                        "container-margin": "24px"
+                    },
+                    "fontFamily": {
+                        "page-title": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "section-title": ["Inter"],
+                        "label-md": ["Inter"],
+                        "mono": ["Inter"],
+                        "caption": ["Inter"],
+                        "card-title": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                        "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-primary text-text-primary overflow-hidden h-screen flex flex-col">
+<!-- Top Header Bar -->
+<header class="bg-surface dark:bg-surface border-b border-border-default flex items-center justify-between px-gutter w-full h-touch-target z-50">
+<div class="flex items-center gap-3">
+<button class="p-1 hover:bg-surface-variant transition-colors rounded cursor-pointer active:opacity-80" onclick="toggleSidebar()">
+<span class="material-symbols-outlined text-primary">menu</span>
+</button>
+<h1 class="font-page-title text-page-title text-primary dark:text-primary tracking-tight">WorkDesk</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-1 hover:bg-surface-variant transition-colors rounded cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-text-secondary" data-icon="search">search</span>
+</button>
+<button class="p-1 hover:bg-surface-variant transition-colors rounded cursor-pointer active:opacity-80 relative">
+<span class="material-symbols-outlined text-text-secondary" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-status-danger rounded-full border border-surface"></span>
+</button>
+<div class="ml-2 w-8 h-8 rounded-full overflow-hidden border border-border-default cursor-pointer active:opacity-80" onclick="toggleProfileDrawer()">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a mid-30s male executive with a focused yet friendly expression, set against a blurred corporate office background. The lighting is soft and professional, emphasizing a modern corporate aesthetic with clean lines and a palette of muted blues and greys to match the WorkDesk branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA36y5jBH7MjQUxI6jfjLI7mRw1cC201sayu0VjCLfYbLk51VjKDGAdfFuxSyeFiUhDXmSZG_VvMAcPU7bKkjDu4pkt2aWQz2gqHuqnGx6Q9ov-m0bj3QLUtS70yIrUdlJYzgBfgKi0gVfVoiWG-zhc7cljzPqvzJIDCU9YlIH77jBCR_leUFf2xmyOYD06hfW4dYn6eGuolNuDtkYdtZyw_bQMabKbtxvz3MHdW0X1zcA0-c70p3GtAAo6BPigqJS4m2xNvg5wGLE"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto no-scrollbar pb-20">
+<!-- Bento Grid Layout -->
+<div class="p-4 space-y-4">
+<!-- Quick Stats Section -->
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-surface-secondary border border-border-default p-3 rounded-lg flex flex-col gap-1">
+<span class="font-label-md text-label-md text-text-secondary">Active Projects</span>
+<div class="flex items-end gap-2">
+<span class="font-page-title text-page-title text-primary">12</span>
+<span class="font-caption text-caption text-status-success mb-1">+2%</span>
+</div>
+</div>
+<div class="bg-surface-secondary border border-border-default p-3 rounded-lg flex flex-col gap-1">
+<span class="font-label-md text-label-md text-text-secondary">Open Tasks</span>
+<div class="flex items-end gap-2">
+<span class="font-page-title text-page-title text-text-primary">48</span>
+<span class="material-symbols-outlined text-status-warning text-[16px] mb-1">priority_high</span>
+</div>
+</div>
+</div>
+<!-- Main Work Card (Featured) -->
+<div class="bg-surface-elevated border border-border-default rounded-xl overflow-hidden">
+<div class="h-32 bg-primary-container relative">
+<img class="w-full h-full object-cover opacity-40" data-alt="A high-density data visualization dashboard showing complex line graphs and bar charts in a deep navy and cobalt blue color scheme. The visual style is technical and utilitarian, representing a professional project management environment. Subtle light glows highlight key data points, conveying precision and authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQg7QGs1pN8W8cjk5u99UCZY4FmdNH-sZV3drBd5ZTfhHIICANICEYrO_ZnK7NPMlAw6fcj2KU2ObF8potdEHf2zjE4JS8Wu1WJOzZtLjlPbOYw4ARkSO--j1665u-ohaDGeBBGSPTxb4lk5_vlgW722bjrmPzv8vHIWvZU0H6AUO6bYjH9jRyfREfAQfo1jDplQJ1_YvcpzOjnIWTKYLJzLSwiMmZiU8XJNCXbW1QgMQSfZPLmVuMyRtvFU-waNo_lwroskI-0dE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-elevated to-transparent"></div>
+<div class="absolute bottom-3 left-4">
+<span class="bg-surface-primary text-primary px-2 py-0.5 rounded text-[10px] font-bold tracking-widest uppercase mb-1 inline-block">Current Sprint</span>
+<h2 class="font-section-title text-section-title text-text-primary">Q4 Product Roadmap</h2>
+</div>
+</div>
+<div class="p-4">
+<div class="flex items-center justify-between mb-3">
+<div class="flex -space-x-2">
+<div class="w-6 h-6 rounded-full border-2 border-surface-elevated overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Portrait of a creative professional woman in a modern office, characterized by soft directional lighting and a minimalist aesthetic. The color palette focuses on neutral tones with subtle blue accents, aligning with the stable and professional focus of the WorkDesk brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAUW0PDRN7wu3OVrobxsg1-qbAetqDeFutJKZMivaKuWVRin2mWMe_wUguKX2YHkwoN1-1ewd7Gtks2EInr1a3udhF1XXe084WDiz38O480517DkM-JbyEN8Fl-NR8qroxX-8rV__bv-UrgaO7Je8ENUd-k9XW3r6MJ2NhafkawWKxk25Jej2iKn7AoJE16ne1--obKToJ7jkmEsnzngd4svjrRC92ElKs5IifywA16QB8U30JSvlKP1OXeAxRNu_-MH_YAQF1qpk"/>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-surface-elevated overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close-up of a diverse professional male in a high-tech workspace environment. The shot is crisp and detailed, using a cool-toned corporate color palette. The atmosphere is industrious and focused, suitable for a productivity-oriented organizational operating system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0AXSMm1Ygw3aAYBaZdaO6JPBxFiHZINgCRmU5sXcWe8S6VwgmDqdlrBgYMWvmAlIqbN3sQb5mK0W7ZX_dWVatbeuW9Fnn0nSv51RnmHtY9B_ywvI6g6Peo3Rk7l_B_72epvt1HVVyPLdicKg82uJqZNfPalyIDeCOH3vdZBnyvY_grxCdaUZiuIHr-QRDHvCVFytDGjR9fc7uSn2ESNe1SxkEUrMp2Y7_9dBL2Kp65F4d4WEb6K37_04LA1c69GuLT8gC--qt4lk"/>
+</div>
+<div class="w-6 h-6 rounded-full border-2 border-surface-elevated flex items-center justify-center bg-surface-container-high text-[10px] font-bold">+4</div>
+</div>
+<span class="font-caption text-caption text-text-secondary">75% Complete</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-3/4"></div>
+</div>
+</div>
+</div>
+<!-- Recent Items List -->
+<div class="space-y-2">
+<div class="flex items-center justify-between px-1">
+<h3 class="font-section-title text-section-title text-text-primary">Recent Documents</h3>
+<button class="text-primary font-label-md text-label-md">View All</button>
+</div>
+<div class="grid grid-cols-1 gap-2">
+<div class="bg-surface-secondary hover:bg-surface-container transition-all p-3 rounded-lg border border-border-default flex items-center gap-4 cursor-pointer active:opacity-80">
+<div class="bg-surface-container-high p-2 rounded">
+<span class="material-symbols-outlined text-primary">description</span>
+</div>
+<div class="flex-1">
+<div class="font-card-title text-card-title text-text-primary">System Architecture.pdf</div>
+<div class="font-caption text-caption text-text-secondary">Edited 2h ago • 4.2 MB</div>
+</div>
+<span class="material-symbols-outlined text-text-secondary">more_vert</span>
+</div>
+<div class="bg-surface-secondary hover:bg-surface-container transition-all p-3 rounded-lg border border-border-default flex items-center gap-4 cursor-pointer active:opacity-80">
+<div class="bg-surface-container-high p-2 rounded">
+<span class="material-symbols-outlined text-status-warning">table_chart</span>
+</div>
+<div class="flex-1">
+<div class="font-card-title text-card-title text-text-primary">Financial Projections_FY24</div>
+<div class="font-caption text-caption text-text-secondary">Edited 5h ago • 1.8 MB</div>
+</div>
+<span class="material-symbols-outlined text-text-secondary">more_vert</span>
+</div>
+</div>
+</div>
+<!-- Messages/Alerts Bubble -->
+<div class="bg-tertiary-fixed text-on-tertiary-fixed p-4 rounded-xl flex items-start gap-3">
+<span class="material-symbols-outlined mt-1">info</span>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-semibold">New Bulletin Update</p>
+<p class="font-caption text-caption opacity-80">The workspace storage limit will be increased next Monday during scheduled maintenance.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 right-0 bg-surface dark:bg-surface border-t border-border-default h-[72px] flex items-center justify-around px-2 z-50">
+<div class="flex flex-col items-center justify-center w-full h-full text-primary font-bold cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center w-full h-full text-text-secondary hover:bg-surface-variant transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-md text-label-md mt-1">Library</span>
+</div>
+<div class="flex flex-col items-center justify-center w-full h-full text-text-secondary hover:bg-surface-variant transition-colors cursor-pointer active:opacity-80 relative">
+<span class="material-symbols-outlined">forum</span>
+<span class="font-label-md text-label-md mt-1">Messages</span>
+<span class="absolute top-3 right-5 w-4 h-4 bg-primary text-on-primary text-[10px] flex items-center justify-center rounded-full font-bold">3</span>
+</div>
+<div class="flex flex-col items-center justify-center w-full h-full text-text-secondary hover:bg-surface-variant transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-label-md text-label-md mt-1">Bulletin</span>
+</div>
+</nav>
+<!-- Sidebar Menu (Hamburger Drawer) -->
+<div class="fixed inset-0 bg-black/60 opacity-0 pointer-events-none transition-opacity duration-300 z-[60]" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<aside class="w-sidebar-width h-screen fixed left-0 top-0 bg-surface-secondary dark:bg-surface-secondary border-r border-border-default z-[70] translate-x-[-100%] transition-transform duration-300 flex flex-col py-4 px-2" id="sideNavBar">
+<div class="px-4 mb-8 flex items-center justify-between">
+<div>
+<div class="font-section-title text-section-title text-text-primary">Global Workspace</div>
+<div class="font-label-md text-label-md text-text-secondary">Pro Plan</div>
+</div>
+<button class="text-text-secondary" onclick="toggleSidebar()"><span class="material-symbols-outlined">close</span></button>
+</div>
+<button class="mx-2 mb-6 h-touch-target bg-primary text-on-primary font-bold rounded-lg flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined">add</span>
+<span class="font-label-md text-label-md">Create New Item</span>
+</button>
+<nav class="flex-1 space-y-1">
+<div class="flex items-center gap-3 px-4 py-2 rounded-lg bg-surface-container-high text-primary font-semibold cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-md text-label-md">Projects</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-label-md">Tasks</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined">cloud_queue</span>
+<span class="font-label-md text-label-md">Files</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Insights</span>
+</div>
+</nav>
+<div class="mt-auto border-t border-border-default pt-4 space-y-1">
+<div class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-md text-label-md">Storage</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out cursor-pointer">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</div>
+</div>
+</aside>
+<!-- Profile & Settings Drawer -->
+<div class="fixed inset-0 bg-black/60 opacity-0 pointer-events-none transition-opacity duration-300 z-[80]" id="profileOverlay" onclick="toggleProfileDrawer()"></div>
+<div class="fixed bottom-0 left-0 right-0 bg-surface-elevated border-t border-border-default rounded-t-xl z-[90] translate-y-full transition-transform duration-300 p-6" id="profileDrawer">
+<div class="w-12 h-1 bg-border-default rounded-full mx-auto mb-6"></div>
+<div class="flex items-center gap-4 mb-8">
+<img class="w-16 h-16 rounded-full border border-border-default" data-alt="Close-up profile photo of a male professional, set against a high-contrast dark office background. The lighting highlights sharp contours and professional focus, aligning with the modern corporate aesthetic and stable, utilitarian brand personality of WorkDesk." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv1RtD0nPKOFxbwR5YCMMpeUtHZJ5GnreAi0RASRouTNCHvqgCSfKQEbEEc_75BEFCP16-ixr2ji_ICBZrPhQ1DePHRNbhu3ArL2MnvUb0Zg22WBKup88ZhRrFxTV9fluX3ZJZrYJH4oq-N2ilhS99VSisSzwmqPATGL_mcYH18BPp6ShcfvAqljiqRNnUKDqTPdAHo8mjg55OszkK7lZyNHYZwN4W5o5ORf_vsRWA6riNrfLok2gdsI_qTjCcuFcCLgXcQ8s3hqM"/>
+<div>
+<h2 class="font-section-title text-section-title text-text-primary">Alex Sterling</h2>
+<p class="font-body-sm text-body-sm text-text-secondary">Principal Architect • Design Systems</p>
+</div>
+</div>
+<!-- Storage Widget moved here -->
+<div class="bg-surface-container p-4 rounded-lg border border-border-default mb-6">
+<div class="flex justify-between mb-2">
+<span class="font-label-md text-label-md text-text-primary">Cloud Storage</span>
+<span class="font-label-md text-label-md text-text-secondary">84.2 GB / 100 GB</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[84%]"></div>
+</div>
+<button class="mt-4 w-full text-center text-primary font-bold text-label-md">Upgrade Plan</button>
+</div>
+<div class="space-y-4">
+<button class="w-full flex items-center justify-between text-text-primary py-2 active:bg-surface-variant rounded px-2 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Account Settings</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between text-text-primary py-2 active:bg-surface-variant rounded px-2 transition-colors">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined">security</span>
+<span class="font-body-md text-body-md">Privacy &amp; Security</span>
+</div>
+<span class="material-symbols-outlined text-text-secondary">chevron_right</span>
+</button>
+<button class="w-full flex items-center gap-3 text-status-danger py-2 active:bg-surface-variant rounded px-2 transition-colors">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Sign Out</span>
+</button>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-4 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-3xl">edit</span>
+</button>
+<script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sideNavBar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const isHidden = sidebar.classList.contains('translate-x-[-100%]');
+
+            if (isHidden) {
+                sidebar.classList.remove('translate-x-[-100%]');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100');
+            } else {
+                sidebar.classList.add('translate-x-[-100%]');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                overlay.classList.remove('opacity-100');
+            }
+        }
+
+        function toggleProfileDrawer() {
+            const drawer = document.getElementById('profileDrawer');
+            const overlay = document.getElementById('profileOverlay');
+            const isHidden = drawer.classList.contains('translate-y-full');
+
+            if (isHidden) {
+                drawer.classList.remove('translate-y-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+                overlay.classList.add('opacity-100');
+            } else {
+                drawer.classList.add('translate-y-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+                overlay.classList.remove('opacity-100');
+            }
+        }
+    </script>
+</body></html>

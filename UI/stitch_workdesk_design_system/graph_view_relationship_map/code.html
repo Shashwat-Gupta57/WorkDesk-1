@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#2c3138",
+                    "surface-primary": "#0D1117",
+                    "error": "#ffb4ab",
+                    "inverse-on-surface": "#2d3137",
+                    "on-background": "#dfe2eb",
+                    "primary": "#a2c9ff",
+                    "on-tertiary": "#432c00",
+                    "status-warning": "#D29922",
+                    "border-default": "#30363D",
+                    "surface-dim": "#10141a",
+                    "surface-secondary": "#161B22",
+                    "on-error-container": "#ffdad6",
+                    "text-primary": "#E6EDF3",
+                    "tertiary-fixed-dim": "#ffba42",
+                    "surface-tint": "#a2c9ff",
+                    "surface-container-low": "#181c22",
+                    "surface": "#10141a",
+                    "status-success": "#3FB950",
+                    "secondary-container": "#42474f",
+                    "primary-container": "#58a6ff",
+                    "on-error": "#690005",
+                    "tertiary-container": "#da9600",
+                    "inverse-surface": "#dfe2eb",
+                    "tertiary": "#ffba42",
+                    "background": "#10141a",
+                    "on-tertiary-container": "#4f3400",
+                    "surface-container-lowest": "#0a0e14",
+                    "tertiary-fixed": "#ffddaf",
+                    "outline-variant": "#414752",
+                    "surface-bright": "#353940",
+                    "on-primary-container": "#003a6b",
+                    "on-secondary-container": "#b1b5bf",
+                    "outline": "#8b919d",
+                    "on-secondary-fixed-variant": "#42474f",
+                    "on-primary-fixed": "#001c38",
+                    "on-primary-fixed-variant": "#004882",
+                    "surface-container-highest": "#31353c",
+                    "secondary-fixed": "#dee2ec",
+                    "on-tertiary-fixed": "#281800",
+                    "on-surface": "#dfe2eb",
+                    "surface-container-high": "#262a31",
+                    "secondary": "#c2c7d0",
+                    "error-container": "#93000a",
+                    "on-primary": "#00315c",
+                    "surface-container": "#1c2026",
+                    "text-secondary": "#8B949E",
+                    "surface-variant": "#31353c",
+                    "primary-fixed": "#d3e4ff",
+                    "on-surface-variant": "#c0c7d4",
+                    "surface-elevated": "#1C2128",
+                    "status-danger": "#F85149",
+                    "on-tertiary-fixed-variant": "#614000",
+                    "on-secondary-fixed": "#171c23",
+                    "inverse-primary": "#0060aa",
+                    "secondary-fixed-dim": "#c2c7d0",
+                    "primary-fixed-dim": "#a2c9ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "input-height": "32px",
+                    "container-margin": "24px",
+                    "gutter": "16px",
+                    "touch-target": "40px",
+                    "sidebar-width": "260px",
+                    "unit": "4px",
+                    "context-panel-width": "300px"
+            },
+            "fontFamily": {
+                    "card-title": ["Inter"],
+                    "caption": ["Inter"],
+                    "page-title": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "mono": ["Inter"],
+                    "body-md": ["Inter"],
+                    "section-title": ["Inter"]
+            },
+            "fontSize": {
+                    "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                    "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { background-color: #0D1117; color: #E6EDF3; font-family: 'Inter', sans-serif; overflow: hidden; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; font-size: 18px; }
+        .graph-canvas { background-image: radial-gradient(#30363D 1px, transparent 1px); background-size: 24px 24px; }
+        .node-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation (From JSON SideNavBar) -->
+<aside class="w-sidebar-width h-screen fixed left-0 top-0 bg-surface-secondary border-r border-border-default flex flex-col py-4 px-2 z-30">
+<div class="px-3 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" data-weight="fill">hub</span>
+</div>
+<div>
+<h1 class="font-section-title text-section-title text-text-primary leading-none">WorkDesk</h1>
+<p class="text-[10px] text-text-secondary uppercase tracking-widest mt-1">Global Workspace</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Dashboard -->
+<a class="flex items-center gap-3 px-3 h-9 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<!-- Projects -->
+<a class="flex items-center gap-3 px-3 h-9 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span>Projects</span>
+</a>
+<!-- Tasks -->
+<a class="flex items-center gap-3 px-3 h-9 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span>Tasks</span>
+</a>
+<!-- Insights (Active) -->
+<a class="flex items-center gap-3 px-3 h-9 rounded bg-surface-container-high text-primary font-semibold transition-all duration-150 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Insights</span>
+</a>
+<!-- Files -->
+<a class="flex items-center gap-3 px-3 h-9 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">cloud_queue</span>
+<span>Files</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1 pt-4 border-t border-border-default">
+<button class="w-full flex items-center justify-center gap-2 bg-primary text-surface-primary h-touch-target rounded font-label-md text-label-md font-bold mb-4">
+<span class="material-symbols-outlined">add</span>
+<span>Create New Item</span>
+</button>
+<a class="flex items-center gap-3 px-3 h-9 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">database</span>
+<span>Storage</span>
+</a>
+<a class="flex items-center gap-3 px-3 h-9 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span>Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-sidebar-width flex flex-col relative h-screen">
+<!-- Top Navigation (From JSON TopNavBar) -->
+<header class="w-full h-touch-target bg-surface border-b border-border-default flex items-center justify-between px-gutter z-20">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-text-secondary">search</span>
+<input class="w-full h-8 pl-8 pr-3 bg-surface-secondary border border-border-default rounded font-body-sm text-body-sm focus:outline-none focus:border-primary" placeholder="Search nodes..." type="text"/>
+</div>
+<div class="flex items-center gap-6">
+<span class="font-body-md text-body-md text-primary font-bold cursor-pointer">Graph View</span>
+<span class="font-body-md text-body-md text-text-secondary cursor-pointer hover:bg-surface-variant transition-colors px-2 rounded">Timeline</span>
+<span class="font-body-md text-body-md text-text-secondary cursor-pointer hover:bg-surface-variant transition-colors px-2 rounded">Clusters</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-text-secondary cursor-pointer hover:bg-surface-variant p-1 rounded transition-colors">notifications</span>
+<span class="material-symbols-outlined text-text-secondary cursor-pointer hover:bg-surface-variant p-1 rounded transition-colors">help</span>
+<span class="material-symbols-outlined text-text-secondary cursor-pointer hover:bg-surface-variant p-1 rounded transition-colors">settings</span>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden border border-border-default">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9SXaulE9wtTL3_TtD7Ozc_7rF1WabPYwuc4ORzkC6bM4_IEkL-A_8Wj5m0HgG51ML6rbBNx83GyXuC2lwDYCCBaX8JQOzJecuva_Ybb6ONSVS0ho6Of-RcIQZvb7k16TPPg3IVeZbKNa8014NI9WQzp9DZ3KhwVJqD8Lltc1TWiukr3TokDf7XUe8u_f-j_40QsiofEdRnf_RH-t5A7oMTRmj32oKyhEt2h_iJ0jFsYwxxyRXJprF6JiHw3cSXH1OxoQ6RlJr7ZM"/>
+</div>
+</div>
+</header>
+<!-- Toolbars and Overlays -->
+<div class="absolute inset-0 z-0 graph-canvas pointer-events-none"></div>
+<!-- Graph View Content -->
+<div class="flex-1 relative overflow-hidden" id="graph-container">
+<!-- Simulated Large Graph Nodes (Performance State) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none">
+<!-- Connectors -->
+<line stroke="#30363D" stroke-width="1" x1="20%" x2="45%" y1="30%" y2="50%"></line>
+<line stroke="#30363D" stroke-width="1" x1="45%" x2="70%" y1="50%" y2="25%"></line>
+<line stroke="#30363D" stroke-width="1" x1="45%" x2="60%" y1="50%" y2="75%"></line>
+<line stroke="#30363D" stroke-width="1" x1="15%" x2="45%" y1="65%" y2="50%"></line>
+<line stroke="#30363D" stroke-width="1" x1="80%" x2="70%" y1="60%" y2="25%"></line>
+<!-- Subtle dense background points (Simplified rendering) -->
+<circle cx="10%" cy="10%" fill="#414752" r="1"></circle>
+<circle cx="12%" cy="15%" fill="#414752" r="1"></circle>
+<circle cx="15%" cy="12%" fill="#414752" r="1"></circle>
+<circle cx="85%" cy="85%" fill="#414752" r="1"></circle>
+<circle cx="88%" cy="82%" fill="#414752" r="1"></circle>
+</svg>
+<!-- Interactive Nodes -->
+<!-- Central Node (Set) -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto cursor-pointer group">
+<div class="w-12 h-12 rounded bg-tertiary flex items-center justify-center text-on-tertiary shadow-lg ring-4 ring-tertiary/20">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dataset</span>
+</div>
+<div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-surface-elevated border border-border-default px-2 py-1 rounded">
+<span class="font-label-md text-label-md text-text-primary">Core Architecture</span>
+</div>
+</div>
+<!-- Library Node -->
+<div class="absolute left-[20%] top-[30%] pointer-events-auto cursor-pointer group">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">book</span>
+</div>
+<div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-surface-container-high px-2 py-0.5 rounded opacity-60 group-hover:opacity-100 transition-opacity">
+<span class="font-caption text-caption text-text-secondary">Documentation</span>
+</div>
+</div>
+<!-- Artifact Node (Highlighted) -->
+<div class="absolute left-[70%] top-[25%] pointer-events-auto cursor-pointer group">
+<div class="w-6 h-6 rounded bg-status-success flex items-center justify-center text-on-primary node-pulse ring-4 ring-status-success/30">
+<span class="material-symbols-outlined !text-[14px]">description</span>
+</div>
+<div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-surface-elevated border border-primary px-2 py-1 rounded">
+<span class="font-label-md text-label-md text-primary">v2_Final_Spec.pdf</span>
+</div>
+</div>
+<!-- Artifact Node 2 -->
+<div class="absolute left-[60%] top-[75%] pointer-events-auto cursor-pointer group">
+<div class="w-6 h-6 rounded bg-surface-container-highest border border-border-default flex items-center justify-center text-text-primary">
+<span class="material-symbols-outlined !text-[14px]">image</span>
+</div>
+<div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 whitespace-nowrap bg-surface-container-high px-2 py-0.5 rounded opacity-60">
+<span class="font-caption text-caption text-text-secondary">Schema_Diagram.png</span>
+</div>
+</div>
+<!-- UI Overlay: Control Panel (Left) -->
+<div class="absolute left-4 top-4 flex flex-col gap-2 z-10">
+<div class="bg-surface-elevated border border-border-default rounded p-1 flex flex-col shadow-2xl">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-variant rounded transition-colors text-text-secondary hover:text-text-primary">
+<span class="material-symbols-outlined">add</span>
+</button>
+<div class="h-[1px] bg-border-default mx-1"></div>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-variant rounded transition-colors text-text-secondary hover:text-text-primary">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<div class="h-[1px] bg-border-default mx-1"></div>
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-variant rounded transition-colors text-text-secondary hover:text-text-primary">
+<span class="material-symbols-outlined">restart_alt</span>
+</button>
+</div>
+<div class="bg-surface-elevated border border-border-default rounded p-1 shadow-2xl">
+<button class="w-8 h-8 flex items-center justify-center hover:bg-surface-variant rounded transition-colors text-text-secondary hover:text-text-primary" title="Toggle Layout Force">
+<span class="material-symbols-outlined">settings_ethernet</span>
+</button>
+</div>
+</div>
+<!-- UI Overlay: Legend (Bottom Left) -->
+<div class="absolute left-4 bottom-4 bg-surface-elevated/80 backdrop-blur-md border border-border-default rounded-lg p-3 shadow-2xl w-48 z-10">
+<h3 class="font-label-md text-label-md text-text-primary mb-3 flex items-center justify-between">
+<span>Legend</span>
+<span class="material-symbols-outlined !text-[14px] opacity-40">info</span>
+</h3>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded bg-tertiary"></div>
+<span class="font-caption text-caption text-text-secondary">Artifact Sets</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="font-caption text-caption text-text-secondary">Library Sections</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded bg-surface-container-highest border border-border-default"></div>
+<span class="font-caption text-caption text-text-secondary">Indiv. Artifacts</span>
+</div>
+<div class="pt-2 border-t border-border-default mt-2">
+<div class="flex items-center gap-2">
+<div class="w-4 h-[1px] bg-border-default"></div>
+<span class="font-caption text-caption text-text-secondary italic">Relationships</span>
+</div>
+</div>
+</div>
+</div>
+<!-- UI Overlay: Filters (Right) -->
+<div class="absolute right-4 top-4 w-64 flex flex-col gap-4 z-10 h-[calc(100%-32px)]">
+<div class="bg-surface-elevated border border-border-default rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-full">
+<div class="p-4 border-b border-border-default bg-surface-secondary">
+<h3 class="font-card-title text-card-title text-text-primary">Graph Filters</h3>
+</div>
+<div class="p-4 space-y-6 overflow-y-auto scroll-hide">
+<!-- Date Filter -->
+<div>
+<label class="font-label-md text-label-md text-text-secondary block mb-2">Time Range</label>
+<div class="space-y-1">
+<div class="flex items-center justify-between text-[11px] text-text-secondary mb-1">
+<span>2020</span>
+<span>Present</span>
+</div>
+<div class="h-1 bg-surface-container-highest rounded-full relative">
+<div class="absolute left-1/4 right-0 h-full bg-primary rounded-full"></div>
+<div class="absolute left-1/4 -top-1 w-3 h-3 bg-text-primary border-2 border-primary rounded-full shadow cursor-pointer"></div>
+<div class="absolute right-0 -top-1 w-3 h-3 bg-text-primary border-2 border-primary rounded-full shadow cursor-pointer"></div>
+</div>
+</div>
+</div>
+<!-- Tags Filter -->
+<div>
+<label class="font-label-md text-label-md text-text-secondary block mb-2">Tags</label>
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2 py-0.5 rounded bg-primary/10 border border-primary/20 text-primary font-caption text-caption cursor-pointer">#architecture</span>
+<span class="px-2 py-0.5 rounded bg-surface-container border border-border-default text-text-secondary font-caption text-caption cursor-pointer hover:bg-surface-variant transition-colors">#security</span>
+<span class="px-2 py-0.5 rounded bg-primary/10 border border-primary/20 text-primary font-caption text-caption cursor-pointer">#v2-specs</span>
+<span class="px-2 py-0.5 rounded bg-surface-container border border-border-default text-text-secondary font-caption text-caption cursor-pointer hover:bg-surface-variant transition-colors">#drafts</span>
+<span class="px-2 py-0.5 rounded bg-surface-container border border-border-default text-text-secondary font-caption text-caption cursor-pointer hover:bg-surface-variant transition-colors">#legacy</span>
+</div>
+</div>
+<!-- Owner Filter -->
+<div>
+<label class="font-label-md text-label-md text-text-secondary block mb-2">Node Owner</label>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="w-3.5 h-3.5 rounded-sm bg-surface-secondary border-border-default text-primary focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-text-primary group-hover:text-primary transition-colors">Internal Team</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="w-3.5 h-3.5 rounded-sm bg-surface-secondary border-border-default text-primary focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-text-primary group-hover:text-primary transition-colors">Sub-Contractors</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="w-3.5 h-3.5 rounded-sm bg-surface-secondary border-border-default text-primary focus:ring-0 focus:ring-offset-0" type="checkbox"/>
+<span class="font-body-sm text-body-sm text-text-primary group-hover:text-primary transition-colors">Automated Bots</span>
+</label>
+</div>
+</div>
+<!-- Performance Settings -->
+<div class="pt-4 border-t border-border-default">
+<div class="flex items-center justify-between mb-2">
+<label class="font-label-md text-label-md text-text-secondary">Low Latency Mode</label>
+<div class="w-8 h-4 bg-status-success rounded-full relative cursor-pointer">
+<div class="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full"></div>
+</div>
+</div>
+<p class="text-[10px] text-text-secondary leading-tight">Simplified rendering enabled for &gt;5,000 nodes.</p>
+</div>
+</div>
+<div class="mt-auto p-4 bg-surface-secondary border-t border-border-default">
+<button class="w-full h-8 bg-surface-container border border-border-default rounded font-label-md text-label-md text-text-primary hover:bg-surface-variant transition-colors">
+                            Reset View
+                        </button>
+</div>
+</div>
+</div>
+<!-- Empty State / Background Context Hint -->
+<div class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-surface-elevated border border-border-default px-4 py-2 rounded-full shadow-lg flex items-center gap-3">
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
+</span>
+<span class="font-label-md text-label-md text-text-secondary uppercase tracking-wider">Large Graph State Active: 12,482 Nodes Rendered</span>
+</div>
+</div>
+</main>
+<!-- Context Panel (Right Metadata - as per Brand Style) -->
+<aside class="w-context-panel-width h-screen bg-surface-secondary border-l border-border-default flex flex-col z-20">
+<div class="p-4 border-b border-border-default flex items-center justify-between">
+<h2 class="font-section-title text-section-title text-text-primary">Metadata</h2>
+<button class="text-text-secondary hover:text-text-primary transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-6 scroll-hide">
+<div class="rounded-lg bg-surface-elevated border border-border-default overflow-hidden">
+<img alt="Node visual preview" class="w-full h-32 object-cover opacity-80" data-alt="A high-tech server room at night, with rows of blinking blue and white LED lights illuminating the dark environment. The perspective is from floor-level looking down a long corridor between server racks. The lighting is cool-toned and cinematic, emphasizing a professional, data-centric atmosphere. The scene evokes a feeling of immense computing power and institutional memory." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEGJ9i07OmEWZN4U39Bjto-Rju8vcbIx0wGrRJ3KBR6_nAWzeAeFOra2RJcw8In-Ps4xoe0EQDdcjwREVPRcGp2l6whP_KXEtdDIjd8Ze9Cp7_BP-m4-J9wSasqsgUMYPbrUPFC9fyyguPtHjjWd0ig4Rnhf6M-GmxfCkwzqOZNrj2wysZ1qHRmFdBI2lLYUIcIq8bCcjlfwJrhY8PwAKDrAWfmX_hmlRpOwhJNrIHnWRPoq1URKeAYDj1EP1NqIKIXMfzLsgrW7U"/>
+<div class="p-3">
+<h3 class="font-card-title text-card-title text-primary">v2_Final_Spec.pdf</h3>
+<p class="font-caption text-caption text-text-secondary mt-1">Updated 2h ago by @r_chen</p>
+</div>
+</div>
+<section>
+<h4 class="font-label-md text-label-md text-text-secondary uppercase tracking-widest mb-3">Relations (14)</h4>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2 rounded hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary !text-sm">link</span>
+<span class="font-body-sm text-body-sm text-text-primary">API_Endpoints.json</span>
+</div>
+<span class="font-caption text-caption text-text-secondary group-hover:text-primary">Parent</span>
+</div>
+<div class="flex items-center justify-between p-2 rounded hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary !text-sm">link</span>
+<span class="font-body-sm text-body-sm text-text-primary">Dev_Logs_Q3</span>
+</div>
+<span class="font-caption text-caption text-text-secondary group-hover:text-primary">Reference</span>
+</div>
+</div>
+</section>
+<section>
+<h4 class="font-label-md text-label-md text-text-secondary uppercase tracking-widest mb-3">Properties</h4>
+<div class="grid grid-cols-2 gap-y-3 gap-x-2">
+<div>
+<p class="font-caption text-caption text-text-secondary">Type</p>
+<p class="font-body-sm text-body-sm text-text-primary">PDF Document</p>
+</div>
+<div>
+<p class="font-caption text-caption text-text-secondary">Size</p>
+<p class="font-body-sm text-body-sm text-text-primary">4.2 MB</p>
+</div>
+<div>
+<p class="font-caption text-caption text-text-secondary">Security</p>
+<span class="px-1.5 py-0.5 rounded bg-status-danger/10 text-status-danger font-caption text-caption border border-status-danger/20">Classified</span>
+</div>
+<div>
+<p class="font-caption text-caption text-text-secondary">Cluster</p>
+<p class="font-body-sm text-body-sm text-text-primary">Arch_Main</p>
+</div>
+</div>
+</section>
+<section>
+<h4 class="font-label-md text-label-md text-text-secondary uppercase tracking-widest mb-3">Activity</h4>
+<div class="relative pl-4 space-y-4 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[1px] before:bg-border-default">
+<div class="relative">
+<div class="absolute -left-[19px] top-1 w-2 h-2 rounded-full bg-primary"></div>
+<p class="font-body-sm text-body-sm text-text-primary leading-tight">Node re-indexed into cluster <span class="text-primary cursor-pointer">Arch_Main</span></p>
+<span class="font-caption text-caption text-text-secondary">10:42 AM</span>
+</div>
+<div class="relative">
+<div class="absolute -left-[19px] top-1 w-2 h-2 rounded-full bg-border-default"></div>
+<p class="font-body-sm text-body-sm text-text-primary leading-tight">Relation added to <span class="text-primary cursor-pointer">API_Endpoints.json</span></p>
+<span class="font-caption text-caption text-text-secondary">Yesterday</span>
+</div>
+</div>
+</section>
+</div>
+<div class="p-4 border-t border-border-default bg-surface-secondary">
+<button class="w-full flex items-center justify-center gap-2 bg-surface-elevated border border-border-default hover:bg-surface-variant h-9 rounded text-text-primary font-label-md text-label-md transition-colors">
+<span class="material-symbols-outlined">open_in_new</span>
+<span>Open in Editor</span>
+</button>
+</div>
+</aside>
+<script>
+        // Micro-interaction for the graph: subtle movement or node dragging simulation
+        const graphContainer = document.getElementById('graph-container');
+        
+        // Simple zoom effect simulation on scroll
+        graphContainer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            // This is just a visual placeholder for the zoom functionality
+            console.log('Zooming...', e.deltaY > 0 ? 'out' : 'in');
+        }, { passive: false });
+
+        // Logic for "Large Graph Performance State" toggle
+        // In a real app, this would switch rendering engines (SVG to Canvas/WebGL)
+    </script>
+</body></html>

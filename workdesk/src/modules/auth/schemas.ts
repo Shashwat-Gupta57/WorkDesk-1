@@ -1,0 +1,72 @@
+import { z } from "zod";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Login Schema
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const LoginSchema = z.object({
+  email: z
+    .string({ message: "Email is required." })
+    .email("Invalid email format.")
+    .toLowerCase()
+    .trim(),
+  password: z
+    .string({ message: "Password is required." })
+    .min(1, "Password is required."),
+});
+
+export type LoginInput = z.infer<typeof LoginSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Change Password Schema
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const ChangePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string({ message: "Current password is required." })
+      .min(1, "Current password is required."),
+    newPassword: z
+      .string({ message: "New password is required." })
+      .min(8, "Password must be at least 8 characters.")
+      .max(72, "Password must be at most 72 characters.") // bcrypt limit
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter.")
+      .regex(/[0-9]/, "Password must contain at least one number."),
+    confirmPassword: z.string({ message: "Please confirm your new password." }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: "New password must differ from the current password.",
+    path: ["newPassword"],
+  });
+
+export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Admin: Update User Schema
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const UpdateUserSchema = z
+  .object({
+    status: z.enum(["ACTIVE", "SUSPENDED"]).optional(),
+    role: z.enum(["MEMBER", "ADMIN"]).optional(),
+  })
+  .refine((data) => data.status !== undefined || data.role !== undefined, {
+    message: "At least one field (status or role) must be provided.",
+  });
+
+export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// User ID Path Param Schema
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const UserIdParamSchema = z.object({
+  id: z.string().uuid("Invalid user ID format."),
+});
+
+export type UserIdParam = z.infer<typeof UserIdParamSchema>;

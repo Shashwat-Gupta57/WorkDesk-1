@@ -1,0 +1,280 @@
+# PRODUCT REQUIREMENTS DOCUMENT (PRD)
+
+# WorkDesk V1 — Knowledge & Archive Platform
+
+## Product Name
+
+WorkDesk
+
+## Product Vision
+
+WorkDesk is the central knowledge repository of GoBitsNBytes Prayagraj. It enables members to create, organize, version, archive, search, and publish organizational work while preserving ownership and historical records.
+
+---
+
+# Problem Statement
+
+Organizational work is currently distributed across multiple platforms including Discord, Google Drive, chats, emails, and personal devices.
+
+This results in:
+
+* Knowledge loss when members leave
+* Difficulty locating previous work
+* Duplicate effort
+* Poor discoverability
+* Lack of version history
+* No unified archive
+
+WorkDesk V1 solves this by creating a structured archival system.
+
+---
+
+# Goals
+
+* Centralize organizational knowledge
+* Create long-term archives
+* Preserve version history
+* Enable artifact discovery
+* Allow controlled public sharing
+* Provide fast access through a PWA
+
+---
+
+# User Roles
+
+## Member
+
+Can:
+
+* Create sets
+* Create artifacts
+* Upload files
+* Create text artifacts
+* Edit artifacts
+* Manage versions
+* Publish artifacts
+* Search archives
+* Manage profile
+
+## Administrator
+
+Can:
+
+* Manage users
+* Suspend users
+* Manage platform settings
+* View audit logs
+
+---
+
+# Core Concepts
+
+## Artifact
+
+Smallest unit of work.
+
+Examples:
+
+* Marketing Analysis
+* Proposal
+* Email Template
+* Design Asset
+* Source Code Archive
+
+Artifact Types:
+
+* Text
+* PDF
+* DOCX
+* PPTX
+* Images
+* ZIP
+* Other uploaded files
+
+---
+
+## Set
+
+Container for artifacts.
+
+Equivalent to folders.
+
+Functions:
+
+* Create
+* Rename
+* Delete
+* Nesting support
+* Search support
+
+---
+
+# Authentication
+
+## Login
+
+Fields:
+
+* Email
+* Password
+
+Features:
+
+* Remember Me
+* Forgot Password
+
+---
+
+# Dashboard
+
+Sections:
+
+* Recent Artifacts
+* Recent Activity
+* Published Artifacts
+* Pending Notifications
+
+---
+
+# Archive Module
+
+## Explorer View
+
+Tree-based navigation.
+
+Interactions:
+
+Single Click:
+
+* Select
+
+Double Click:
+
+* Open
+
+---
+
+## Artifact Editor
+
+Supports:
+
+* Rich Text Editing
+* File Uploads
+* Metadata Editing
+
+Metadata:
+
+* Title
+* Description
+* Tags
+* Owner
+* Created Date
+* Last Modified Date
+
+---
+
+# Versioning System
+
+Every artifact maintains versions.
+
+Example:
+
+Draft 1
+Draft 2
+Draft 3
+Final
+
+Features:
+
+* Create Version
+* Restore Version
+* Compare Versions
+* Commit Final Version
+
+No version may be permanently overwritten.
+
+---
+
+# Search
+
+Search Scope:
+
+* Artifact Names
+* Descriptions
+* Tags
+* Set Names
+
+Filters:
+
+* Owner
+* Date
+* Type
+* Published Status
+
+---
+
+# Library
+
+Public organizational repository.
+
+Features:
+
+* Publish Artifact
+* Remove Artifact
+* Browse Public Artifacts
+* Search Public Artifacts
+
+Ownership remains with original creator.
+
+Library stores references only.
+
+No file duplication.
+
+---
+
+# Library Sections
+
+Users may:
+
+* Create Sections
+* Delete Sections
+
+Deletion Workflow:
+
+When section deletion is requested:
+
+1. All artifact owners are notified.
+2. Owners choose:
+
+   * Move Artifact
+   * Remove from Public Library
+
+Artifacts remain in personal archives regardless.
+
+---
+
+# Account Management
+
+Users can:
+
+* Change Email
+* Change Password
+* Update Profile Information
+* Change Theme Preferences
+
+---
+
+# PWA Requirements
+
+* Installable
+* Mobile Responsive
+* Offline Asset Cache
+* Push Notifications Support
+
+---
+
+# Success Metrics
+
+* 100% organizational work archived through WorkDesk
+* Less than 30 seconds average retrieval time
+* Zero loss of historical organizational assets

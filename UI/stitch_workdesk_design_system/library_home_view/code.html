@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Library Home | WorkDesk</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 18px;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363D;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #414752;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 16px;
+        }
+        .artifact-card:hover .action-overlay {
+            opacity: 1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary": "#2c3138",
+                      "surface-primary": "#0D1117",
+                      "error": "#ffb4ab",
+                      "inverse-on-surface": "#2d3137",
+                      "on-background": "#dfe2eb",
+                      "primary": "#a2c9ff",
+                      "on-tertiary": "#432c00",
+                      "status-warning": "#D29922",
+                      "border-default": "#30363D",
+                      "surface-dim": "#10141a",
+                      "surface-secondary": "#161B22",
+                      "on-error-container": "#ffdad6",
+                      "text-primary": "#E6EDF3",
+                      "tertiary-fixed-dim": "#ffba42",
+                      "surface-tint": "#a2c9ff",
+                      "surface-container-low": "#181c22",
+                      "surface": "#10141a",
+                      "status-success": "#3FB950",
+                      "secondary-container": "#42474f",
+                      "primary-container": "#58a6ff",
+                      "on-error": "#690005",
+                      "tertiary-container": "#da9600",
+                      "inverse-surface": "#dfe2eb",
+                      "tertiary": "#ffba42",
+                      "background": "#10141a",
+                      "on-tertiary-container": "#4f3400",
+                      "surface-container-lowest": "#0a0e14",
+                      "tertiary-fixed": "#ffddaf",
+                      "outline-variant": "#414752",
+                      "surface-bright": "#353940",
+                      "on-primary-container": "#003a6b",
+                      "on-secondary-container": "#b1b5bf",
+                      "outline": "#8b919d",
+                      "on-secondary-fixed-variant": "#42474f",
+                      "on-primary-fixed": "#001c38",
+                      "on-primary-fixed-variant": "#004882",
+                      "surface-container-highest": "#31353c",
+                      "secondary-fixed": "#dee2ec",
+                      "on-tertiary-fixed": "#281800",
+                      "on-surface": "#dfe2eb",
+                      "surface-container-high": "#262a31",
+                      "secondary": "#c2c7d0",
+                      "error-container": "#93000a",
+                      "on-primary": "#00315c",
+                      "surface-container": "#1c2026",
+                      "text-secondary": "#8B949E",
+                      "surface-variant": "#31353c",
+                      "primary-fixed": "#d3e4ff",
+                      "on-surface-variant": "#c0c7d4",
+                      "surface-elevated": "#1C2128",
+                      "status-danger": "#F85149",
+                      "on-tertiary-fixed-variant": "#614000",
+                      "on-secondary-fixed": "#171c23",
+                      "inverse-primary": "#0060aa",
+                      "secondary-fixed-dim": "#c2c7d0",
+                      "primary-fixed-dim": "#a2c9ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "input-height": "32px",
+                      "container-margin": "24px",
+                      "gutter": "16px",
+                      "touch-target": "40px",
+                      "sidebar-width": "260px",
+                      "unit": "4px",
+                      "context-panel-width": "300px"
+              },
+              "fontFamily": {
+                      "card-title": ["Inter"],
+                      "caption": ["Inter"],
+                      "page-title": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "mono": ["Inter"],
+                      "body-md": ["Inter"],
+                      "section-title": ["Inter"]
+              },
+              "fontSize": {
+                      "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                      "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-surface-primary text-text-primary selection:bg-primary/30">
+<!-- Sidebar Navigation -->
+<aside class="w-sidebar-width h-screen fixed left-0 top-0 bg-surface-secondary flex flex-col py-4 px-2 border-r border-border-default z-50">
+<div class="flex items-center gap-3 px-3 mb-8">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" data-icon="hub">hub</span>
+</div>
+<div>
+<h2 class="font-section-title text-section-title text-text-primary leading-tight">Global Workspace</h2>
+<p class="font-label-md text-label-md text-text-secondary">Pro Plan</p>
+</div>
+</div>
+<button class="mx-2 mb-6 h-input-height bg-primary text-on-primary flex items-center justify-center gap-2 rounded-lg font-label-md text-label-md hover:bg-primary-container transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-[16px]" data-icon="add">add</span>
+            Create New Item
+        </button>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-surface-container-high text-primary font-semibold transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label-md text-label-md">Tasks</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="cloud_queue">cloud_queue</span>
+<span class="font-label-md text-label-md">Files</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Insights</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-border-default space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span class="font-label-md text-label-md">Storage</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="ml-sidebar-width min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="h-touch-target bg-surface flex items-center justify-between px-gutter w-full border-b border-border-default sticky top-0 z-40">
+<div class="flex items-center gap-4 flex-1">
+<span class="font-page-title text-page-title text-primary">WorkDesk</span>
+<div class="relative w-full max-w-md ml-4">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-text-secondary text-[18px]" data-icon="search">search</span>
+<input class="w-full h-[32px] bg-surface-secondary border border-border-default rounded px-9 font-body-sm text-body-sm focus:outline-none focus:border-primary transition-colors" placeholder="Search knowledge repository..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded text-text-secondary hover:bg-surface-variant transition-colors active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded text-text-secondary hover:bg-surface-variant transition-colors active:opacity-80">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded text-text-secondary hover:bg-surface-variant transition-colors active:opacity-80">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="h-6 w-[1px] bg-border-default mx-1"></div>
+<img alt="User profile avatar" class="w-7 h-7 rounded-full border border-border-default" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhYftt3bELo9_WEO6yHBdqfZUIsd7wOoUC4imrxejsKZg2yJ2q22Ff--C-eWxfSBbi-bL0RsfZ0AyhMNHU19JA5SGTLqVP_kVdUJDzrNjlNzZ5MbCoXwEfbE8oJIgiErxEjLeTKB3ksJFOHzkCf_6CUuhWCUKaPeJFGfVWuULPoNbY0oc_E5XYhBEls3jEqB52lNfLiOtvfrkbZ75jQXwPzpwZQx9vIGRSWA684Snua7MgBO4rXiu_N0_pmVvGhet-7oiWeHFBoE4"/>
+</div>
+</header>
+<!-- Content Area -->
+<div class="p-container-margin">
+<!-- Discovery Experience (Hero Bento Section) -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-6">
+<div>
+<h1 class="font-page-title text-page-title text-text-primary mb-1">Library Home</h1>
+<p class="font-body-md text-body-md text-text-secondary">Explore the latest architectural patterns and technical artifacts.</p>
+</div>
+<div class="flex gap-2">
+<button class="px-4 h-[32px] bg-surface-elevated border border-border-default rounded flex items-center gap-2 font-label-md text-label-md hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="filter_list">filter_list</span>
+                            Filter
+                        </button>
+<button class="px-4 h-[32px] bg-primary-container text-on-primary-container rounded flex items-center gap-2 font-label-md text-label-md hover:bg-primary-container/80 transition-colors">
+<span class="material-symbols-outlined" data-icon="rss_feed">rss_feed</span>
+                            Manage Subscriptions
+                        </button>
+</div>
+</div>
+<div class="bento-grid h-[420px]">
+<!-- Featured Artifact -->
+<div class="col-span-8 row-span-2 relative rounded-xl overflow-hidden group border border-border-default">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A macro photograph of an intricate, futuristic motherboard structure glowing with subtle neon blue and violet light. The architecture is dense and highly technical, symbolizing a deep knowledge repository. The lighting is low-key, professional, and sophisticated, mirroring a premium dark mode UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdwTIuJiK2KKItvJbgKfRrSD81BXYNs0kzHjdfWR_O5eY3OVdZo9VAOfUM27AjOKJUDv4oeq8Pb0SdkIOGHrBrmKjtBg_Yt0VE6WU9aywEQdWg1tBx6kUeIySjT9mZuDQSOE9K81z_owstfC4YOJbVkxm0dxaImo1ufS9-F5psOvMytAyKGz3A7xfA6-KnR7oLi9Ad4HbGEfo6qVv5xu4xXTpjGdcnog0zp3SQ-pSkeT88QlZgVJ78zoTjWE_h9yJ-On468u-zH2I"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 w-full">
+<div class="flex gap-2 mb-4">
+<span class="px-2 py-0.5 bg-primary text-on-primary text-[10px] font-bold uppercase rounded">Top Performing</span>
+<span class="px-2 py-0.5 bg-white/20 backdrop-blur-md text-white text-[10px] font-bold uppercase rounded">Engineering</span>
+</div>
+<h2 class="font-page-title text-page-title text-white mb-2 max-w-2xl">Enterprise-Scale Microservices: Communication Patterns &amp; Resilience</h2>
+<p class="text-white/70 font-body-md text-body-md max-w-xl mb-6">Comprehensive documentation on circuit breakers, event sourcing, and global state synchronization for high-availability systems.</p>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full border border-white/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1gjCTl3uQTSwcaW24BJccevJDscUbbj6OaYAdNJ9qwGL6sH7od20HgQo7Iw-QIGLmEqk0oli7ocNCLxMmYsbRGUsiBgz0Xht0-sZiEV5hAeGLtGKJ1KlnJry4wnp8E8f-s3NTXii7qwZZy8oZvGISq8zGvzPbCfsk7OPeKUwYEwumbCrxER8I3oeIQmnBGxd8Q5mkVy9VoLG2y6jYIAPgi6CTmVf6fFpJZnq0x5JBbKrHlF_0EwGjdIY2_ozeZWTLGWMHWcXd7Mg"/>
+<span class="font-label-md text-label-md text-white">Jane Foster</span>
+</div>
+<span class="text-white/40 text-[12px]">•</span>
+<span class="font-label-md text-label-md text-white/60">Updated 2h ago</span>
+</div>
+</div>
+</div>
+<!-- New Release 1 -->
+<div class="col-span-4 bg-surface-elevated border border-border-default rounded-xl p-6 flex flex-col justify-between hover:bg-surface-variant transition-colors cursor-pointer group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-md text-label-md text-status-success">New</span>
+</div>
+<h3 class="font-section-title text-section-title text-text-primary mb-2">CI/CD Pipeline Security</h3>
+<p class="font-body-sm text-body-sm text-text-secondary">Best practices for hardening automated workflows against supply chain attacks.</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="font-caption text-caption text-text-secondary uppercase tracking-wider">Infrastructure</span>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<!-- Trending Section -->
+<div class="col-span-4 bg-surface-elevated border border-border-default rounded-xl p-6 flex flex-col justify-between hover:bg-surface-variant transition-colors cursor-pointer group">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-tertiary" data-icon="trending_up">trending_up</span>
+<span class="font-label-md text-label-md text-text-secondary">3.4k reads</span>
+</div>
+<h3 class="font-section-title text-section-title text-text-primary mb-2">React 19 Server Components</h3>
+<p class="font-body-sm text-body-sm text-text-secondary">A deep dive into the experimental features and state management paradigms.</p>
+</div>
+<div class="mt-4 flex items-center justify-between">
+<span class="font-caption text-caption text-text-secondary uppercase tracking-wider">Frontend</span>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100 transition-opacity" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Artifact Cards Grid -->
+<section>
+<div class="flex items-center gap-4 mb-8">
+<button class="font-label-md text-label-md text-text-primary border-b-2 border-primary pb-2 px-1">All Artifacts</button>
+<button class="font-label-md text-label-md text-text-secondary hover:text-text-primary pb-2 px-1 transition-colors">Documentation</button>
+<button class="font-label-md text-label-md text-text-secondary hover:text-text-primary pb-2 px-1 transition-colors">Code Snippets</button>
+<button class="font-label-md text-label-md text-text-secondary hover:text-text-primary pb-2 px-1 transition-colors">Design Specs</button>
+<div class="flex-1"></div>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded border border-border-default flex items-center justify-center text-text-secondary hover:bg-surface-variant"><span class="material-symbols-outlined" data-icon="grid_view">grid_view</span></button>
+<button class="w-8 h-8 rounded border border-border-default flex items-center justify-center text-text-secondary hover:bg-surface-variant"><span class="material-symbols-outlined" data-icon="list">list</span></button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Artifact Card 1 -->
+<div class="artifact-card bg-surface-elevated border border-border-default rounded-lg p-4 hover:border-outline transition-all duration-200 relative">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 rounded bg-surface-secondary flex items-center justify-center border border-border-default">
+<span class="material-symbols-outlined text-text-secondary" data-icon="article">article</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary"><span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<h4 class="font-card-title text-card-title text-text-primary mb-2 line-clamp-1">K8s Deployment Manifesto</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mb-4 line-clamp-2">The standard template for multi-regional clusters with autoscaling enabled.</p>
+<div class="flex flex-wrap gap-1.5 mb-4">
+<span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">DevOps</span>
+<span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">Kubernetes</span>
+</div>
+<div class="pt-4 border-t border-border-default flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUviymEIcshDo71jPSoN_-H8brBS46OIvrzAzCDQ8UAHnkXsc8-vJ69W5aU7viHZh-zbJZBATYXWxTqvaK89-Yv43Ov9E9-FYA-CCo_JYpg6V6anz2FhrXLyQHK5ja7bviV4a23IuQOepfgAzJMwh0MWqOHjFcUC-rryCi_eFOVG9MTkK4wVYb3SXMTlYjLY-nUTLVrciuBusUqWuTLqG6aHV-htUSm2N6hx3DROQcq63lgU6F3FkLcs7MjdffBea5a85XyG-64nk"/>
+<span class="font-caption text-caption text-text-secondary">Sam Wilson</span>
+</div>
+<span class="font-caption text-caption text-text-secondary">Nov 12</span>
+</div>
+</div>
+<!-- Artifact Card 2 -->
+<div class="artifact-card bg-surface-elevated border border-border-default rounded-lg p-4 hover:border-outline transition-all duration-200">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 rounded bg-surface-secondary flex items-center justify-center border border-border-default">
+<span class="material-symbols-outlined text-text-secondary" data-icon="terminal">terminal</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary"><span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<h4 class="font-card-title text-card-title text-text-primary mb-2 line-clamp-1">Global Utility Hooks</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mb-4 line-clamp-2">Custom React hooks for authentication, local storage, and dark mode toggling.</p>
+<div class="flex flex-wrap gap-1.5 mb-4">
+<span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">React</span>
+<span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">Utility</span>
+</div>
+<div class="pt-4 border-t border-border-default flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW46bcvReaBYyHAL62kyhxTlBiIl1cm3BkUeoW7ThPV5o-_nyLkc5Xdlx16jWwhCj5HbrKBLOFF6UzJ9Ipr1OSlw6aV2NcBYU1DD3_P1lMIANW8eGAiQIsfpJrDkAN9qsxND65YtrduUFa9a2eZegW-7bzPkx9jLsX_WTjsOC9XvC0AE1wp6frj5GlS3EKk6ehuHET7NidCpwzLsAN6C2m0OVFgAMwwL6UTu6x9bLUBva7J3aMlGOIcaLtudv23KyHHRdkylpKEU8"/>
+<span class="font-caption text-caption text-text-secondary">Alex Chen</span>
+</div>
+<span class="font-caption text-caption text-text-secondary">Oct 30</span>
+</div>
+</div>
+<!-- Artifact Card 3 -->
+<div class="artifact-card bg-surface-elevated border border-border-default rounded-lg p-4 hover:border-outline transition-all duration-200">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 rounded bg-surface-secondary flex items-center justify-center border border-border-default">
+<span class="material-symbols-outlined text-text-secondary" data-icon="schema">schema</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary"><span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<h4 class="font-card-title text-card-title text-text-primary mb-2 line-clamp-1">Database Schema v4.2</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mb-4 line-clamp-2">Updated entity-relationship diagrams for the core transaction engine.</p>
+<div class="flex flex-wrap gap-1.5 mb-4">
+<span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">Database</span>
+<span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">Architecture</span>
+</div>
+<div class="pt-4 border-t border-border-default flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAes1dH6_BtHY4GQBAGCUrhgne9h04H2WUExEGxVxAWGXk-cyf4Rytb29nCmZuHv3UBdf0yhIh-u3UqZ4yyAZP3A8FlYOp9St6V9ckHfL2ApdV-Cl1Kpm1iOdxUxiksItaTcrNc3h2nl_7exIe2eYQG4tj4w3uAX54Aw0smK0gMksDT0EWd6AaQJJerzj8M3RQx4N8P-KFCE7ILXS0RhnhbnMEOMXXzlsoPNhZOLGMf2ZY6thY8ArDpJlV6rA8Ajw9BJr17GlST_vU"/>
+<span class="font-caption text-caption text-text-secondary">Sarah Kay</span>
+</div>
+<span class="font-caption text-caption text-text-secondary">Nov 05</span>
+</div>
+</div>
+<!-- Artifact Card 4 -->
+<div class="artifact-card bg-surface-elevated border border-border-default rounded-lg p-4 hover:border-outline transition-all duration-200">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 rounded bg-surface-secondary flex items-center justify-center border border-border-default">
+<span class="material-symbols-outlined text-text-secondary" data-icon="palette">palette</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary"><span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<h4 class="font-card-title text-card-title text-text-primary mb-2 line-clamp-1">Brand Identity Guidelines</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mb-4 line-clamp-2">Logo usage, color palettes, and typography rules for marketing materials.</p>
+<div class="flex flex-wrap gap-1.5 mb-4">
+<span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">Design</span>
+<span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">Marketing</span>
+</div>
+<div class="pt-4 border-t border-border-default flex items-center justify-between">
+<div class="flex items-center gap-2">
+<img class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBplTr9EdYtzG9TMkqysAz2HyqGxUpGhd8S6RBM2FK46Sl1MkvisRufTXLy8GVLKTuKDFMgx3mqxeGoecRU1cZ1sBXSAJP4foh5lrVJHsf8lWcvmyu64o64kYvrF7y7TSiglPjBMQrunxF0q7iFC2kFc2_Mg0ea-TL7gSdzzOa8RHkurJbO6A4Dy5V1r-Jtv_JvJkEx6tuQhT7c4K4I6TdtZ5PNGRBN4nRcYkWDGs98lUqDHfBj8IvXHeBwGkj6l6guTQOp4ane1OM"/>
+<span class="font-caption text-caption text-text-secondary">Mark Ross</span>
+</div>
+<span class="font-caption text-caption text-text-secondary">Oct 15</span>
+</div>
+</div>
+<!-- Repeat for High Density -->
+<div class="artifact-card bg-surface-elevated border border-border-default rounded-lg p-4 hover:border-outline transition-all duration-200">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 rounded bg-surface-secondary flex items-center justify-center border border-border-default">
+<span class="material-symbols-outlined text-text-secondary" data-icon="security">security</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary"><span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<h4 class="font-card-title text-card-title text-text-primary mb-2 line-clamp-1">Zero Trust Framework</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mb-4 line-clamp-2">Policy documentation for implementing identity-based security perimeters.</p>
+<div class="flex flex-wrap gap-1.5 mb-4"><span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">Security</span></div>
+<div class="pt-4 border-t border-border-default flex items-center justify-between">
+<div class="flex items-center gap-2"><img class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2YnQaFKD-ct1hlNXYqhGbr5E_LnCJzym1jtZ99pSlcErmyBkYBYUpzytSSyTdgm_3FBvQF33NQPXcgTyJn467IAUuDagLsCPOHaYOLWaMVm3lLdRLZHo1eGAWZ-OQvszqpFGLuEHuRnmK_lImQUGuvW7vqUg8O0lvfkGo3lMCm8iZJLOqZx2zGv4K1ovE4JWlCkxmDCd-pAVOA3z50QXBZB1ff_LWIJDvTCfk0xV51UoaOU4KMXw9ko0DI-PH-Qf-0OcWoK_4aRo"/><span class="font-caption text-caption text-text-secondary">InfoSec Team</span></div>
+<span class="font-caption text-caption text-text-secondary">Yesterday</span>
+</div>
+</div>
+<div class="artifact-card bg-surface-elevated border border-border-default rounded-lg p-4 hover:border-outline transition-all duration-200">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 rounded bg-surface-secondary flex items-center justify-center border border-border-default">
+<span class="material-symbols-outlined text-text-secondary" data-icon="psychology">psychology</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary"><span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<h4 class="font-card-title text-card-title text-text-primary mb-2 line-clamp-1">AI Model Training Logs</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mb-4 line-clamp-2">Epoch reports and loss function graphs for the v2 recommendation engine.</p>
+<div class="flex flex-wrap gap-1.5 mb-4"><span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">ML/AI</span></div>
+<div class="pt-4 border-t border-border-default flex items-center justify-between">
+<div class="flex items-center gap-2"><img class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5sn3QVdz3e1SbzzNMYJZ6p4dXbpUgdLSQyST7eYWLypRarcuolyPSLKvJSiMXkJ0s-9T-Ua-6abRtKq3kzBV3qSzm06ewnx8UhgGK67wWqO-b2lg8fIiYInM_sWXobAUAM9Y37eDBRMIHqEXvUbVyIa8IFjqEHrmdq95ypAnH2JO7divaEJ8KVPQhvSN5Y_PE4Y8tafQGqkqzWXQsQJEpUlVCmDVTtjqQfK7x_qR7H4AXXZFS1HyivV0GDvw4WNafNZ5luN0ZUVU"/><span class="font-caption text-caption text-text-secondary">Brain Lab</span></div>
+<span class="font-caption text-caption text-text-secondary">Nov 01</span>
+</div>
+</div>
+<div class="artifact-card bg-surface-elevated border border-border-default rounded-lg p-4 hover:border-outline transition-all duration-200">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 rounded bg-surface-secondary flex items-center justify-center border border-border-default">
+<span class="material-symbols-outlined text-text-secondary" data-icon="data_exploration">data_exploration</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary"><span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<h4 class="font-card-title text-card-title text-text-primary mb-2 line-clamp-1">User Research Summary</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mb-4 line-clamp-2">Key takeaways from the Q3 usability sessions for the new mobile dashboard.</p>
+<div class="flex flex-wrap gap-1.5 mb-4"><span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">UX Research</span></div>
+<div class="pt-4 border-t border-border-default flex items-center justify-between">
+<div class="flex items-center gap-2"><img class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBG4LJpnzsXjWABu8833FDRpWN1YXgQfcx_N-xn60JH-ZXCM7rmiZ-Gazjl9nK1bIuNS7aZwVcHqqpmdaWtDsEBKvN3g_y6v5jGHX4gaiHJk_52AeJhoAOT53NUtb4VzfzhK30nQxEAeAG5X4tGPr4u8GFjs-C_UWZYGfn960hVZI4u5zPtQO3nyYnBE34TJPbzqKWe7TVP5-iSFfbyIvRvakm3-qOy_LREAUibndep4XF6kcpCqJdyVe73Z-VunwPk2yFbJ1twFWg"/><span class="font-caption text-caption text-text-secondary">Emily Davids</span></div>
+<span class="font-caption text-caption text-text-secondary">Nov 10</span>
+</div>
+</div>
+<div class="artifact-card bg-surface-elevated border border-border-default rounded-lg p-4 hover:border-outline transition-all duration-200">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 rounded bg-surface-secondary flex items-center justify-center border border-border-default">
+<span class="material-symbols-outlined text-text-secondary" data-icon="api">api</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary"><span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span></button>
+</div>
+<h4 class="font-card-title text-card-title text-text-primary mb-2 line-clamp-1">Public API Specs</h4>
+<p class="font-body-sm text-body-sm text-text-secondary mb-4 line-clamp-2">Swagger/OpenAPI documentation for third-party developer integrations.</p>
+<div class="flex flex-wrap gap-1.5 mb-4"><span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">API</span><span class="px-2 py-0.5 bg-surface-secondary text-text-secondary text-[10px] border border-border-default rounded">External</span></div>
+<div class="pt-4 border-t border-border-default flex items-center justify-between">
+<div class="flex items-center gap-2"><img class="w-5 h-5 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9yNDnb_2pCmtB-0rF1ycS2CyVSoRMe0n9Fg-qaFEcTQN9oBld1yI16YslEQLEfigeJnPbBHzxc2QmTuZwt33Q47XGoEb9MfN1Y1dtyq5gIpUjiYGKwkUUyqWXpKJEQKqbINKzRpL1RnUZII7rPfi1FRVPBSU-mHLqqXkxgrwq9GEQMDTKX3p9-GL8fa4EIxj6w213LDnlbhBxK8YeHP9lUMCpgWHum4gIIC01uafQX7l00-mZZWb1RniQ5ZU-G1yIoNsnkrl1lVc"/><span class="font-caption text-caption text-text-secondary">Core Platform</span></div>
+<span class="font-caption text-caption text-text-secondary">Oct 28</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Floating Action Button (FAB) contextually for adding to library -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-transform z-50">
+<span class="material-symbols-outlined text-[28px]" data-icon="upload_file">upload_file</span>
+</button>
+</main>
+<!-- Context/Metadata Panel (Right Side) -->
+<aside class="hidden xl:flex w-context-panel-width h-screen fixed right-0 top-0 bg-surface-secondary border-l border-border-default flex-col p-6 overflow-y-auto">
+<h3 class="font-section-title text-section-title text-text-primary mb-6">Subscriptions</h3>
+<div class="space-y-4 mb-8">
+<div class="flex items-center justify-between p-3 rounded bg-surface-container border border-border-default">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="memory">memory</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-text-primary">Eng-Core</p>
+<p class="font-caption text-caption text-text-secondary">12 new today</p>
+</div>
+</div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+</div>
+<div class="flex items-center justify-between p-3 rounded bg-surface-container border border-border-default">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-status-warning/20 flex items-center justify-center text-status-warning">
+<span class="material-symbols-outlined" data-icon="brush">brush</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-text-primary">Design-Ops</p>
+<p class="font-caption text-caption text-text-secondary">No new updates</p>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded bg-surface-container border border-border-default">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-status-success/20 flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-text-primary">Compliance</p>
+<p class="font-caption text-caption text-text-secondary">2 new today</p>
+</div>
+</div>
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+</div>
+</div>
+<h3 class="font-section-title text-section-title text-text-primary mb-4">Activity Stream</h3>
+<div class="space-y-6">
+<div class="flex gap-3">
+<div class="flex-shrink-0 w-[1px] bg-border-default relative ml-2 mt-2">
+<div class="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-border-default"></div>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-text-primary"><span class="font-bold">David J.</span> updated <span class="text-primary cursor-pointer">Security Protocol</span></p>
+<p class="font-caption text-caption text-text-secondary mt-1">15 minutes ago</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="flex-shrink-0 w-[1px] bg-border-default relative ml-2 mt-2">
+<div class="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-border-default"></div>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-text-primary"><span class="font-bold">Maria G.</span> bookmarked <span class="text-primary cursor-pointer">React 19 Deep Dive</span></p>
+<p class="font-caption text-caption text-text-secondary mt-1">1 hour ago</p>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="flex-shrink-0 w-[1px] bg-border-default relative ml-2 mt-2">
+<div class="absolute -left-1 -top-1 w-2.5 h-2.5 rounded-full bg-border-default"></div>
+</div>
+<div>
+<p class="font-body-sm text-body-sm text-text-primary"><span class="font-bold">System</span> archived <span class="text-text-secondary">Legacy Auth v1.0</span></p>
+<p class="font-caption text-caption text-text-secondary mt-1">4 hours ago</p>
+</div>
+</div>
+</div>
+<div class="mt-auto pt-6 border-t border-border-default">
+<button class="w-full h-touch-target border border-border-default rounded flex items-center justify-center gap-2 font-label-md text-label-md text-text-secondary hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+                Export Library Index
+            </button>
+</div>
+</aside>
+<script>
+        // Micro-interactions
+        document.querySelectorAll('.artifact-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.classList.add('shadow-xl');
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.classList.remove('shadow-xl');
+            });
+        });
+
+        // Search highlight effect
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('ring-1', 'ring-primary/50');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('ring-1', 'ring-primary/50');
+        });
+    </script>
+</body></html>

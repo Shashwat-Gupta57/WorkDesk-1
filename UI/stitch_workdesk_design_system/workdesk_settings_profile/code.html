@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #10141a;
+            color: #E6EDF3;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0D1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363D;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #414752;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#2c3138",
+                        "surface-primary": "#0D1117",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#2d3137",
+                        "on-background": "#dfe2eb",
+                        "primary": "#a2c9ff",
+                        "on-tertiary": "#432c00",
+                        "status-warning": "#D29922",
+                        "border-default": "#30363D",
+                        "surface-dim": "#10141a",
+                        "surface-secondary": "#161B22",
+                        "on-error-container": "#ffdad6",
+                        "text-primary": "#E6EDF3",
+                        "tertiary-fixed-dim": "#ffba42",
+                        "surface-tint": "#a2c9ff",
+                        "surface-container-low": "#181c22",
+                        "surface": "#10141a",
+                        "status-success": "#3FB950",
+                        "secondary-container": "#42474f",
+                        "primary-container": "#58a6ff",
+                        "on-error": "#690005",
+                        "tertiary-container": "#da9600",
+                        "inverse-surface": "#dfe2eb",
+                        "tertiary": "#ffba42",
+                        "background": "#10141a",
+                        "on-tertiary-container": "#4f3400",
+                        "surface-container-lowest": "#0a0e14",
+                        "tertiary-fixed": "#ffddaf",
+                        "outline-variant": "#414752",
+                        "surface-bright": "#353940",
+                        "on-primary-container": "#003a6b",
+                        "on-secondary-container": "#b1b5bf",
+                        "outline": "#8b919d",
+                        "on-secondary-fixed-variant": "#42474f",
+                        "on-primary-fixed": "#001c38",
+                        "on-primary-fixed-variant": "#004882",
+                        "surface-container-highest": "#31353c",
+                        "secondary-fixed": "#dee2ec",
+                        "on-tertiary-fixed": "#281800",
+                        "on-surface": "#dfe2eb",
+                        "surface-container-high": "#262a31",
+                        "secondary": "#c2c7d0",
+                        "error-container": "#93000a",
+                        "on-primary": "#00315c",
+                        "surface-container": "#1c2026",
+                        "text-secondary": "#8B949E",
+                        "surface-variant": "#31353c",
+                        "primary-fixed": "#d3e4ff",
+                        "on-surface-variant": "#c0c7d4",
+                        "surface-elevated": "#1C2128",
+                        "status-danger": "#F85149",
+                        "on-tertiary-fixed-variant": "#614000",
+                        "on-secondary-fixed": "#171c23",
+                        "inverse-primary": "#0060aa",
+                        "secondary-fixed-dim": "#c2c7d0",
+                        "primary-fixed-dim": "#a2c9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "input-height": "32px",
+                        "container-margin": "24px",
+                        "gutter": "16px",
+                        "touch-target": "40px",
+                        "sidebar-width": "260px",
+                        "unit": "4px",
+                        "context-panel-width": "300px"
+                    },
+                    "fontFamily": {
+                        "card-title": ["Inter"],
+                        "caption": ["Inter"],
+                        "page-title": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono": ["Inter"],
+                        "body-md": ["Inter"],
+                        "section-title": ["Inter"]
+                    },
+                    "fontSize": {
+                        "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                        "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="overflow-hidden">
+<!-- TopNavBar -->
+<header class="bg-surface text-primary font-body-md text-body-md w-full h-touch-target border-b border-border-default flex items-center justify-between px-gutter w-full fixed top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="font-page-title text-page-title text-primary">WorkDesk</span>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-2 text-text-secondary">search</span>
+<input class="bg-surface-secondary border border-border-default text-text-primary text-body-sm px-8 h-input-height w-64 rounded-lg focus:outline-none focus:border-primary transition-all" placeholder="Search settings..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-text-secondary hover:bg-surface-variant transition-colors p-2 rounded cursor-pointer active:opacity-80">notifications</button>
+<button class="material-symbols-outlined text-text-secondary hover:bg-surface-variant transition-colors p-2 rounded cursor-pointer active:opacity-80">help</button>
+<button class="material-symbols-outlined text-primary font-bold hover:bg-surface-variant transition-colors p-2 rounded cursor-pointer active:opacity-80">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-border-default ml-2 cursor-pointer">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgUqKTQfcX6MNU-Ioheqlf6lPyv2koiU3pop_bg23MOqBsyg_NthKo_IJs9fi8WsNS-j1NSS4KBtn-hMva2-RNUlhCdpiRtdMyTgXp1zOtI1MWbJHsQ3RANQ08inmS3_Ud9ivqrjb9CwVcKePQ4CXLp-ySUT1Gw2DBt7AYAHA-X-HJMUYe2cGYoNVJON9mwzrtnQjYSPxEhhHDZ83wPFEB7E2ium_XYWisWUeXEO2b1IzUZjkhOJnAhxVHnfzjc8uwAW1VBkPgV4c"/>
+</div>
+</div>
+</header>
+<!-- Sidebar & Content Wrapper -->
+<div class="flex pt-touch-target h-screen">
+<!-- SideNavBar -->
+<aside class="bg-surface-secondary text-primary font-label-md text-label-md w-sidebar-width h-full border-r border-border-default flex flex-col py-4 px-2 overflow-y-auto">
+<div class="mb-6 px-2">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">token</span>
+</div>
+<div>
+<h2 class="font-section-title text-section-title text-text-primary leading-tight">Global Workspace</h2>
+<p class="text-text-secondary text-caption">Pro Plan</p>
+</div>
+</div>
+</div>
+<button class="bg-primary-container text-on-primary-container font-semibold py-2 px-4 rounded-lg mb-6 flex items-center justify-center gap-2 hover:opacity-90 transition-all active:opacity-80">
+<span class="material-symbols-outlined">add</span>
+                Create New Item
+            </button>
+<nav class="flex-1 space-y-1">
+<div class="group px-2 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer transition-all duration-150 ease-in-out flex items-center gap-3">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </div>
+<div class="group px-2 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer transition-all duration-150 ease-in-out flex items-center gap-3">
+<span class="material-symbols-outlined">folder_open</span>
+                    Projects
+                </div>
+<div class="group px-2 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer transition-all duration-150 ease-in-out flex items-center gap-3">
+<span class="material-symbols-outlined">assignment</span>
+                    Tasks
+                </div>
+<div class="group px-2 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer transition-all duration-150 ease-in-out flex items-center gap-3">
+<span class="material-symbols-outlined">cloud_queue</span>
+                    Files
+                </div>
+<div class="group px-2 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer transition-all duration-150 ease-in-out flex items-center gap-3">
+<span class="material-symbols-outlined">analytics</span>
+                    Insights
+                </div>
+<div class="pt-6 pb-2 px-2">
+<p class="text-[10px] uppercase tracking-wider text-text-secondary font-bold">Preferences</p>
+</div>
+<div class="group px-2 py-2 rounded-lg bg-surface-container-high text-primary font-semibold cursor-pointer flex items-center gap-3">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">person</span>
+                    Profile &amp; Settings
+                </div>
+<div class="group px-2 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer transition-all duration-150 ease-in-out flex items-center gap-3">
+<span class="material-symbols-outlined">security</span>
+                    Security
+                </div>
+</nav>
+<div class="mt-auto border-t border-border-default pt-4 space-y-1">
+<div class="group px-2 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer flex items-center gap-3">
+<span class="material-symbols-outlined">database</span>
+                    Storage
+                </div>
+<div class="group px-2 py-2 rounded-lg text-text-secondary hover:bg-surface-container hover:text-text-primary cursor-pointer flex items-center gap-3">
+<span class="material-symbols-outlined">contact_support</span>
+                    Support
+                </div>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 bg-surface-primary overflow-y-auto relative">
+<div class="max-w-5xl mx-auto p-12">
+<!-- Header -->
+<div class="mb-12">
+<h1 class="font-page-title text-page-title text-text-primary mb-2">Settings &amp; Profile</h1>
+<p class="text-text-secondary font-body-md text-body-md">Manage your account preferences, security, and workspace integration.</p>
+</div>
+<!-- Bento Grid Content -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Profile Card -->
+<div class="col-span-12 lg:col-span-8 bg-surface-elevated border border-border-default rounded-lg p-6 flex items-start gap-8">
+<div class="relative group">
+<div class="w-24 h-24 rounded-full overflow-hidden border-2 border-primary p-1 bg-surface-primary">
+<img alt="Profile" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDND9n7oYU-kcMHsqRfETSDF6MPhn9PPgQMnR5gSaoyyWkcdz6ZAS8rpl2u6v-EXkAi8bBRjnTDot_Qc8o_cwf9Q_Y_YMPSuFZy775gDevcMcQ7kz0Cocr4sRYVwjYbZ6Xy1phh8xAqwbGsDuTFoCR0QFW0ensrEHuGCHJbNWLZZNl2hL_Z82BUViPkyadUHVSi1qExlWq7qZokYHszM3XrB1hApMvjuMbZOVOlmWPVaSvGkU-62Bhz9WZr00NlRevRZX3iFXKgP6c"/>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary text-surface-primary p-1.5 rounded-full shadow-lg hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-section-title text-section-title text-text-primary">Alex Sterling</h3>
+<p class="text-text-secondary text-body-sm">Senior Product Architect • San Francisco, CA</p>
+</div>
+<button class="bg-surface-container border border-border-default text-text-primary px-4 py-1.5 rounded text-label-md hover:bg-surface-variant transition-colors">Edit Profile</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-secondary p-3 rounded border border-border-default">
+<p class="text-caption text-text-secondary mb-1">Email Address</p>
+<p class="text-body-sm text-text-primary font-mono">alex.sterling@workdesk.io</p>
+</div>
+<div class="bg-surface-secondary p-3 rounded border border-border-default">
+<p class="text-caption text-text-secondary mb-1">Workspace Role</p>
+<p class="text-body-sm text-text-primary">Administrator</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Storage Breakdown Card -->
+<div class="col-span-12 lg:col-span-4 bg-surface-elevated border border-border-default rounded-lg p-6">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-card-title text-card-title text-text-primary">Storage Usage</h3>
+<span class="text-primary text-label-md font-bold">82%</span>
+</div>
+<div class="w-full h-2 bg-surface-secondary rounded-full overflow-hidden flex mb-6">
+<div class="h-full bg-primary" style="width: 45%"></div>
+<div class="h-full bg-tertiary" style="width: 25%"></div>
+<div class="h-full bg-status-success" style="width: 12%"></div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="text-body-sm text-text-secondary">Project Files</span>
+</div>
+<span class="text-body-sm text-text-primary font-mono">42.5 GB</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary"></div>
+<span class="text-body-sm text-text-secondary">Media Assets</span>
+</div>
+<span class="text-body-sm text-text-primary font-mono">24.1 GB</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-status-success"></div>
+<span class="text-body-sm text-text-secondary">Backups</span>
+</div>
+<span class="text-body-sm text-text-primary font-mono">15.4 GB</span>
+</div>
+</div>
+<button class="w-full mt-6 bg-surface-container-highest border border-border-default text-text-primary py-2 rounded text-label-md hover:bg-surface-variant transition-colors">Manage Storage</button>
+</div>
+<!-- Account Security Section -->
+<div class="col-span-12 lg:col-span-6 bg-surface-elevated border border-border-default rounded-lg p-6">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-status-warning">security</span>
+<h3 class="font-card-title text-card-title text-text-primary">Account Security</h3>
+</div>
+<div class="space-y-0 border-t border-border-default">
+<div class="py-4 border-b border-border-default flex items-center justify-between">
+<div>
+<p class="text-body-sm font-semibold text-text-primary">Two-Factor Authentication</p>
+<p class="text-caption text-text-secondary">Enabled via Authenticator App</p>
+</div>
+<div class="w-8 h-4 bg-primary rounded-full relative cursor-pointer">
+<div class="absolute right-0.5 top-0.5 w-3 h-3 bg-surface-primary rounded-full"></div>
+</div>
+</div>
+<div class="py-4 border-b border-border-default flex items-center justify-between">
+<div>
+<p class="text-body-sm font-semibold text-text-primary">Password</p>
+<p class="text-caption text-text-secondary">Last changed 4 months ago</p>
+</div>
+<button class="text-primary text-label-md hover:underline">Change</button>
+</div>
+<div class="py-4 border-b border-border-default flex items-center justify-between">
+<div>
+<p class="text-body-sm font-semibold text-text-primary">Active Sessions</p>
+<p class="text-caption text-text-secondary">4 devices currently logged in</p>
+</div>
+<button class="text-primary text-label-md hover:underline">Revoke All</button>
+</div>
+</div>
+</div>
+<!-- Connected Services Section -->
+<div class="col-span-12 lg:col-span-6 bg-surface-elevated border border-border-default rounded-lg p-6">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary">hub</span>
+<h3 class="font-card-title text-card-title text-text-primary">Connected Services</h3>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<div class="flex items-center justify-between p-3 bg-surface-secondary border border-border-default rounded">
+<div class="flex items-center gap-3">
+<img alt="GitHub Logo" class="w-8 h-8 rounded" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdvKhACw90QDWyYrxL0I-VXmRQ5LCN8-mdSp0CxWjUP7907LNzLE1Bl4lJFKYYbg7ydZL07fP9xLDOQUa59OzvQ09hyQ5htUthvARM61NIxDmMivhmLUrIm0-wGCWs4soatB9wIGlH5M6DYCtbyy5nomxH_EOFq8oIjudXz6B47FQ80oxpep8AT0wzSbGsKhO__mtDInFAjuZlpr6r012jCgVPjAN4gRPZhwmOfaPXKUqkF-ezX9-j_HcFJ82vFyV_1l3QrnpLv6M"/>
+<div>
+<p class="text-body-sm font-semibold text-text-primary">GitHub</p>
+<p class="text-caption text-status-success">Connected</p>
+</div>
+</div>
+<button class="material-symbols-outlined text-text-secondary hover:text-status-danger transition-colors">link_off</button>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-secondary border border-border-default rounded">
+<div class="flex items-center gap-3">
+<img alt="Slack Logo" class="w-8 h-8 rounded" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHKe4Ean6mZGvp7N1820FWpgvJQX06_QNC0-jEnWYzp1NWrya54J3rwQxmpnGd6j1lWGBgNt-QRB7mOpBzjBVTpWMBrsQlQU1jtBJpDtpUlUw9v8xG6r7JmbYntbOQ-maUGdrIdvT-4njzDH2KZ4nt4iO6JieMg4CRJK8cu4nCY8syTMqlOz36DObbYrbNW0XCeeECY4ojYG2W4HHpn1M6HuozHIL3o9DUFDW7ShK1Wj5OvjalnXD0OfEPaI5fMxN-XuHhizRiLcI"/>
+<div>
+<p class="text-body-sm font-semibold text-text-primary">Slack</p>
+<p class="text-caption text-status-success">Connected</p>
+</div>
+</div>
+<button class="material-symbols-outlined text-text-secondary hover:text-status-danger transition-colors">link_off</button>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-secondary border border-border-default rounded border-dashed opacity-75">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-surface-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-text-secondary">add</span>
+</div>
+<p class="text-body-sm text-text-secondary">Connect new service...</p>
+</div>
+<button class="text-primary text-label-md hover:underline">Browse</button>
+</div>
+</div>
+</div>
+<!-- Notification Preferences -->
+<div class="col-span-12 bg-surface-elevated border border-border-default rounded-lg p-6">
+<div class="flex items-center gap-2 mb-8">
+<span class="material-symbols-outlined text-tertiary">notifications_active</span>
+<h3 class="font-card-title text-card-title text-text-primary">Notification Preferences</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="space-y-4">
+<h4 class="text-label-md font-bold text-text-secondary uppercase tracking-widest border-b border-border-default pb-2">Desktop</h4>
+<div class="flex items-center justify-between">
+<span class="text-body-sm text-text-primary">Push Notifications</span>
+<div class="w-8 h-4 bg-primary rounded-full relative cursor-pointer"><div class="absolute right-0.5 top-0.5 w-3 h-3 bg-surface-primary rounded-full"></div></div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-body-sm text-text-primary">Mentions &amp; Replies</span>
+<div class="w-8 h-4 bg-primary rounded-full relative cursor-pointer"><div class="absolute right-0.5 top-0.5 w-3 h-3 bg-surface-primary rounded-full"></div></div>
+</div>
+</div>
+<div class="space-y-4">
+<h4 class="text-label-md font-bold text-text-secondary uppercase tracking-widest border-b border-border-default pb-2">Email</h4>
+<div class="flex items-center justify-between">
+<span class="text-body-sm text-text-primary">Weekly Digests</span>
+<div class="w-8 h-4 bg-primary rounded-full relative cursor-pointer"><div class="absolute right-0.5 top-0.5 w-3 h-3 bg-surface-primary rounded-full"></div></div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-body-sm text-text-primary">Security Alerts</span>
+<div class="w-8 h-4 bg-primary rounded-full relative cursor-pointer"><div class="absolute right-0.5 top-0.5 w-3 h-3 bg-surface-primary rounded-full"></div></div>
+</div>
+</div>
+<div class="space-y-4">
+<h4 class="text-label-md font-bold text-text-secondary uppercase tracking-widest border-b border-border-default pb-2">Theme Preferences</h4>
+<div class="flex items-center gap-4">
+<div class="flex-1 p-3 border border-primary rounded bg-surface-container flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">dark_mode</span>
+<span class="text-body-sm font-semibold text-text-primary">Dark Mode</span>
+<span class="material-symbols-outlined text-primary ml-auto">check_circle</span>
+</div>
+<div class="flex-1 p-3 border border-border-default rounded bg-surface-secondary opacity-50 flex items-center gap-3 cursor-not-allowed">
+<span class="material-symbols-outlined">light_mode</span>
+<span class="text-body-sm">Light Mode</span>
+</div>
+</div>
+<p class="text-caption text-text-secondary">V1 only supports high-contrast dark theme for professional focus.</p>
+</div>
+</div>
+</div>
+<!-- Destructive Actions -->
+<div class="col-span-12 mt-4 p-6 bg-error-container/10 border border-error/20 rounded-lg flex items-center justify-between">
+<div>
+<h4 class="text-body-sm font-bold text-error">Deactivate Account</h4>
+<p class="text-caption text-text-secondary">Permanently remove your workspace access and personal data.</p>
+</div>
+<button class="px-4 py-2 bg-transparent border border-error text-error rounded text-label-md font-bold hover:bg-error hover:text-on-error transition-all">Deactivate</button>
+</div>
+</div>
+</div>
+<!-- Footer Decorative Element -->
+<div class="w-full h-1 bg-gradient-to-r from-transparent via-border-default to-transparent absolute bottom-0"></div>
+</main>
+<!-- Context Panel (Right) -->
+<aside class="hidden xl:flex flex-col w-context-panel-width bg-surface border-l border-border-default h-full p-6">
+<h3 class="font-section-title text-section-title text-text-primary mb-6">Activity Log</h3>
+<div class="space-y-6">
+<div class="flex gap-4 relative">
+<div class="absolute left-[15px] top-8 bottom-0 w-[1px] bg-border-default"></div>
+<div class="z-10 w-8 h-8 rounded-full bg-surface-container border border-border-default flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px] text-status-success">login</span>
+</div>
+<div>
+<p class="text-body-sm text-text-primary font-semibold leading-tight">New Login Detected</p>
+<p class="text-caption text-text-secondary">Chrome on MacOS • Today, 10:24 AM</p>
+</div>
+</div>
+<div class="flex gap-4 relative">
+<div class="absolute left-[15px] top-8 bottom-0 w-[1px] bg-border-default"></div>
+<div class="z-10 w-8 h-8 rounded-full bg-surface-container border border-border-default flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px] text-primary">sync</span>
+</div>
+<div>
+<p class="text-body-sm text-text-primary font-semibold leading-tight">Storage Synced</p>
+<p class="text-caption text-text-secondary">Cloud Backup Complete • Today, 09:00 AM</p>
+</div>
+</div>
+<div class="flex gap-4 relative">
+<div class="z-10 w-8 h-8 rounded-full bg-surface-container border border-border-default flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[14px] text-status-warning">key</span>
+</div>
+<div>
+<p class="text-body-sm text-text-primary font-semibold leading-tight">API Key Generated</p>
+<p class="text-caption text-text-secondary">External Integration Tool • Yesterday</p>
+</div>
+</div>
+</div>
+<div class="mt-auto bg-surface-elevated rounded-lg p-4 border border-border-default">
+<p class="text-caption text-text-secondary mb-3">System Health</p>
+<div class="flex items-center justify-between mb-2">
+<span class="text-body-sm text-text-primary">Global Latency</span>
+<span class="text-body-sm text-status-success font-mono">24ms</span>
+</div>
+<div class="w-full h-1 bg-surface-secondary rounded-full overflow-hidden">
+<div class="h-full bg-status-success w-full opacity-50"></div>
+</div>
+</div>
+</aside>
+</div>
+<script>
+        // Micro-interactions for toggles
+        document.querySelectorAll('.relative.cursor-pointer').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const knob = this.querySelector('div');
+                const isEnabled = knob.classList.contains('right-0.5');
+                
+                if (isEnabled) {
+                    knob.classList.replace('right-0.5', 'left-0.5');
+                    this.classList.replace('bg-primary', 'bg-surface-secondary');
+                } else {
+                    knob.classList.replace('left-0.5', 'right-0.5');
+                    this.classList.replace('bg-surface-secondary', 'bg-primary');
+                }
+            });
+        });
+    </script>
+</body></html>

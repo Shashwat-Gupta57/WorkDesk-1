@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WorkDesk | Messaging Module</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D1117;
+            color: #E6EDF3;
+            overflow: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #10141a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #30363D;
+            border-radius: 10px;
+        }
+        .artifact-card:hover {
+            border-color: #58a6ff;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#2c3138",
+                        "surface-primary": "#0D1117",
+                        "error": "#ffb4ab",
+                        "inverse-on-surface": "#2d3137",
+                        "on-background": "#dfe2eb",
+                        "primary": "#a2c9ff",
+                        "on-tertiary": "#432c00",
+                        "status-warning": "#D29922",
+                        "border-default": "#30363D",
+                        "surface-dim": "#10141a",
+                        "surface-secondary": "#161B22",
+                        "on-error-container": "#ffdad6",
+                        "text-primary": "#E6EDF3",
+                        "tertiary-fixed-dim": "#ffba42",
+                        "surface-tint": "#a2c9ff",
+                        "surface-container-low": "#181c22",
+                        "surface": "#10141a",
+                        "status-success": "#3FB950",
+                        "secondary-container": "#42474f",
+                        "primary-container": "#58a6ff",
+                        "on-error": "#690005",
+                        "tertiary-container": "#da9600",
+                        "inverse-surface": "#dfe2eb",
+                        "tertiary": "#ffba42",
+                        "background": "#10141a",
+                        "on-tertiary-container": "#4f3400",
+                        "surface-container-lowest": "#0a0e14",
+                        "tertiary-fixed": "#ffddaf",
+                        "outline-variant": "#414752",
+                        "surface-bright": "#353940",
+                        "on-primary-container": "#003a6b",
+                        "on-secondary-container": "#b1b5bf",
+                        "outline": "#8b919d",
+                        "on-secondary-fixed-variant": "#42474f",
+                        "on-primary-fixed": "#001c38",
+                        "on-primary-fixed-variant": "#004882",
+                        "surface-container-highest": "#31353c",
+                        "secondary-fixed": "#dee2ec",
+                        "on-tertiary-fixed": "#281800",
+                        "on-surface": "#dfe2eb",
+                        "surface-container-high": "#262a31",
+                        "secondary": "#c2c7d0",
+                        "error-container": "#93000a",
+                        "on-primary": "#00315c",
+                        "surface-container": "#1c2026",
+                        "text-secondary": "#8B949E",
+                        "surface-variant": "#31353c",
+                        "primary-fixed": "#d3e4ff",
+                        "on-surface-variant": "#c0c7d4",
+                        "surface-elevated": "#1C2128",
+                        "status-danger": "#F85149",
+                        "on-tertiary-fixed-variant": "#614000",
+                        "on-secondary-fixed": "#171c23",
+                        "inverse-primary": "#0060aa",
+                        "secondary-fixed-dim": "#c2c7d0",
+                        "primary-fixed-dim": "#a2c9ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "input-height": "32px",
+                        "container-margin": "24px",
+                        "gutter": "16px",
+                        "touch-target": "40px",
+                        "sidebar-width": "260px",
+                        "unit": "4px",
+                        "context-panel-width": "300px"
+                    },
+                    "fontFamily": {
+                        "card-title": ["Inter"],
+                        "caption": ["Inter"],
+                        "page-title": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "mono": ["Inter"],
+                        "body-md": ["Inter"],
+                        "section-title": ["Inter"]
+                    },
+                    "fontSize": {
+                        "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                        "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-primary text-text-primary h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="w-full h-touch-target flex items-center justify-between px-gutter border-b border-border-default bg-surface z-50">
+<div class="flex items-center gap-4">
+<span class="font-page-title text-page-title text-primary tracking-tight">WorkDesk</span>
+<div class="hidden md:flex items-center bg-surface-secondary border border-border-default px-3 py-1 rounded-lg gap-2 w-64">
+<span class="material-symbols-outlined text-text-secondary">search</span>
+<input class="bg-transparent border-none text-body-sm focus:ring-0 w-full p-0" placeholder="Global search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-3 pr-4 border-r border-border-default">
+<button class="material-symbols-outlined text-text-secondary hover:text-primary transition-colors">notifications</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-primary transition-colors">help</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-primary transition-colors">settings</button>
+</div>
+<img alt="User profile avatar" class="w-7 h-7 rounded-full object-cover border border-border-default" data-alt="A professional headshot of a focused male creative director with short groomed hair and glasses, shot in a high-contrast dark studio setting with subtle blue backlighting. The aesthetic is clean, corporate, and minimalist, echoing the dark-mode UI environment with sharp focus and deep shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6gsJFo5K_AFhlfPxhzF4GDvqK0aSxN3e551PhCI5FoPVnGtVuSxWM4gqMJau2_ItKC5dk-6HVfzPDHS8a7e4SvDWGf6cSz_qkDumlgJSwWVr1EeHlrJh5GAIeRaA5K-G2ruEmd3bua-tOq-fPgCDJczkR9dv2bKt8hLIgJPcsnjKzZHhyG8sbZFzMVSCFSgEwPTMaYExqq--0jLJebv4qfIpKd9KjbleeTQIWZF9NJhku8xPG8hYrnb4BzRmN6mocpay2wWmTxWE"/>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<aside class="w-sidebar-width h-full bg-surface-secondary border-r border-border-default flex flex-col py-4 px-2 hidden lg:flex">
+<div class="flex items-center gap-3 px-2 mb-6">
+<div class="w-8 h-8 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary" style="font-variation-settings: 'FILL' 1;">widgets</span>
+</div>
+<div>
+<div class="font-section-title text-section-title text-text-primary leading-tight">Global Workspace</div>
+<div class="font-label-md text-label-md text-text-secondary">Pro Plan</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-2 py-1.5 rounded bg-surface-container-high text-primary font-semibold transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-1.5 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-md text-label-md">Projects</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-1.5 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">assignment</span>
+<span class="font-label-md text-label-md">Tasks</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-1.5 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">cloud_queue</span>
+<span class="font-label-md text-label-md">Files</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-1.5 rounded text-text-secondary hover:bg-surface-container hover:text-text-primary transition-all duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-md text-label-md">Insights</span>
+</a>
+<div class="mt-8 mb-2 px-2 text-[10px] uppercase font-bold text-text-secondary tracking-widest">Navigation</div>
+<button class="w-full flex items-center justify-center gap-2 py-2 bg-primary text-on-primary rounded font-label-md text-label-md hover:bg-opacity-90 transition-colors">
+<span class="material-symbols-outlined text-[16px]">add</span>
+                    Create New Item
+                </button>
+</nav>
+<div class="mt-auto flex flex-col gap-1 pt-4 border-t border-border-default">
+<a class="flex items-center gap-3 px-2 py-1.5 rounded text-text-secondary hover:bg-surface-container transition-all duration-150" href="#">
+<span class="material-symbols-outlined">database</span>
+<span class="font-label-md text-label-md">Storage</span>
+</a>
+<a class="flex items-center gap-3 px-2 py-1.5 rounded text-text-secondary hover:bg-surface-container transition-all duration-150" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+</div>
+</aside>
+<!-- Message List Sidebar -->
+<aside class="w-80 flex flex-col bg-surface border-r border-border-default">
+<div class="p-4 flex items-center justify-between">
+<h2 class="font-section-title text-section-title">Messages</h2>
+<div class="flex gap-2">
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary transition-colors">edit_square</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary transition-colors">filter_list</button>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<div class="px-4 py-2 text-caption text-text-secondary uppercase tracking-widest font-bold">Channels</div>
+<div class="flex flex-col mb-4">
+<button class="flex items-center gap-3 px-4 py-2 hover:bg-surface-container transition-colors text-left border-l-2 border-primary bg-surface-container-low">
+<span class="text-text-secondary font-mono">#</span>
+<span class="font-label-md text-label-md flex-1">engineering-sync</span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</button>
+<button class="flex items-center gap-3 px-4 py-2 hover:bg-surface-container transition-colors text-left border-l-2 border-transparent">
+<span class="text-text-secondary font-mono">#</span>
+<span class="font-label-md text-label-md">product-strategy</span>
+</button>
+<button class="flex items-center gap-3 px-4 py-2 hover:bg-surface-container transition-colors text-left border-l-2 border-transparent">
+<span class="text-text-secondary font-mono">#</span>
+<span class="font-label-md text-label-md">design-critique</span>
+</button>
+</div>
+<div class="px-4 py-2 text-caption text-text-secondary uppercase tracking-widest font-bold">Direct Messages</div>
+<div class="flex flex-col">
+<button class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-left group">
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="A portrait of a male software engineer with a beard and serious expression, wearing a navy polo shirt. The background is a blurred office with cool blue and grey lighting, matching the tech-focused and professional dark-mode UI aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6M5Ehc1yVC8b8ZAYa4nvYt7dQ5kuIQQjo_O6LinJixllXVR6C8sLK_61D78nKNRebrk_mlxpTwKHUDiSkxWQUbHw6i5qb8GLLKA0uB2t4SlUhfWbyQYi0p0zuNGjwpYkmEJlFGN8C78kKTFki308WD4F8CZE6gi-bR8OEHuN-VJkf8Hl5W2pahuH0aIHxBHrQ7H30y3KF619o2XKMY7IVRgIvDC-uO5gRPeVPUggJ_-KlVfyWsgLhEztuYgGYP5oIkWk8m0Ia0ng"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-success rounded-full border-2 border-surface"></span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="font-label-md text-label-md text-text-primary truncate">Alex Rivera</div>
+<div class="text-caption text-text-secondary truncate">Can you review the API schema?</div>
+</div>
+<div class="text-[10px] text-text-secondary">2m</div>
+</button>
+<button class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-left group">
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover grayscale group-hover:grayscale-0 transition-all" data-alt="Professional headshot of a female product manager with a confident smile, set against a dark architectural background. Soft directional lighting highlights her features, using a cool color temperature that integrates perfectly with the dark UI theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtxs8T1h5Mspjis1fAKokgO98IOSfv0YiKJEKH3UBQxVXquzln2_Np-sNs1qlF0yvZdlLdJMG5DshWLARhDRaXJgQNX0wkfAf4yKJS_Pmw8Lk1ym9Mywe57RVcLBcHY9o0jX8Dde2QYXXyPy21MxAF04kOXznwesVLTA7_DOPmsRL7aI5If_Dz_LxaFako1_qkFGk_0c7urQgA2FIzlgIWDTsLrHbyhUuzeT5iFoTxKkemTWEW7Z5XZn0_F1ooJosCBYRfuvuSArc"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-text-secondary rounded-full border-2 border-surface"></span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="font-label-md text-label-md text-text-primary truncate">Sarah Chen</div>
+<div class="text-caption text-text-secondary truncate">The board meeting is moved to...</div>
+</div>
+<div class="text-[10px] text-text-secondary">1h</div>
+</button>
+<button class="flex items-center gap-3 px-4 py-3 hover:bg-surface-container transition-colors text-left group">
+<div class="relative">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center font-bold text-primary text-[10px]">MK</div>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-status-warning rounded-full border-2 border-surface"></span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="font-label-md text-label-md text-text-primary truncate">Marcus K.</div>
+<div class="text-caption text-text-secondary truncate">Artifact #290 uploaded.</div>
+</div>
+<div class="text-[10px] text-text-secondary">4h</div>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Chat View -->
+<main class="flex-1 flex flex-col bg-surface-primary relative">
+<!-- Chat Header -->
+<div class="h-touch-target flex items-center justify-between px-gutter border-b border-border-default bg-surface/50 backdrop-blur-sm">
+<div class="flex items-center gap-3">
+<span class="text-text-secondary font-mono text-xl">#</span>
+<div>
+<span class="font-section-title text-section-title">engineering-sync</span>
+<span class="mx-2 text-border-default">|</span>
+<span class="font-label-md text-label-md text-text-secondary font-normal">Q3 Roadmap and Infrastructure Scalability</span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-1.5 text-text-secondary hover:text-text-primary">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">24</span>
+</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">notifications_off</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">star</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">info</button>
+</div>
+</div>
+<!-- Message Stream -->
+<div class="flex-1 overflow-y-auto p-gutter flex flex-col gap-6 custom-scrollbar">
+<!-- System Divider -->
+<div class="relative flex py-4 items-center">
+<div class="flex-grow border-t border-border-default"></div>
+<span class="flex-shrink mx-4 text-caption text-text-secondary uppercase font-bold tracking-widest">Today</span>
+<div class="flex-grow border-t border-border-default"></div>
+</div>
+<!-- Message with Artifact -->
+<div class="flex gap-4 group">
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="Headshot of a serious male developer in dark-themed professional attire, lit from the side with a cool light to match the corporate dark UI style. The image has high clarity and a minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDf8BPEeF5qPmzf6a43m7ucdLXxPcVtRlf6vooCM8YAcDA3WONasOifmed4nu91RBuomvs_2j-IGs7vxwm2r4_T0rEDR_NhqWabnZGdGFxd9Mjh2sU7XVXP5eYLeCJToUxmNwxhx4LmxPKHjJUzvJDdEyN6jm3YDjoWWzMlUD3nKvkaCwCeOqcphEriw4SAPoTikh6ibbcb7N2yb3czmXn5Sa9eyuJ8RVzEnWXyuz2c8exXyHdPMK_Wckaxt9P03CN9bZahSqyNRCQ"/>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-card-title text-card-title text-primary">Alex Rivera</span>
+<span class="text-caption text-text-secondary">10:42 AM</span>
+</div>
+<p class="font-body-md text-body-md text-text-primary leading-relaxed mb-4">
+                            Just finished the initial draft for the database migration plan. I've attached the artifact below for everyone to review before the sync. High priority items are marked in the schema section.
+                        </p>
+<!-- Artifact Card -->
+<div class="artifact-card max-w-lg bg-surface-elevated border border-border-default rounded-lg overflow-hidden transition-all duration-200">
+<div class="p-4 border-b border-border-default bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary/10 rounded">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">schema</span>
+</div>
+<div>
+<div class="font-card-title text-card-title">DB_Migration_Draft_V1</div>
+<div class="text-caption text-text-secondary">JSON Schema • 42 KB</div>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-1 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined text-text-secondary">open_in_new</span></button>
+<button class="p-1 hover:bg-surface-container rounded transition-colors"><span class="material-symbols-outlined text-text-secondary">download</span></button>
+</div>
+</div>
+<div class="p-4 bg-surface-dim font-mono text-[12px] text-primary/80 leading-tight">
+<pre><code>{
+  "operation": "migrate_v2",
+  "tables": ["users", "orders", "meta"],
+  "strategy": "zero_downtime",
+  "rollback": true
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<!-- Message -->
+<div class="flex gap-4 group">
+<img class="w-10 h-10 rounded-lg object-cover" data-alt="Professional portrait of a female project lead with dark hair, looking into the camera with a subtle, knowledgeable smile. The lighting is sophisticated, with blue and silver highlights that harmonize with a dark, high-utility software theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXfhc9puCiLy5b5mUXkbkujbekTkLcZQLReQNMgj-Dkr4HCbM7Zj55teShIZIvq10d-8sudlSjz2lIKF_eWWPf12m6WsIQVd3JhN77Jd1GcvXvgNqe3gxzwkiUOu2jzr0Ic6m0AidO0E8flByRJ-D8ulTXrFDmrNPTYLCFlYgSYFnydS36dpTjcQXIxNuF3Hv97gCjkcpzidoJai38r7y2fwnqWj5vf9PdFBKohiHNefF7KN7tYHh7E8O9aOmwp1cNql50FrTZE4s"/>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-card-title text-card-title text-status-success">Sarah Chen</span>
+<span class="text-caption text-text-secondary">10:45 AM</span>
+</div>
+<p class="font-body-md text-body-md text-text-primary leading-relaxed">
+                            Looks solid at first glance, Alex. I'm concerned about the <code class="bg-surface-container-highest px-1 rounded text-primary">rollback</code> logic for the <code class="bg-surface-container-highest px-1 rounded text-primary">orders</code> table though. Let's make sure we've tested the state consistency after a partial failure.
+                        </p>
+</div>
+</div>
+<!-- Another Artifact -->
+<div class="flex gap-4 group">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center font-bold text-primary text-sm">MK</div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-card-title text-card-title text-text-primary">Marcus K.</span>
+<span class="text-caption text-text-secondary">11:02 AM</span>
+</div>
+<p class="font-body-md text-body-md text-text-primary mb-3">
+                            Added the performance metrics from the staging run.
+                        </p>
+<div class="artifact-card max-w-lg bg-surface-elevated border border-border-default rounded-lg transition-all duration-200 p-4 flex items-center gap-4">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-status-warning" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
+<span class="font-card-title text-card-title">Staging Run Results</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-2 rounded">
+<div class="text-caption text-text-secondary">Latency</div>
+<div class="font-mono text-status-success">142ms</div>
+</div>
+<div class="bg-surface-container-low p-2 rounded">
+<div class="text-caption text-text-secondary">Error Rate</div>
+<div class="font-mono text-primary">0.02%</div>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-text-secondary">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Message Input Area -->
+<div class="p-gutter">
+<div class="bg-surface-elevated border border-border-default rounded-lg p-2 focus-within:border-primary transition-colors">
+<div class="flex items-center gap-2 mb-2 px-2">
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">format_bold</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">format_italic</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">code</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">link</button>
+<div class="w-px h-4 bg-border-default mx-1"></div>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">format_list_bulleted</button>
+</div>
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-body-md placeholder:text-text-secondary min-h-[40px] resize-none py-1 px-2" placeholder="Message #engineering-sync..."></textarea>
+<div class="flex items-center justify-between mt-2 px-2 border-t border-border-default pt-2">
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">add_circle</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">mood</button>
+<button class="material-symbols-outlined text-text-secondary hover:text-text-primary">alternate_email</button>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-caption text-text-secondary">Press ↵ to send</span>
+<button class="bg-primary text-on-primary px-3 py-1 rounded font-label-md text-label-md hover:bg-opacity-90 transition-opacity">Send</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Context Panel (Activity/Artifacts) -->
+<aside class="w-context-panel-width hidden xl:flex flex-col bg-surface border-l border-border-default">
+<div class="h-touch-target flex items-center px-4 border-b border-border-default bg-surface/50">
+<span class="font-section-title text-section-title">Details</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar">
+<!-- Pinned Artifacts -->
+<div class="p-4 border-b border-border-default">
+<div class="flex items-center justify-between mb-3">
+<h3 class="font-label-md text-label-md uppercase tracking-wider text-text-secondary">Pinned Artifacts</h3>
+<span class="text-caption text-primary">View all</span>
+</div>
+<div class="flex flex-col gap-2">
+<div class="p-3 bg-surface-container rounded-lg border border-border-default hover:border-text-secondary cursor-pointer transition-colors">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-card-title text-card-title truncate">Architecture_Spec_v2.pdf</span>
+</div>
+<div class="text-[10px] text-text-secondary uppercase">Updated 2 days ago</div>
+</div>
+<div class="p-3 bg-surface-container rounded-lg border border-border-default hover:border-text-secondary cursor-pointer transition-colors">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: 'FILL' 1;">table_view</span>
+<span class="font-card-title text-card-title truncate">Deployment_Checklist</span>
+</div>
+<div class="text-[10px] text-text-secondary uppercase">Shared by Sarah Chen</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity -->
+<div class="p-4">
+<h3 class="font-label-md text-label-md uppercase tracking-wider text-text-secondary mb-4">Activity Stream</h3>
+<div class="flex flex-col gap-4">
+<div class="flex gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-status-success mt-1.5"></div>
+<div class="flex-1">
+<div class="text-body-sm text-text-primary"><b>Sarah Chen</b> updated the topic</div>
+<div class="text-caption text-text-secondary">3h ago</div>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5"></div>
+<div class="flex-1">
+<div class="text-body-sm text-text-primary"><b>Alex Rivera</b> joined the channel</div>
+<div class="text-caption text-text-secondary">5h ago</div>
+</div>
+</div>
+<div class="flex gap-3">
+<div class="w-1.5 h-1.5 rounded-full bg-status-warning mt-1.5"></div>
+<div class="flex-1">
+<div class="text-body-sm text-text-primary"><b>Marcus K.</b> pinned an artifact</div>
+<div class="text-caption text-text-secondary">Yesterday</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Micro-interaction Script -->
+<script>
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.style.transform = 'scale(0.98)';
+            });
+            el.addEventListener('mouseup', () => {
+                el.style.transform = 'scale(1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                el.style.transform = 'scale(1)';
+            });
+        });
+
+        const textarea = document.querySelector('textarea');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            if(this.scrollHeight > 200) {
+                this.style.overflowY = 'scroll';
+                this.style.height = '200px';
+            } else {
+                this.style.overflowY = 'hidden';
+            }
+        });
+    </script>
+</body></html>

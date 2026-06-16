@@ -1,0 +1,95 @@
+WorkDesk V4 — Operations Hub
+Vision
+
+Make WorkDesk the daily operating environment of GoBitsNBytes.
+
+Bulletin Board
+
+Content Types:
+
+Announcement
+
+Examples:
+
+Client Updates
+Meeting Notices
+Countdown
+
+Examples:
+
+Deadlines
+Deliverables
+Countdown System
+
+Fields:
+
+Title
+Description
+Due Date
+Targets
+
+Statuses:
+
+Pending
+Completed
+Overdue
+Incomplete
+Dashboard Integration
+
+Upcoming:
+
+Deadlines
+Notices
+Tasks
+Mail Hub
+
+Providers:
+
+Gmail
+Outlook
+
+Features:
+
+Unified Inbox
+Multi-Mailbox View
+Sender Tags
+Color Labels
+Search
+Filters
+Tool Dock
+
+Persistent Sidebar Launcher
+
+Supported:
+
+ChatGPT
+Claude
+Stitch
+Canva
+Figma
+GitHub
+
+Functions:
+
+Quick Launch
+New Tab Open
+Work Session Flow
+Open Artifact
+Launch Tool
+Work Externally
+Import Results
+Save Version
+Commit
+Discord Integration
+
+Features:
+
+Connect Account
+Share Artifact Links
+Post References
+
+Files remain in WorkDesk.
+
+Success Criteria
+
+Daily organizational operations happen inside WorkDesk.

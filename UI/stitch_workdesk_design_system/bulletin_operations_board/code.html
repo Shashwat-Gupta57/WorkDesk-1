@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WorkDesk | Bulletin Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#2c3138",
+                    "surface-primary": "#0D1117",
+                    "error": "#ffb4ab",
+                    "inverse-on-surface": "#2d3137",
+                    "on-background": "#dfe2eb",
+                    "primary": "#a2c9ff",
+                    "on-tertiary": "#432c00",
+                    "status-warning": "#D29922",
+                    "border-default": "#30363D",
+                    "surface-dim": "#10141a",
+                    "surface-secondary": "#161B22",
+                    "on-error-container": "#ffdad6",
+                    "text-primary": "#E6EDF3",
+                    "tertiary-fixed-dim": "#ffba42",
+                    "surface-tint": "#a2c9ff",
+                    "surface-container-low": "#181c22",
+                    "surface": "#10141a",
+                    "status-success": "#3FB950",
+                    "secondary-container": "#42474f",
+                    "primary-container": "#58a6ff",
+                    "on-error": "#690005",
+                    "tertiary-container": "#da9600",
+                    "inverse-surface": "#dfe2eb",
+                    "tertiary": "#ffba42",
+                    "background": "#10141a",
+                    "on-tertiary-container": "#4f3400",
+                    "surface-container-lowest": "#0a0e14",
+                    "tertiary-fixed": "#ffddaf",
+                    "outline-variant": "#414752",
+                    "surface-bright": "#353940",
+                    "on-primary-container": "#003a6b",
+                    "on-secondary-container": "#b1b5bf",
+                    "outline": "#8b919d",
+                    "on-secondary-fixed-variant": "#42474f",
+                    "on-primary-fixed": "#001c38",
+                    "on-primary-fixed-variant": "#004882",
+                    "surface-container-highest": "#31353c",
+                    "secondary-fixed": "#dee2ec",
+                    "on-tertiary-fixed": "#281800",
+                    "on-surface": "#dfe2eb",
+                    "surface-container-high": "#262a31",
+                    "secondary": "#c2c7d0",
+                    "error-container": "#93000a",
+                    "on-primary": "#00315c",
+                    "surface-container": "#1c2026",
+                    "text-secondary": "#8B949E",
+                    "surface-variant": "#31353c",
+                    "primary-fixed": "#d3e4ff",
+                    "on-surface-variant": "#c0c7d4",
+                    "surface-elevated": "#1C2128",
+                    "status-danger": "#F85149",
+                    "on-tertiary-fixed-variant": "#614000",
+                    "on-secondary-fixed": "#171c23",
+                    "inverse-primary": "#0060aa",
+                    "secondary-fixed-dim": "#c2c7d0",
+                    "primary-fixed-dim": "#a2c9ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "input-height": "32px",
+                    "container-margin": "24px",
+                    "gutter": "16px",
+                    "touch-target": "40px",
+                    "sidebar-width": "260px",
+                    "unit": "4px",
+                    "context-panel-width": "300px"
+            },
+            "fontFamily": {
+                    "card-title": ["Inter"],
+                    "caption": ["Inter"],
+                    "page-title": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "mono": ["Inter"],
+                    "body-md": ["Inter"],
+                    "section-title": ["Inter"]
+            },
+            "fontSize": {
+                    "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                    "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 18px;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0D1117; }
+        ::-webkit-scrollbar-thumb { background: #30363D; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #414752; }
+    </style>
+</head>
+<body class="bg-surface-primary text-text-primary font-body-md overflow-hidden">
+<!-- SIDEBAR NAV (Shared Component SideNavBar) -->
+<aside class="w-sidebar-width h-screen fixed left-0 top-0 bg-surface-secondary border-r border-border-default flex flex-col py-4 px-2 z-50">
+<div class="flex items-center gap-3 px-3 mb-8">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+</div>
+<div>
+<h2 class="font-section-title text-section-title text-text-primary leading-tight">Global Workspace</h2>
+<p class="text-text-secondary text-caption font-caption">Pro Plan</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<div class="px-3 py-2 flex items-center gap-3 rounded cursor-pointer transition-all duration-150 ease-in-out hover:bg-surface-container hover:text-text-primary text-text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</div>
+<div class="px-3 py-2 flex items-center gap-3 rounded cursor-pointer transition-all duration-150 ease-in-out bg-surface-container-high text-primary font-semibold font-label-md text-label-md">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment</span>
+<span>Tasks</span>
+</div>
+<div class="px-3 py-2 flex items-center gap-3 rounded cursor-pointer transition-all duration-150 ease-in-out hover:bg-surface-container hover:text-text-primary text-text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined">folder_open</span>
+<span>Projects</span>
+</div>
+<div class="px-3 py-2 flex items-center gap-3 rounded cursor-pointer transition-all duration-150 ease-in-out hover:bg-surface-container hover:text-text-primary text-text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined">cloud_queue</span>
+<span>Files</span>
+</div>
+<div class="px-3 py-2 flex items-center gap-3 rounded cursor-pointer transition-all duration-150 ease-in-out hover:bg-surface-container hover:text-text-primary text-text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined">analytics</span>
+<span>Insights</span>
+</div>
+</nav>
+<div class="mt-auto pt-4 border-t border-border-default space-y-1">
+<button class="w-full mb-4 py-2 px-3 bg-primary text-surface-primary rounded font-label-md text-label-md font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">add</span>
+<span>Create New Item</span>
+</button>
+<div class="px-3 py-2 flex items-center gap-3 rounded cursor-pointer transition-all duration-150 ease-in-out hover:bg-surface-container hover:text-text-primary text-text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined">database</span>
+<span>Storage</span>
+</div>
+<div class="px-3 py-2 flex items-center gap-3 rounded cursor-pointer transition-all duration-150 ease-in-out hover:bg-surface-container hover:text-text-primary text-text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined">contact_support</span>
+<span>Support</span>
+</div>
+</div>
+</aside>
+<!-- TOP NAV (Shared Component TopNavBar) -->
+<header class="fixed top-0 left-sidebar-width right-0 h-touch-target bg-surface border-b border-border-default flex items-center justify-between px-gutter z-40">
+<div class="flex items-center gap-4 flex-1">
+<h1 class="font-page-title text-page-title text-primary">WorkDesk</h1>
+<div class="max-w-md flex-1 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">search</span>
+<input class="w-full bg-surface-secondary border border-border-default h-input-height pl-10 pr-4 rounded text-body-sm font-body-sm focus:border-primary focus:ring-0 transition-colors" placeholder="Search bulletins..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-text-secondary cursor-pointer hover:bg-surface-variant transition-colors p-1 rounded">notifications</span>
+<span class="material-symbols-outlined text-text-secondary cursor-pointer hover:bg-surface-variant transition-colors p-1 rounded">help</span>
+<span class="material-symbols-outlined text-text-secondary cursor-pointer hover:bg-surface-variant transition-colors p-1 rounded">settings</span>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-border-default">
+<img alt="User profile avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQ4lE9gev3dGPNmh0mn4AXkpDAH_QpbTvyLUBSKU6Zu8KlhvOcUeaov_or5YuvY6pU81ueqzj1USX0wNqgEB8yWxSior3O5qZ2cRKHyc4yJ958liCH8GvMPtW6UuZ0Y_FS0R2blBJsOc6jv1kyh_l4tPML7UTkZ4Ga6sQMG6n-u5BbUujvj24Tc0-_YBP6Jzgi_AIcksw3r_dWmJqmcfcC8pBm6Whk43ewGEOQGaqtMtAjC3CJKbgtjcmu-nFk36gydtci-zh8Lnw"/>
+</div>
+</div>
+</header>
+<!-- MAIN CONTENT CANVAS -->
+<main class="ml-sidebar-width mt-touch-target h-[calc(100vh-40px)] overflow-y-auto p-gutter bg-surface-primary">
+<!-- Header & Action Row -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<nav class="flex gap-4 mb-2">
+<span class="text-primary font-bold border-b-2 border-primary pb-1 cursor-pointer font-label-md text-label-md">All Bulletins</span>
+<span class="text-text-secondary hover:text-text-primary transition-colors pb-1 cursor-pointer font-label-md text-label-md">My Posts</span>
+<span class="text-text-secondary hover:text-text-primary transition-colors pb-1 cursor-pointer font-label-md text-label-md">Archived</span>
+</nav>
+<h2 class="font-page-title text-page-title text-text-primary">Operations Bulletin Board</h2>
+</div>
+<div class="flex gap-2">
+<button class="h-input-height px-4 bg-primary text-surface-primary rounded font-label-md text-label-md font-bold flex items-center gap-2 hover:opacity-90 transition-opacity" onclick="toggleModal('createModal')">
+<span class="material-symbols-outlined">post_add</span>
+<span>New Bulletin</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid Layout for High Density -->
+<div class="grid grid-cols-12 gap-4 auto-rows-min">
+<!-- URGENT ANNOUNCEMENT (Large Card) -->
+<div class="col-span-12 lg:col-span-8 p-6 bg-surface-elevated border border-border-default rounded-lg relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="px-2 py-1 bg-status-danger/10 text-status-danger border border-status-danger/20 rounded font-label-md text-[10px] font-bold uppercase tracking-wider">Urgent</span>
+</div>
+<div class="flex flex-col h-full">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-status-danger" style="font-variation-settings: 'FILL' 1;">report</span>
+<h3 class="font-section-title text-section-title text-text-primary">Critical System Maintenance: Q3 Infrastructure Migration</h3>
+</div>
+<p class="text-text-secondary font-body-md mb-6 max-w-2xl">
+                        All production environments will be under read-only mode starting this Friday at 22:00 UTC. Please ensure all critical deployments are finalized before the cutoff. Estimated downtime is 4 hours.
+                    </p>
+<div class="mt-auto flex items-center justify-between">
+<div class="flex -space-x-2">
+<img alt="Team member" class="w-6 h-6 rounded-full border border-surface-elevated" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAFGlrK3L51MibmzCrwVHTfrJuWZR4NW1W-ayCYJeMIDrjXeQyiJ05uE42Bz27NNUNGiBfDgQ9fXRwOyS6m7AGj4ktgcD19qg4s0I2ByOizQqPcrH5RHUg4Kj0QbgqlcwX7LdrNuR-6c_bX2BfhuB8Um8LxMf4ePZAAY4MfhuLCcF5dS5-c3mCfddRJ8HhpOWu1KsNydiDciW-owiSZeXUsCZsjw2AJFjyDd9jhr7bpE2KzslVJ2hCy1jEXNTFFsyMifufxFKaeAg"/>
+<img alt="Team member" class="w-6 h-6 rounded-full border border-surface-elevated" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKXA-cEUDmHVqeum3NakbsJIEVb1lb1J0h0gs43wgf678pttKG4sTUexyAzSBISLYeyy8jwg0g-B6zd6sOgmfSNL1PFLCl6dLG15vzND7dhTxYfUg0ltknNKZ-IDn-dSQOXCKQ4jTjrQqf4vaXkanrpQKo23FX1q4e16AV-uILkRcXozr0aTMRdF7w18a-9_93Ty3Dg_LV-4tQHndQZ3VrWdWQ_CduMhNoACIbUy-klzqm8zvK4cVRgGp94G51w31pMpDKt-1k8ts"/>
+<div class="w-6 h-6 rounded-full bg-surface-container border border-surface-elevated flex items-center justify-center text-[10px] text-text-secondary">+4</div>
+</div>
+<div class="text-caption font-caption text-text-secondary">Posted 2h ago by Infrastructure Lead</div>
+</div>
+</div>
+</div>
+<!-- DEADLINE COUNTDOWN (Small Card) -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 p-5 bg-surface-elevated border border-border-default rounded-lg">
+<div class="flex justify-between items-start mb-4">
+<h4 class="font-card-title text-card-title text-text-primary">Q3 Performance Reviews</h4>
+<span class="px-2 py-0.5 bg-status-warning/10 text-status-warning border border-status-warning/20 rounded font-label-md text-[10px] font-bold uppercase">Internal</span>
+</div>
+<div class="flex items-end gap-2 mb-4">
+<span class="text-4xl font-bold text-primary tracking-tighter">04</span>
+<span class="text-text-secondary font-label-md mb-1">Days remaining</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 mb-2">
+<div class="bg-status-warning h-1.5 rounded-full" style="width: 85%"></div>
+</div>
+<div class="flex justify-between text-caption font-caption text-text-secondary">
+<span>Deadline: Sept 30</span>
+<span>85% Completed</span>
+</div>
+</div>
+<!-- MILESTONE TRACKING (High Density List Card) -->
+<div class="col-span-12 md:col-span-6 lg:col-span-4 p-5 bg-surface-elevated border border-border-default rounded-lg flex flex-col">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-status-success">check_circle</span>
+<h4 class="font-card-title text-card-title text-text-primary">Major Milestones</h4>
+</div>
+<div class="space-y-3 flex-1">
+<div class="flex items-center gap-3 p-2 hover:bg-surface-container rounded transition-colors group cursor-pointer">
+<div class="w-2 h-2 rounded-full bg-status-success"></div>
+<span class="text-body-sm font-body-sm text-text-primary flex-1">SOC2 Type II Audit Compliance</span>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100">chevron_right</span>
+</div>
+<div class="flex items-center gap-3 p-2 hover:bg-surface-container rounded transition-colors group cursor-pointer">
+<div class="w-2 h-2 rounded-full bg-status-success"></div>
+<span class="text-body-sm font-body-sm text-text-primary flex-1">Global CDN Expansion</span>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100">chevron_right</span>
+</div>
+<div class="flex items-center gap-3 p-2 hover:bg-surface-container rounded transition-colors group cursor-pointer">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-body-sm font-body-sm text-text-primary flex-1">Mobile App Dark Mode Release</span>
+<span class="material-symbols-outlined text-text-secondary opacity-0 group-hover:opacity-100">chevron_right</span>
+</div>
+</div>
+</div>
+<!-- PUBLIC NOTICE (Text Based Density) -->
+<div class="col-span-12 lg:col-span-8 p-6 bg-surface-secondary border border-border-default rounded-lg">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<span class="px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded font-label-md text-[10px] font-bold uppercase tracking-wider">Public</span>
+<h4 class="font-section-title text-section-title text-text-primary">Open-Source Contribution Program</h4>
+</div>
+<span class="text-caption font-caption text-text-secondary">Sept 22, 2023</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<p class="text-body-sm font-body-sm text-text-secondary mb-4 leading-relaxed">
+                            We are officially launching our internal bounty program for open-source contributions. Employees can now dedicate 10% of their time to upstreaming fixes to core libraries.
+                        </p>
+<div class="flex gap-2">
+<span class="px-2 py-1 bg-surface-container text-text-primary text-[11px] rounded">React</span>
+<span class="px-2 py-1 bg-surface-container text-text-primary text-[11px] rounded">TypeScript</span>
+<span class="px-2 py-1 bg-surface-container text-text-primary text-[11px] rounded">Go</span>
+</div>
+</div>
+<div class="relative rounded-lg overflow-hidden h-32 border border-border-default">
+<img class="w-full h-full object-cover grayscale opacity-50 hover:grayscale-0 transition-all duration-500" data-alt="A macro photograph of clean, well-indented computer source code on a dark monitor screen. The text is sharp and vibrant with syntax highlighting in cool blues, greens, and purples against a deep charcoal background. The atmosphere is professional, organized, and technical, reflecting a modern development environment. The lighting is soft and ambient from the screen itself." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJFTiP_5XiZNrXwZWJQ5FF7pJcuq5JeTjQHeTvRJG2ksSr6ypTo77YB14ZJZnCGwrXO_XoDM414ccohnG9zJKdemRlXUCdt5DWBs6dwfHwsofb5VLEihfDunsusK9wEwVUN8CP6RN2ekdGPIvTqNbKkHX93wSYmb8Vk17O7tep6wAzcxkLvzGcXjrDXvmU8uHhHMX16jnwpalnThAr_PkZKvBWkTknlNGIWS6rsumDE40SuAWk-1Tzcreiex6RU28tfPXRUQpTMfQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-secondary to-transparent"></div>
+</div>
+</div>
+</div>
+<!-- FEED SECTION (High Density Column) -->
+<div class="col-span-12 lg:col-span-4 space-y-4">
+<div class="p-4 bg-surface-elevated border border-border-default rounded-lg">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">celebration</span>
+</div>
+<div>
+<p class="text-body-sm font-body-sm font-bold text-text-primary">New Team Onboarding</p>
+<p class="text-caption font-caption text-text-secondary">Welcome 12 new engineers today!</p>
+</div>
+</div>
+</div>
+<div class="p-4 bg-surface-elevated border border-border-default rounded-lg">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container">policy</span>
+</div>
+<div>
+<p class="text-body-sm font-body-sm font-bold text-text-primary">Policy Update: Remote Work</p>
+<p class="text-caption font-caption text-text-secondary">Revised guidelines for Q4 travel.</p>
+</div>
+</div>
+<button class="w-full py-1.5 border border-border-default rounded text-[11px] font-bold uppercase tracking-wider text-text-secondary hover:text-text-primary hover:bg-surface-container transition-all">Read Document</button>
+</div>
+<div class="p-4 bg-surface-container-lowest border border-border-default border-dashed rounded-lg flex flex-col items-center justify-center py-8">
+<span class="material-symbols-outlined text-text-secondary mb-2">more_horiz</span>
+<p class="text-caption font-caption text-text-secondary">End of recent updates</p>
+</div>
+</div>
+</div>
+</main>
+<!-- CREATE BULLETIN MODAL (Admin Flow Overlay) -->
+<div class="fixed inset-0 z-[100] hidden items-center justify-center p-4" id="createModal">
+<div class="absolute inset-0 bg-black/70" onclick="toggleModal('createModal')"></div>
+<div class="relative w-full max-w-2xl bg-surface-elevated border border-border-default rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
+<div class="px-6 py-4 border-b border-border-default flex items-center justify-between">
+<h3 class="font-section-title text-section-title text-text-primary">Create New Bulletin</h3>
+<button class="p-1 hover:bg-surface-variant rounded text-text-secondary" onclick="toggleModal('createModal')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6 space-y-6">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-text-secondary">Bulletin Title</label>
+<input class="w-full h-input-height bg-surface-secondary border border-border-default rounded px-3 text-body-md focus:border-primary focus:ring-0" placeholder="e.g. Q4 Security Roadmap..." type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-text-secondary">Status Indicator</label>
+<select class="w-full h-input-height bg-surface-secondary border border-border-default rounded px-3 text-body-sm focus:border-primary focus:ring-0">
+<option>Internal</option>
+<option>Urgent</option>
+<option>Public</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-text-secondary">Category</label>
+<select class="w-full h-input-height bg-surface-secondary border border-border-default rounded px-3 text-body-sm focus:border-primary focus:ring-0">
+<option>Infrastructure</option>
+<option>HR &amp; Culture</option>
+<option>Security</option>
+<option>Product</option>
+</select>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-text-secondary">Message Content</label>
+<textarea class="w-full bg-surface-secondary border border-border-default rounded p-3 text-body-md focus:border-primary focus:ring-0" placeholder="Detailed announcement details..." rows="4"></textarea>
+</div>
+<div class="flex items-center gap-4 p-4 bg-surface-container rounded-lg border border-border-default">
+<div class="w-10 h-10 rounded border border-dashed border-text-secondary flex items-center justify-center text-text-secondary cursor-pointer hover:bg-surface-variant">
+<span class="material-symbols-outlined">add_photo_alternate</span>
+</div>
+<div class="flex-1">
+<p class="text-body-sm font-body-sm text-text-primary">Attach media or documents</p>
+<p class="text-caption font-caption text-text-secondary">Max file size: 10MB</p>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 bg-surface-secondary border-t border-border-default flex justify-end gap-3">
+<button class="h-input-height px-6 border border-border-default rounded font-label-md text-label-md text-text-primary hover:bg-surface-container transition-colors" onclick="toggleModal('createModal')">Cancel</button>
+<button class="h-input-height px-6 bg-primary text-surface-primary rounded font-label-md text-label-md font-bold hover:opacity-90 transition-opacity">Post Bulletin</button>
+</div>
+</div>
+</div>
+<!-- FAB (Suppressed on Detail/Admin Flow, Active here for quick access) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-primary text-surface-primary rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40" onclick="toggleModal('createModal')">
+<span class="material-symbols-outlined" style="font-size: 28px; font-variation-settings: 'wght' 600;">edit_square</span>
+</button>
+<script>
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        // Micro-interactions for list items
+        document.querySelectorAll('.group').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                // Subtle lift or effect if desired
+            });
+        });
+    </script>
+</body></html>

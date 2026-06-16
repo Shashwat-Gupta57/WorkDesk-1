@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WorkDesk Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary-fixed-variant": "#004882",
+                "status-danger": "#F85149",
+                "inverse-primary": "#0060aa",
+                "error": "#ffb4ab",
+                "inverse-surface": "#dfe2eb",
+                "on-primary": "#00315c",
+                "on-primary-fixed": "#001c38",
+                "error-container": "#93000a",
+                "on-primary-container": "#003a6b",
+                "on-tertiary-fixed-variant": "#614000",
+                "surface": "#10141a",
+                "tertiary-fixed": "#ffddaf",
+                "inverse-on-surface": "#2d3137",
+                "surface-tint": "#a2c9ff",
+                "outline-variant": "#414752",
+                "background": "#10141a",
+                "secondary-container": "#42474f",
+                "on-error": "#690005",
+                "surface-variant": "#31353c",
+                "surface-bright": "#353940",
+                "on-background": "#dfe2eb",
+                "border-default": "#30363D",
+                "surface-primary": "#0D1117",
+                "secondary-fixed": "#dee2ec",
+                "on-tertiary": "#432c00",
+                "text-secondary": "#8B949E",
+                "tertiary-fixed-dim": "#ffba42",
+                "on-surface": "#dfe2eb",
+                "on-secondary-fixed": "#171c23",
+                "on-tertiary-fixed": "#281800",
+                "tertiary": "#ffba42",
+                "on-secondary": "#2c3138",
+                "primary-fixed": "#d3e4ff",
+                "surface-container-lowest": "#0a0e14",
+                "tertiary-container": "#da9600",
+                "surface-secondary": "#161B22",
+                "surface-elevated": "#1C2128",
+                "secondary-fixed-dim": "#c2c7d0",
+                "on-error-container": "#ffdad6",
+                "status-warning": "#D29922",
+                "surface-dim": "#10141a",
+                "secondary": "#c2c7d0",
+                "surface-container-low": "#181c22",
+                "outline": "#8b919d",
+                "surface-container-highest": "#31353c",
+                "primary-container": "#58a6ff",
+                "surface-container-high": "#262a31",
+                "on-surface-variant": "#c0c7d4",
+                "primary": "#a2c9ff",
+                "on-secondary-container": "#b1b5bf",
+                "text-primary": "#E6EDF3",
+                "primary-fixed-dim": "#a2c9ff",
+                "on-tertiary-container": "#4f3400",
+                "status-success": "#3FB950",
+                "surface-container": "#1c2026",
+                "on-secondary-fixed-variant": "#42474f"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "input-height": "32px",
+                "touch-target": "40px",
+                "sidebar-width": "260px",
+                "gutter": "16px",
+                "container-margin": "24px",
+                "unit": "4px",
+                "context-panel-width": "300px"
+            },
+            "fontFamily": {
+                "card-title": ["Inter"],
+                "body-md": ["Inter"],
+                "page-title": ["Inter"],
+                "mono": ["Inter"],
+                "label-md": ["Inter"],
+                "section-title": ["Inter"],
+                "body-sm": ["Inter"],
+                "caption": ["Inter"]
+            },
+            "fontSize": {
+                "card-title": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "page-title": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                "mono": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                "section-title": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}],
+                "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-primary text-text-primary min-h-screen pb-24">
+<!-- TopNavBar Implementation -->
+<header class="bg-surface dark:bg-surface border-b border-border-default flex items-center justify-between px-gutter w-full h-touch-target sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<span class="font-page-title text-page-title text-primary dark:text-primary">WorkDesk</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="material-symbols-outlined text-text-secondary cursor-pointer hover:bg-surface-variant transition-colors p-1 rounded active:opacity-80" data-icon="search">search</div>
+<div class="material-symbols-outlined text-text-secondary cursor-pointer hover:bg-surface-variant transition-colors p-1 rounded active:opacity-80" data-icon="notifications">notifications</div>
+<div class="relative group cursor-pointer active:opacity-80">
+<img alt="User profile avatar" class="w-8 h-8 rounded-full border border-border-default" data-alt="A professional headshot of a corporate executive in a dark-themed environment. The lighting is low-key with subtle blue rim lighting on the shoulders, reflecting a high-tech workspace. The background is a soft-focus office with minimalist workstations and glowing server racks, maintaining the WorkDesk dark-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGMZJja4u5RUYhG7VO7g3u9mSPx-JGpQXoxzqfY3vg2MlRxdLi7gMtYrlycz0Fe3DhrFMKRLG0ZvMRcCdSkJYaC2tIw_3ZiBLZdymBFm4TehD0N0nmp-FNzQZk36yW_-2FoU1TV3GQN5E-oAIEfMAG9Q0ogm0kscdDAwRv1EYefgAhb99j8vzsf4POXt-9Hbxq1GGKlF9jAme_2cS-khq3alh7H3AU3CZCJwiCMpS6YeHNQ3_EVDahdVi8gSSliotohVa_OO0zmbI"/>
+</div>
+</div>
+</header>
+<main class="p-gutter space-y-8">
+<!-- Quick-Access Stats -->
+<section class="grid grid-cols-2 gap-4">
+<div class="bg-surface-secondary border border-border-default p-4 rounded-lg">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-md text-label-md text-text-secondary">Total Artifacts</span>
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="description">description</span>
+</div>
+<div class="font-page-title text-page-title">1,284</div>
+<div class="font-caption text-caption text-status-success mt-1 flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-1" data-icon="trending_up">trending_up</span>
+                    +12% vs LY
+                </div>
+</div>
+<div class="bg-surface-secondary border border-border-default p-4 rounded-lg">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-md text-label-md text-text-secondary">Collaborators</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]" data-icon="group">group</span>
+</div>
+<div class="font-page-title text-page-title">42</div>
+<div class="font-caption text-caption text-text-secondary mt-1">Active Now</div>
+</div>
+</section>
+<!-- Starred (Horizontal Scroll) -->
+<section>
+<div class="flex items-center justify-between mb-4">
+<h2 class="font-section-title text-section-title">Starred</h2>
+<span class="font-label-md text-label-md text-primary cursor-pointer">View All</span>
+</div>
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+<!-- Card 1 -->
+<div class="flex-shrink-0 w-40 bg-surface-elevated border border-border-default rounded-xl overflow-hidden group">
+<div class="h-24 bg-surface-variant relative">
+<img class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" data-alt="A high-fidelity conceptual visual of a digital database architecture, featuring neon-blue circuitry patterns on a charcoal grey background. The lighting is cinematic with sharp highlights, evoking a sense of data integrity and professional organization. The style is strictly modern corporate with deep tonal shifts and zero transparency." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdQLQ1hUpww-a20dYENU3b6wjlCS61UfEkagzXx4aFYhC3tilkrnvnMewLWoVQ8pNkkUQ2t9_xA4yS15oV40Gi3r4iRKxX29rOcaAmCr1kvoWm5z60dnU8SJvOlZqKJK5FUIhXVDeteBpOLjdEPkPyFcFkmG0AAZ-FC-fwSO7QyW4wlfYfxq59RdpD6AtAaTFUVKIHcwSv65hLVLfcORONcC-zDYpNHalGUCotX-GdCD3I37UmOyHVQiPSTPp0e9NmqOb2JNi9PDY"/>
+<div class="absolute top-2 right-2 material-symbols-outlined text-tertiary text-[16px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</div>
+</div>
+<div class="p-3">
+<p class="font-card-title text-card-title truncate">Q4 Strategy.pdf</p>
+<p class="font-caption text-caption text-text-secondary">2.4 MB</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="flex-shrink-0 w-40 bg-surface-elevated border border-border-default rounded-xl overflow-hidden group">
+<div class="h-24 bg-surface-variant relative">
+<img class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" data-alt="A sophisticated data visualization dashboard showing complex analytical charts and heatmaps. The color palette is restricted to dark grays, slate blues, and muted orange accents. The lighting is even and crisp, highlighting the clean, sharp lines of the graph interface. The overall mood is focused, professional, and data-driven." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9ZOFO8Rw_c1PJhHtW8sW3V1RTRBIPZEA3seaobeC9SwucVzjUYx9uok8rH4PqGN5uDeQbNYAMa9t1-GUuppMWz-N6mdnigyh0SYHVuD2gtkr91zmf0buLdgcFbG4DrBuupJCB-wtTCJzfqRp6BobebJY7IrXhjbcSSaXHFvRtpKfRmEmSu8IgsNwF4ClHeimYKAFWAQIx47-xx3Mg_T5YwvQoCqRfWkb1HKViupxYzeaXX40qH8F8hOnTciNE2Vr0MbQWpPJ27AM"/>
+<div class="absolute top-2 right-2 material-symbols-outlined text-tertiary text-[16px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</div>
+</div>
+<div class="p-3">
+<p class="font-card-title text-card-title truncate">Revenue Forecast</p>
+<p class="font-caption text-caption text-text-secondary">Modified 2h ago</p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="flex-shrink-0 w-40 bg-surface-elevated border border-border-default rounded-xl overflow-hidden group">
+<div class="h-24 bg-surface-variant relative">
+<img class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" data-alt="Abstract structural design representing institutional memory, using interlocking obsidian slabs and soft metallic highlights. The lighting is dramatic and directional, creating deep shadows and high-contrast surfaces. The palette is dominated by deep blacks and cool grays, reflecting a stable and authoritative professional focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHmvF-XsuSqL4HQAdV8iaPU9197aDnjTXUNvs2pSzh6P0MK6pIBgqAeiXH-epCoYqx64QUpMMa32HA_MSDB9z0SHLTro6VaHVVLwQgaXUpnntdPxvz_oZY9DMVOFOI_E-6_XRLQfs20xZp8SYTIX3Vlc3e7m45wwAjgPgnGxqBNKV4G2Lt7YyANnyQnmu5iuUJBubZf-i4ObHi4Bk2QrHe9IXj8GzGzUwdR3SW0t7kuzx_pQyQsu1Hy7CkezfLhyr70BAmg-ru1zU"/>
+<div class="absolute top-2 right-2 material-symbols-outlined text-tertiary text-[16px]" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</div>
+</div>
+<div class="p-3">
+<p class="font-card-title text-card-title truncate">Brand Identity</p>
+<p class="font-caption text-caption text-text-secondary">15.8 MB</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Recent Artifacts (Vertical Cards) -->
+<section class="space-y-4">
+<h2 class="font-section-title text-section-title">Recent Artifacts</h2>
+<div class="space-y-3">
+<div class="bg-surface-secondary border border-border-default p-3 flex items-center gap-4 rounded-lg hover:bg-surface-elevated transition-colors cursor-pointer active:opacity-80">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="article">article</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md text-body-md font-semibold truncate">WorkDesk_Guide_v2.md</p>
+<p class="font-caption text-caption text-text-secondary">In /Documentation • 5m ago</p>
+</div>
+<span class="material-symbols-outlined text-text-secondary text-[20px]" data-icon="more_vert">more_vert</span>
+</div>
+<div class="bg-surface-secondary border border-border-default p-3 flex items-center gap-4 rounded-lg hover:bg-surface-elevated transition-colors cursor-pointer active:opacity-80">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-status-warning" data-icon="analytics">analytics</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md text-body-md font-semibold truncate">Market_Analysis_2024.xlsx</p>
+<p class="font-caption text-caption text-text-secondary">In /Research • 1h ago</p>
+</div>
+<span class="material-symbols-outlined text-text-secondary text-[20px]" data-icon="more_vert">more_vert</span>
+</div>
+<div class="bg-surface-secondary border border-border-default p-3 flex items-center gap-4 rounded-lg hover:bg-surface-elevated transition-colors cursor-pointer active:opacity-80">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-status-success" data-icon="folder_zip">folder_zip</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-md text-body-md font-semibold truncate">Assets_Production.zip</p>
+<p class="font-caption text-caption text-text-secondary">In /Shared • 3h ago</p>
+</div>
+<span class="material-symbols-outlined text-text-secondary text-[20px]" data-icon="more_vert">more_vert</span>
+</div>
+</div>
+</section>
+<!-- User Profile & Storage -->
+<section class="bg-surface-elevated border border-border-default rounded-xl p-4">
+<div class="flex items-center gap-4 mb-6">
+<img alt="Profile" class="w-12 h-12 rounded-full border-2 border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACSevgf7RPngJ3lPdZHiIgoOVd1-j8xmGmGZy6KSgqOrsxG2YVcRXXiIiud75cNnmBBg88SLmtdnsXOvrKgPuHzEsTF99nDvaQB3t4TNE-A_bfWCfsN7eddtfz5wzA2U1wvgvv8OlEgzfdC7-qFNTSThg0tG37DC-IAwpCnNE4xdDu2AwDU7jV3DbPVO9ymelFyQD_Gm1biGHkugc4y8xSQLALuqWdDNVllgUYU0ZRWMA6Znd8KAw854mnRyPq3S16zib-3wHU3q8"/>
+<div>
+<h3 class="font-section-title text-section-title">Alex Rivera</h3>
+<p class="font-caption text-caption text-text-secondary uppercase tracking-wider">Enterprise Architect</p>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-text-secondary">Cloud Storage</span>
+<span class="text-text-primary">84.2 GB / 128 GB</span>
+</div>
+<div class="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%] rounded-full"></div>
+</div>
+<p class="font-caption text-caption text-text-secondary text-right">65% used</p>
+</div>
+</section>
+<!-- Recent Activity Summary -->
+<section class="space-y-4">
+<h2 class="font-section-title text-section-title">Recent Activity</h2>
+<div class="relative border-l border-border-default ml-2 pl-6 space-y-6">
+<!-- Activity 1 -->
+<div class="relative">
+<div class="absolute -left-[31px] top-0 w-2.5 h-2.5 bg-primary rounded-full ring-4 ring-surface-primary"></div>
+<p class="font-body-sm text-body-sm"><span class="font-bold text-text-primary">Sarah Chen</span> commented on <span class="text-primary">Design Specs</span></p>
+<p class="font-caption text-caption text-text-secondary mt-1 italic">"The spacing on the sidebar needs a bit more breathing room..."</p>
+<p class="font-caption text-caption text-text-secondary mt-1">12 minutes ago</p>
+</div>
+<!-- Activity 2 -->
+<div class="relative">
+<div class="absolute -left-[31px] top-0 w-2.5 h-2.5 bg-status-warning rounded-full ring-4 ring-surface-primary"></div>
+<p class="font-body-sm text-body-sm"><span class="font-bold text-text-primary">Marcus Wright</span> uploaded 4 files to <span class="text-primary">Media Assets</span></p>
+<p class="font-caption text-caption text-text-secondary mt-1">45 minutes ago</p>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar Implementation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-surface dark:bg-surface border-t border-border-default flex items-center justify-around h-touch-target z-50 md:hidden">
+<a class="flex flex-col items-center justify-center transition-all duration-150 ease-in-out text-primary font-bold" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-[10px] mt-0.5">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center transition-all duration-150 ease-in-out text-text-secondary hover:text-text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="folder_open">folder_open</span>
+<span class="font-label-md text-[10px] mt-0.5">Library</span>
+</a>
+<a class="flex flex-col items-center justify-center transition-all duration-150 ease-in-out text-text-secondary hover:text-text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="forum">forum</span>
+<span class="font-label-md text-[10px] mt-0.5">Messages</span>
+</a>
+<a class="flex flex-col items-center justify-center transition-all duration-150 ease-in-out text-text-secondary hover:text-text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]" data-icon="campaign">campaign</span>
+<span class="font-label-md text-[10px] mt-0.5">Bulletin</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for cards
+        document.querySelectorAll('.bg-surface-secondary').forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98)';
+                card.style.transition = 'transform 0.1s ease';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,92 @@
+WorkDesk V2 — Library & Knowledge Distribution
+Vision
+
+Transform archives into discoverable organizational knowledge.
+
+Library Module
+
+Public Repository
+
+Artifacts remain references.
+
+No duplication.
+
+Publishing
+
+States:
+
+Private
+Published
+Library Sections
+
+Users may:
+
+Create Section
+Delete Section
+
+No approval required.
+
+Section Deletion Workflow
+
+Upon deletion:
+
+Owners notified.
+
+Options:
+
+Move Artifact
+Remove Publication
+
+Personal archive remains untouched.
+
+Artifact Relationships
+
+Relationships:
+
+Belongs To
+Related To
+Derived From
+Replaces
+Graph View
+
+Node Types:
+
+Set
+Artifact
+Section
+
+Relationships visualized.
+
+Features:
+
+Search
+Zoom
+Filter
+Clustering
+Knowledge Packs
+
+Curated onboarding collections.
+
+Examples:
+
+Marketing Starter Pack
+Design Starter Pack
+Development Starter Pack
+Library Subscriptions
+
+Users can:
+
+Follow Sections
+Receive Updates
+Share Links
+
+Types:
+
+Internal Link
+Public Link
+
+Permission aware.
+
+Success Criteria
+
+Knowledge becomes discoverable and reusable.
