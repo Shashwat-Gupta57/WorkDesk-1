@@ -52,13 +52,14 @@ const PROTECTED_PREFIXES = [
   "/mail-hub",
   "/graph-view",
   "/settings",
+  "/profile",
 ];
 
 // Routes restricted to ADMIN role only.
 const ADMIN_ONLY_PREFIXES = ["/settings/admin"];
 
 // Routes that should redirect authenticated users away (e.g. login page).
-const AUTH_ROUTES = ["/login", "/forgot-password"];
+const AUTH_ROUTES = ["/login", "/forgot-password", "/reset-password"];
 
 export async function proxy(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;

@@ -32,7 +32,7 @@ function LoginForm() {
     setSubmitting(true);
     try {
       // The login route seals the session cookie and returns the safe user.
-      const user = await api.post<SafeUser>("/api/auth/login", { email, password });
+      const user = await api.post<SafeUser>("/api/auth/login", { email, password, rememberMe: remember });
       // Prime the auth cache synchronously so guarded pages see us as logged in
       // immediately (no await-on-refetch race before navigating).
       setUser(user);
@@ -104,8 +104,9 @@ function LoginForm() {
               />
               Remember me
             </label>
-            {/* Forgot-password flow arrives in Slice 5. */}
-            <span className="cursor-not-allowed text-text-secondary/60">Forgot password?</span>
+            <a href="/forgot-password" className="text-primary hover:underline">
+              Forgot password?
+            </a>
           </div>
 
           {error && (

@@ -13,6 +13,7 @@ export const LoginSchema = z.object({
   password: z
     .string({ message: "Password is required." })
     .min(1, "Password is required."),
+  rememberMe: z.boolean().optional().default(false),
 });
 
 export type LoginInput = z.infer<typeof LoginSchema>;
@@ -70,3 +71,48 @@ export const UserIdParamSchema = z.object({
 });
 
 export type UserIdParam = z.infer<typeof UserIdParamSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Update Profile Schema
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const UpdateProfileSchema = z
+  .object({
+    name: z.string().min(1, "Name is required.").max(100).optional(),
+    email: z.string().email("Invalid email address.").toLowerCase().trim().optional(),
+    themePreference: z.enum(["dark"]).optional(),
+  })
+  .refine((d) => d.name !== undefined || d.email !== undefined || d.themePreference !== undefined, {
+    message: "At least one field must be provided.",
+  });
+
+export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Forgot / Reset Password Schemas
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address.").toLowerCase().trim(),
+});
+
+export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
+
+export const ResetPasswordSchema = z
+  .object({
+    token: z.string().min(1, "Token is required."),
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters.")
+      .max(72)
+      .regex(/[A-Z]/, "Must contain an uppercase letter.")
+      .regex(/[a-z]/, "Must contain a lowercase letter.")
+      .regex(/[0-9]/, "Must contain a number."),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;

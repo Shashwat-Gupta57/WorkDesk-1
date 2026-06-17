@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { getIronSession } from "iron-session";
 import { LoginSchema } from "@/modules/auth/schemas";
 import { verifyCredentials, InvalidCredentialsError, UserSuspendedError } from "@/modules/auth/services/authService";
-import { getSession } from "@/lib/session";
+import { SESSION_OPTIONS, type SessionData } from "@/lib/session";
 import { ok, fail } from "@/types/common";
 import { SafeUser } from "@/modules/auth/types";
 
@@ -17,6 +19,7 @@ import { SafeUser } from "@/modules/auth/types";
 // - Generic error message prevents user enumeration.
 // - Session cookie is HttpOnly, SameSite=lax, Secure in prod.
 // - Existing sessions are overwritten on re-login (no session fixation).
+// - "Remember me" OFF → omit maxAge → cookie expires when browser closes.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -31,11 +34,20 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    const { email, password } = parsed.data;
+    const { email, password, rememberMe } = parsed.data;
     const user: SafeUser = await verifyCredentials(email, password);
 
-    // Seal the session.
-    const session = await getSession();
+    // Build session options. If "Remember me" is off, strip maxAge so the cookie
+    // becomes a session cookie (expires when the browser closes).
+    const sessionOpts = rememberMe
+      ? SESSION_OPTIONS
+      : {
+          ...SESSION_OPTIONS,
+          cookieOptions: { ...SESSION_OPTIONS.cookieOptions, maxAge: undefined },
+        };
+
+    const cookieStore = await cookies();
+    const session = await getIronSession<SessionData>(cookieStore, sessionOpts);
     session.userId = user.id;
     session.email = user.email;
     session.name = user.name;
@@ -46,7 +58,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(ok(user), { status: 200 });
   } catch (err) {
     if (err instanceof InvalidCredentialsError) {
-      // 401 — same response shape for wrong email AND wrong password (anti-enumeration).
       return NextResponse.json(fail(err.code, err.message), { status: 401 });
     }
 

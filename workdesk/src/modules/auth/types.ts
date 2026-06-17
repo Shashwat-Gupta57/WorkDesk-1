@@ -44,3 +44,26 @@ export interface UpdateUserPayload {
   status?: UserStatus;
   role?: Role;
 }
+
+/**
+ * Payload for a user updating their own profile.
+ */
+export interface UpdateProfilePayload {
+  name?: string;
+  email?: string;
+  themePreference?: string;
+}
+
+/**
+ * Row returned by the admin audit log list.
+ */
+export interface AuditLogEntry {
+  id: string;
+  action: string;
+  actorId: string;
+  actorName: string;
+  actorEmail: string;
+  targetId: string | null;
+  details: Record<string, unknown>;
+  createdAt: Date;
+}
