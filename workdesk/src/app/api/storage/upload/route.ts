@@ -29,11 +29,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     const key = buildArchiveContentKey(session.userId, parsed.data.filename);
     const uploadUrl = await getPresignedUploadUrl(key, parsed.data.contentType);
+    const local = process.env.USE_LOCAL_STORAGE === "true";
 
     return NextResponse.json(
       ok({
         uploadUrl,
         contentKey: key,
+        local,
       })
     );
   } catch (err) {

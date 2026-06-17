@@ -14,6 +14,7 @@ import { api, ApiError } from "@/lib/api-client";
 interface UploadTicket {
   uploadUrl: string;
   contentKey: string;
+  local?: boolean;
 }
 
 export class UploadError extends Error {
@@ -38,13 +39,16 @@ export async function uploadFile(file: File): Promise<string> {
     throw new UploadError("Could not obtain an upload ticket.");
   }
 
-  // Step 2 — PUT bytes to R2.
+  // Step 2 — PUT bytes to the upload URL.
+  // When local=true the URL is a same-origin API route that requires the session
+  // cookie. For R2 presigned URLs credentials must NOT be sent.
   let res: Response;
   try {
     res = await fetch(ticket.uploadUrl, {
       method: "PUT",
       headers: { "Content-Type": file.type || "application/octet-stream" },
       body: file,
+      ...(ticket.local ? { credentials: "include" } : {}),
     });
   } catch {
     throw new UploadError(
