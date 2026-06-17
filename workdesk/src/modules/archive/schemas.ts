@@ -141,3 +141,32 @@ export const UploadQuerySchema = z.object({
 export const DownloadQuerySchema = z.object({
   contentKey: z.string({ message: "contentKey is required." }).min(1, "contentKey cannot be empty."),
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Star Schemas
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const ToggleStarSchema = z.object({
+  targetType: z.enum(["artifact", "set"], { message: "targetType must be 'artifact' or 'set'." }),
+  targetId: z.string().uuid("targetId must be a valid UUID."),
+});
+
+export const StarQuerySchema = z.object({
+  targetType: z.enum(["artifact", "set"], { message: "targetType must be 'artifact' or 'set'." }),
+  targetId: z.string().uuid("targetId must be a valid UUID."),
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Extended artifact list query (adds type + starred filters for Slice 3)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const ListArtifactsQuerySchemaV2 = z.object({
+  setId: z.union([z.literal("root"), z.string().uuid()]).nullable().optional(),
+  search: z.string().max(255).optional(),
+  tags: z.string().max(500).optional(),
+  type: z.enum(["TEXT", "PDF", "DOCX", "PPTX", "IMAGE", "ZIP", "OTHER"]).optional(),
+  starred: z
+    .string()
+    .optional()
+    .transform((v) => v === "true"),
+});

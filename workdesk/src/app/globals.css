@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─────────────────────────────────────────────────────────────────────────────
+   WorkDesk Design System — Dark Only (V1)
+   Palette from UI/context.txt, exposed as semantic Tailwind tokens so components
+   can reuse the Stitch mockup class names (bg-surface-secondary, text-text-primary,
+   border-border-default, bg-primary, …).
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Surfaces (dark, layered) */
+  --color-surface-primary: #0d1117; /* app background */
+  --color-surface-secondary: #161b22; /* sidebar / panels */
+  --color-surface-container: #1c2128; /* elevated cards */
+  --color-surface-container-low: #161b22;
+  --color-surface-container-high: #21262d; /* active nav / hover-elevated */
+
+  /* Borders */
+  --color-border-default: #30363d;
+
+  /* Text */
+  --color-text-primary: #e6edf3;
+  --color-text-secondary: #8b949e;
+
+  /* Brand / accent */
+  --color-primary: #58a6ff;
+  --color-on-primary: #0d1117;
+  --color-primary-container: #1f6feb;
+  --color-on-primary-container: #e6edf3;
+
+  /* Status */
+  --color-success: #3fb950;
+  --color-warning: #d29922;
+  --color-danger: #f85149;
+
+  /* Typography */
+  --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Layout primitives used by the shell mockups */
+  --spacing-sidebar-width: 16rem;
+  --spacing-touch-target: 2.5rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background-color: var(--color-surface-primary);
+  color: var(--color-text-primary);
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-surface-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+/* Thin, unobtrusive scrollbars to match the dense productivity aesthetic. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

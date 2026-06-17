@@ -10,7 +10,7 @@ import {
   SetNotFoundError,
   InvalidContentKeyError,
 } from "@/modules/archive/services/archiveService";
-import { CreateArtifactSchema, UpdateArtifactSchema, IdParamSchema } from "@/modules/archive/schemas";
+import { CreateArtifactSchema, UpdateArtifactSchema, IdParamSchema, ListArtifactsQuerySchemaV2 } from "@/modules/archive/schemas";
 import { ok, fail } from "@/types/common";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -34,20 +34,23 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       return NextResponse.json(ok(artifact));
     }
 
-    const setId = searchParams.get("setId") || null;
-    const search = searchParams.get("search") || undefined;
-    const tagsParam = searchParams.get("tags");
-    const tags = tagsParam ? tagsParam.split(",").map((t) => t.trim()).filter(Boolean) : undefined;
-
-    // Validate setId if provided and not "root"
-    if (setId && setId !== "root") {
-      const parsed = IdParamSchema.safeParse({ id: setId });
-      if (!parsed.success) {
-        return NextResponse.json(fail("BAD_REQUEST", "Invalid setId format."), { status: 400 });
-      }
+    const qParsed = ListArtifactsQuerySchemaV2.safeParse({
+      setId: searchParams.get("setId") ?? undefined,
+      search: searchParams.get("search") ?? undefined,
+      tags: searchParams.get("tags") ?? undefined,
+      type: searchParams.get("type") ?? undefined,
+      starred: searchParams.get("starred") ?? undefined,
+    });
+    if (!qParsed.success) {
+      return NextResponse.json(fail("VALIDATION_ERROR", "Invalid query parameters.", qParsed.error.format()), {
+        status: 400,
+      });
     }
 
-    const artifacts = await getArtifacts(session.userId, setId, tags, search);
+    const { setId, search, tags: tagsParam, type, starred } = qParsed.data;
+    const tags = tagsParam ? tagsParam.split(",").map((t) => t.trim()).filter(Boolean) : undefined;
+
+    const artifacts = await getArtifacts(session.userId, setId ?? null, { tags, search, type, starred });
     return NextResponse.json(ok(artifacts));
   } catch (err) {
     if (err instanceof Error && err.name === "UnauthenticatedError") {

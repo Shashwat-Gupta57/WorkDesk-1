@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
+import { query, queryOne, transaction } from "@/lib/db";
 import { SafeUser, UpdateUserPayload, UserSummary } from "@/modules/auth/types";
-import { AuditAction, Role, UserStatus } from "@prisma/client";
+import { AuditAction, Role, UserStatus } from "@/lib/enums";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constants
@@ -9,6 +9,22 @@ import { AuditAction, Role, UserStatus } from "@prisma/client";
 
 /** bcrypt work factor. 12 is secure and keeps hashing under ~300ms on modern hardware. */
 const BCRYPT_ROUNDS = 12;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Raw row shape returned by the `users` table (snake_case columns).
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface UserRow {
+  id: string;
+  email: string;
+  password_hash: string;
+  name: string;
+  role: Role;
+  status: UserStatus;
+  theme_preference: string;
+  created_at: Date;
+  updated_at: Date;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Typed Service Errors
@@ -60,26 +76,17 @@ export class SelfRoleChangeError extends Error {
 // Internal Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** Strips passwordHash from a raw User row. */
-function toSafeUser(user: {
-  id: string;
-  email: string;
-  name: string;
-  role: Role;
-  status: UserStatus;
-  themePreference: string;
-  createdAt: Date;
-  updatedAt: Date;
-}): SafeUser {
+/** Maps a raw users row to the safe projection (drops password_hash). */
+function toSafeUser(row: UserRow): SafeUser {
   return {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-    status: user.status,
-    themePreference: user.themePreference,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    role: row.role,
+    status: row.status,
+    themePreference: row.theme_preference,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   };
 }
 
@@ -88,17 +95,14 @@ async function writeAuditLog(
   action: AuditAction,
   actorId: string,
   targetId: string | null,
-  details: Record<string, any>
+  details: Record<string, unknown>
 ): Promise<void> {
   try {
-    await db.auditLog.create({
-      data: {
-        action,
-        actorId,
-        targetId: targetId ?? undefined,
-        details: details as any,
-      },
-    });
+    await query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      [action, actorId, targetId, JSON.stringify(details)]
+    );
   } catch (err) {
     // Log to server console but never surface to caller.
     console.error("[AuditLog] Failed to write audit record:", err);
@@ -125,14 +129,15 @@ export async function verifyCredentials(
   email: string,
   password: string
 ): Promise<SafeUser> {
-  const user = await db.user.findUnique({
-    where: { email: email.toLowerCase().trim() },
-  });
+  const user = await queryOne<UserRow>(
+    `SELECT * FROM users WHERE email = $1`,
+    [email.toLowerCase().trim()]
+  );
 
   // Always run bcrypt even if user not found (dummy hash prevents timing attack).
   const dummyHash =
     "$2a$12$aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-  const hashToCompare = user?.passwordHash ?? dummyHash;
+  const hashToCompare = user?.password_hash ?? dummyHash;
   const isMatch = await bcrypt.compare(password, hashToCompare);
 
   if (!user || !isMatch) {
@@ -154,9 +159,10 @@ export async function verifyCredentials(
  * @throws UserNotFoundError — user does not exist
  */
 export async function getUserById(userId: string): Promise<SafeUser> {
-  const user = await db.user.findUnique({
-    where: { id: userId },
-  });
+  const user = await queryOne<UserRow>(
+    `SELECT * FROM users WHERE id = $1`,
+    [userId]
+  );
 
   if (!user) {
     throw new UserNotFoundError();
@@ -172,7 +178,7 @@ export async function getUserById(userId: string): Promise<SafeUser> {
  * - Verifies the current password before allowing the change.
  * - Hashes the new password with bcrypt at BCRYPT_ROUNDS work factor.
  * - Writes an audit record (no sensitive data stored).
- * - Runs in a Prisma transaction to ensure atomicity.
+ * - Runs in a transaction to ensure atomicity.
  *
  * @throws UserNotFoundError — user no longer exists
  * @throws InvalidCurrentPasswordError — current password is wrong
@@ -182,33 +188,33 @@ export async function changePassword(
   currentPassword: string,
   newPassword: string
 ): Promise<void> {
-  const user = await db.user.findUnique({ where: { id: userId } });
+  const user = await queryOne<UserRow>(
+    `SELECT * FROM users WHERE id = $1`,
+    [userId]
+  );
 
   if (!user) {
     throw new UserNotFoundError();
   }
 
-  const isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
+  const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
   if (!isMatch) {
     throw new InvalidCurrentPasswordError();
   }
 
   const newHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
 
-  await db.$transaction(async (tx) => {
-    await tx.user.update({
-      where: { id: userId },
-      data: { passwordHash: newHash },
-    });
+  await transaction(async (tx) => {
+    await tx.query(
+      `UPDATE users SET password_hash = $1, updated_at = now() WHERE id = $2`,
+      [newHash, userId]
+    );
 
-    await tx.auditLog.create({
-      data: {
-        action: "PASSWORD_CHANGED",
-        actorId: userId,
-        targetId: userId,
-        details: {},
-      },
-    });
+    await tx.query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      ["PASSWORD_CHANGED", userId, userId, JSON.stringify({})]
+    );
   });
 }
 
@@ -219,19 +225,27 @@ export async function changePassword(
  * Ordered by creation date descending.
  */
 export async function listAllUsers(): Promise<UserSummary[]> {
-  const users = await db.user.findMany({
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      role: true,
-      status: true,
-      createdAt: true,
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const rows = await query<{
+    id: string;
+    email: string;
+    name: string;
+    role: Role;
+    status: UserStatus;
+    created_at: Date;
+  }>(
+    `SELECT id, email, name, role, status, created_at
+     FROM users
+     ORDER BY created_at DESC`
+  );
 
-  return users;
+  return rows.map((r) => ({
+    id: r.id,
+    email: r.email,
+    name: r.name,
+    role: r.role,
+    status: r.status,
+    createdAt: r.created_at,
+  }));
 }
 
 /**
@@ -254,19 +268,35 @@ export async function updateUser(
     throw new SelfRoleChangeError();
   }
 
-  const existing = await db.user.findUnique({ where: { id: targetUserId } });
+  const existing = await queryOne<UserRow>(
+    `SELECT * FROM users WHERE id = $1`,
+    [targetUserId]
+  );
   if (!existing) {
     throw new UserNotFoundError();
   }
 
-  const updated = await db.$transaction(async (tx) => {
-    const updatedUser = await tx.user.update({
-      where: { id: targetUserId },
-      data: {
-        ...(payload.status !== undefined && { status: payload.status }),
-        ...(payload.role !== undefined && { role: payload.role }),
-      },
-    });
+  const updated = await transaction(async (tx) => {
+    // Build a partial UPDATE from whichever fields were provided.
+    const sets: string[] = [];
+    const params: unknown[] = [];
+    let i = 1;
+    if (payload.status !== undefined) {
+      sets.push(`status = $${i++}`);
+      params.push(payload.status);
+    }
+    if (payload.role !== undefined) {
+      sets.push(`role = $${i++}`);
+      params.push(payload.role);
+    }
+    sets.push(`updated_at = now()`);
+    params.push(targetUserId);
+
+    const { rows } = await tx.query<UserRow>(
+      `UPDATE users SET ${sets.join(", ")} WHERE id = $${i} RETURNING *`,
+      params
+    );
+    const updatedUser = rows[0];
 
     // Determine which audit action to record.
     let action: AuditAction;
@@ -278,23 +308,19 @@ export async function updateUser(
       action = "USER_ROLE_CHANGED";
     }
 
-    await tx.auditLog.create({
-      data: {
+    await tx.query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      [
         action,
         actorId,
-        targetId: targetUserId,
-        details: {
-          previousState: {
-            status: existing.status,
-            role: existing.role,
-          },
-          newState: {
-            status: updatedUser.status,
-            role: updatedUser.role,
-          },
-        },
-      },
-    });
+        targetUserId,
+        JSON.stringify({
+          previousState: { status: existing.status, role: existing.role },
+          newState: { status: updatedUser.status, role: updatedUser.role },
+        }),
+      ]
+    );
 
     return updatedUser;
   });

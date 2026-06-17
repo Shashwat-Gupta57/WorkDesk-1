@@ -1,38 +1,75 @@
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+import { Pool, PoolClient, QueryResultRow } from "pg";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Prisma 7 Singleton with pg Adapter
+// PostgreSQL access layer (node-postgres) — replaces Prisma.
 //
-// Prisma 7 requires a driver adapter to be passed to PrismaClient directly.
-// The connection pool is created once and shared across the singleton.
+// A single shared Pool is created per process. In Next.js dev, module
+// hot-reloading would otherwise spawn multiple pools; the globalThis pattern
+// prevents that (same approach used previously for the Prisma singleton).
 //
-// In Next.js 15 development mode, module hot-reloading would otherwise create
-// multiple Pool + PrismaClient instances. The globalThis pattern prevents that.
+// Query helpers:
+//   query<T>(sql, params)        → all rows
+//   queryOne<T>(sql, params)     → first row or null
+//   transaction(fn)              → run fn within BEGIN/COMMIT (ROLLBACK on throw)
+//
+// SQL is written by hand. Always use parameterized queries ($1, $2, …) — never
+// string-interpolate user input.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
+const globalForPg = globalThis as unknown as {
+  pgPool: Pool | undefined;
 };
 
-function createPrismaClient(): PrismaClient {
-  const pool = new Pool({
+function createPool(): Pool {
+  return new Pool({
     connectionString: process.env.DATABASE_URL,
-  });
-  const adapter = new PrismaPg(pool);
-  return new PrismaClient({
-    adapter,
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "error", "warn"]
-        : ["error"],
   });
 }
 
-export const db: PrismaClient =
-  globalForPrisma.prisma ?? createPrismaClient();
+export const pool: Pool = globalForPg.pgPool ?? createPool();
 
 if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = db;
+  globalForPg.pgPool = pool;
+}
+
+/** Runs a query and returns all rows. */
+export async function query<T extends QueryResultRow = QueryResultRow>(
+  sql: string,
+  params: ReadonlyArray<unknown> = []
+): Promise<T[]> {
+  const result = await pool.query<T>(sql, params as unknown[]);
+  return result.rows;
+}
+
+/** Runs a query and returns the first row, or null if none. */
+export async function queryOne<T extends QueryResultRow = QueryResultRow>(
+  sql: string,
+  params: ReadonlyArray<unknown> = []
+): Promise<T | null> {
+  const result = await pool.query<T>(sql, params as unknown[]);
+  return result.rows[0] ?? null;
+}
+
+/**
+ * Runs `fn` inside a single transaction on a dedicated client.
+ * Commits on success, rolls back on any thrown error, and always releases
+ * the client back to the pool.
+ *
+ * Use tx.query(...) for every statement inside `fn` so they share one connection.
+ */
+export async function transaction<T>(
+  fn: (tx: PoolClient) => Promise<T>
+): Promise<T> {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const result = await fn(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 }

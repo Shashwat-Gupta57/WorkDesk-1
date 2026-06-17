@@ -1,4 +1,4 @@
-import { ArtifactType, Visibility } from "@prisma/client";
+import { ArtifactType, Visibility } from "@/lib/enums";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Archive Module Interfaces & Payload Types
@@ -78,4 +78,26 @@ export interface UpdateArtifactPayload {
 export interface CommitVersionPayload {
   contentKey: string;
   changeSummary?: string | null;
+}
+
+// ── Stars ────────────────────────────────────────────────────────────────────
+
+export type StarTargetType = "artifact" | "set";
+
+export interface StarSummary {
+  id: string;
+  userId: string;
+  artifactId: string | null;
+  setId: string | null;
+  createdAt: Date;
+}
+
+export interface StarredLists {
+  artifacts: ArtifactSummary[];
+  sets: SetSummary[];
+}
+
+export interface ToggleStarPayload {
+  targetType: StarTargetType;
+  targetId: string;
 }

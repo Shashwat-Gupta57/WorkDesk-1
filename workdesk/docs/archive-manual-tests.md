@@ -15,7 +15,7 @@ Use `curl` or an HTTP client. Save the session cookie from login as `$COOKIE`.
 # Login and capture session cookie
 curl -s -c cookies.txt -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@gobitsandbytes.in","password":"ChangeMe@123"}'
+  -d '{"email":"admin@flexstudios.com","password":"ChangeMe@123"}'
 
 export COOKIE="workdesk.session=$(grep workdesk.session cookies.txt | awk '{print $7}')"
 ```

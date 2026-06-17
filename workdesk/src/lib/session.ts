@@ -1,6 +1,6 @@
 import { getIronSession, IronSession, SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
-import { Role } from "@prisma/client";
+import { Role } from "@/lib/enums";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Session Data Shape

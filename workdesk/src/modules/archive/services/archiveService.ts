@@ -1,5 +1,5 @@
-import { db } from "@/lib/db";
-import { AuditAction, ArtifactType, Visibility } from "@prisma/client";
+import { query, queryOne, transaction } from "@/lib/db";
+import { AuditAction, ArtifactType, Visibility } from "@/lib/enums";
 import {
   SetSummary,
   SetDetail,
@@ -15,6 +15,44 @@ import {
 import { assertContentKeyNamespace, InvalidContentKeyError } from "../utils/contentKey";
 
 export { InvalidContentKeyError };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Raw row shapes (snake_case columns from PostgreSQL).
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface SetRow {
+  id: string;
+  name: string;
+  parent_id: string | null;
+  owner_id: string;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+}
+
+interface ArtifactRow {
+  id: string;
+  title: string;
+  description: string | null;
+  tags: unknown; // jsonb → already parsed by pg
+  type: ArtifactType;
+  visibility: Visibility;
+  owner_id: string;
+  set_id: string | null;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at: Date | null;
+}
+
+interface VersionRow {
+  id: string;
+  artifact_id: string;
+  version_number: number;
+  content_key: string;
+  change_summary: string | null;
+  author_id: string;
+  created_at: Date;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Typed Archive Errors
@@ -53,12 +91,54 @@ export class CircularReferenceError extends Error {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Content Key Reference Validation (R2 pointer ownership)
+// Row → DTO mappers
 // ─────────────────────────────────────────────────────────────────────────────
 
 function normalizeTags(raw: unknown): string[] {
   return Array.isArray(raw) ? (raw as string[]) : [];
 }
+
+function toSetSummary(row: SetRow): SetSummary {
+  return {
+    id: row.id,
+    name: row.name,
+    parentId: row.parent_id,
+    ownerId: row.owner_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function toArtifactSummary(row: ArtifactRow): ArtifactSummary {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    tags: normalizeTags(row.tags),
+    type: row.type,
+    visibility: row.visibility,
+    ownerId: row.owner_id,
+    setId: row.set_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function toVersionDetail(row: VersionRow): VersionDetail {
+  return {
+    id: row.id,
+    artifactId: row.artifact_id,
+    versionNumber: row.version_number,
+    contentKey: row.content_key,
+    changeSummary: row.change_summary,
+    authorId: row.author_id,
+    createdAt: row.created_at,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Content Key Reference Validation (R2 pointer ownership)
+// ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * Ensures a content key is in the caller's namespace and referenced by one of
@@ -67,13 +147,14 @@ function normalizeTags(raw: unknown): string[] {
 export async function verifyContentKeyReference(ownerId: string, contentKey: string): Promise<void> {
   assertContentKeyNamespace(ownerId, contentKey);
 
-  const version = await db.version.findFirst({
-    where: {
-      contentKey,
-      artifact: { ownerId, deletedAt: null },
-    },
-    select: { id: true },
-  });
+  const version = await queryOne<{ id: string }>(
+    `SELECT v.id
+     FROM versions v
+     JOIN artifacts a ON a.id = v.artifact_id
+     WHERE v.content_key = $1 AND a.owner_id = $2 AND a.deleted_at IS NULL
+     LIMIT 1`,
+    [contentKey, ownerId]
+  );
 
   if (!version) {
     throw new InvalidContentKeyError("Content key is not linked to any of your artifacts.");
@@ -81,24 +162,21 @@ export async function verifyContentKeyReference(ownerId: string, contentKey: str
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Internal Audit Logger Helper
+// Internal Audit Logger Helper (non-throwing)
 // ─────────────────────────────────────────────────────────────────────────────
 
 async function writeAuditLog(
   action: AuditAction,
   actorId: string,
   targetId: string | null,
-  details: Record<string, any>
+  details: Record<string, unknown>
 ): Promise<void> {
   try {
-    await db.auditLog.create({
-      data: {
-        action,
-        actorId,
-        targetId: targetId ?? undefined,
-        details: details as any,
-      },
-    });
+    await query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      [action, actorId, targetId, JSON.stringify(details)]
+    );
   } catch (err) {
     console.error("[AuditLog] Failed to write audit record:", err);
   }
@@ -110,25 +188,25 @@ async function writeAuditLog(
 
 export async function createSet(ownerId: string, payload: CreateSetPayload): Promise<SetSummary> {
   if (payload.parentId) {
-    const parent = await db.set.findFirst({
-      where: { id: payload.parentId, ownerId, deletedAt: null },
-    });
+    const parent = await queryOne<{ id: string }>(
+      `SELECT id FROM sets WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+      [payload.parentId, ownerId]
+    );
     if (!parent) {
       throw new SetNotFoundError();
     }
   }
 
-  const set = await db.set.create({
-    data: {
-      name: payload.name,
-      parentId: payload.parentId ?? null,
-      ownerId,
-    },
-  });
+  const set = await queryOne<SetRow>(
+    `INSERT INTO sets (name, parent_id, owner_id)
+     VALUES ($1, $2, $3)
+     RETURNING *`,
+    [payload.name, payload.parentId ?? null, ownerId]
+  );
 
-  await writeAuditLog("SET_CREATED", ownerId, set.id, { name: set.name });
+  await writeAuditLog("SET_CREATED", ownerId, set!.id, { name: set!.name });
 
-  return set;
+  return toSetSummary(set!);
 }
 
 export async function updateSet(
@@ -136,79 +214,93 @@ export async function updateSet(
   setId: string,
   payload: UpdateSetPayload
 ): Promise<SetSummary> {
-  const existing = await db.set.findFirst({
-    where: { id: setId, ownerId, deletedAt: null },
-  });
+  const existing = await queryOne<SetRow>(
+    `SELECT * FROM sets WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+    [setId, ownerId]
+  );
   if (!existing) {
     throw new SetNotFoundError();
   }
 
-  // Handle circular reference checks when moving folders
-  if (payload.parentId !== undefined && payload.parentId !== existing.parentId) {
+  // Handle circular reference checks when moving folders.
+  if (payload.parentId !== undefined && payload.parentId !== existing.parent_id) {
     if (payload.parentId === setId) {
       throw new CircularReferenceError("A folder cannot be its own parent.");
     }
 
     if (payload.parentId !== null) {
-      // Confirm target parent exists
-      const targetParent = await db.set.findFirst({
-        where: { id: payload.parentId, ownerId, deletedAt: null },
-      });
+      // Confirm target parent exists.
+      const targetParent = await queryOne<SetRow>(
+        `SELECT * FROM sets WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+        [payload.parentId, ownerId]
+      );
       if (!targetParent) {
         throw new SetNotFoundError();
       }
 
-      // Check if targetParent is a descendant of the set we're updating
-      let currentParentId: string | null = targetParent.parentId;
+      // Walk up the target parent's ancestry; reject if we hit the set being moved.
+      let currentParentId: string | null = targetParent.parent_id;
       while (currentParentId) {
         if (currentParentId === setId) {
           throw new CircularReferenceError();
         }
-        const nextFolder = await db.set.findFirst({
-          where: { id: currentParentId, ownerId, deletedAt: null },
-          select: { parentId: true },
-        });
-        currentParentId = nextFolder ? nextFolder.parentId : null;
+        const nextFolder: { parent_id: string | null } | null = await queryOne(
+          `SELECT parent_id FROM sets WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+          [currentParentId, ownerId]
+        );
+        currentParentId = nextFolder ? nextFolder.parent_id : null;
       }
     }
   }
 
-  const updated = await db.set.update({
-    where: { id: setId },
-    data: {
-      ...(payload.name !== undefined && { name: payload.name }),
-      ...(payload.parentId !== undefined && { parentId: payload.parentId }),
-    },
-  });
+  const sets: string[] = [];
+  const params: unknown[] = [];
+  let i = 1;
+  if (payload.name !== undefined) {
+    sets.push(`name = $${i++}`);
+    params.push(payload.name);
+  }
+  if (payload.parentId !== undefined) {
+    sets.push(`parent_id = $${i++}`);
+    params.push(payload.parentId);
+  }
+  sets.push(`updated_at = now()`);
+  params.push(setId);
+
+  const updated = await queryOne<SetRow>(
+    `UPDATE sets SET ${sets.join(", ")} WHERE id = $${i} RETURNING *`,
+    params
+  );
 
   await writeAuditLog("SET_UPDATED", ownerId, setId, {
-    before: { name: existing.name, parentId: existing.parentId },
-    after: { name: updated.name, parentId: updated.parentId },
+    before: { name: existing.name, parentId: existing.parent_id },
+    after: { name: updated!.name, parentId: updated!.parent_id },
   });
 
-  return updated;
+  return toSetSummary(updated!);
 }
 
 /**
  * softDeleteSet
  *
- * Performs cascading soft-delete of a folder. Updates deletedAt on the folder,
+ * Performs cascading soft-delete of a folder. Updates deleted_at on the folder,
  * all its descendants (subfolders), and all artifacts contained inside them.
  */
 export async function softDeleteSet(ownerId: string, setId: string): Promise<void> {
-  const target = await db.set.findFirst({
-    where: { id: setId, ownerId, deletedAt: null },
-  });
+  const target = await queryOne<SetRow>(
+    `SELECT * FROM sets WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+    [setId, ownerId]
+  );
   if (!target) {
     throw new SetNotFoundError();
   }
 
-  // Recursive helper to fetch all subfolder IDs
+  // Recursive helper to collect all live descendant subfolder IDs.
   async function getDescendantSetIds(parentIds: string[]): Promise<string[]> {
-    const children = await db.set.findMany({
-      where: { parentId: { in: parentIds }, deletedAt: null },
-      select: { id: true },
-    });
+    const children = await query<{ id: string }>(
+      `SELECT id FROM sets WHERE parent_id = ANY($1::uuid[]) AND deleted_at IS NULL`,
+      [parentIds]
+    );
     const childIds = children.map((c) => c.id);
     if (childIds.length === 0) return [];
     return [...childIds, ...(await getDescendantSetIds(childIds))];
@@ -217,31 +309,31 @@ export async function softDeleteSet(ownerId: string, setId: string): Promise<voi
   const descendantIds = await getDescendantSetIds([setId]);
   const allSetIds = [setId, ...descendantIds];
 
-  await db.$transaction(async (tx) => {
-    // Soft-delete sets
-    await tx.set.updateMany({
-      where: { id: { in: allSetIds } },
-      data: { deletedAt: new Date() },
-    });
+  await transaction(async (tx) => {
+    await tx.query(
+      `UPDATE sets SET deleted_at = now() WHERE id = ANY($1::uuid[])`,
+      [allSetIds]
+    );
 
-    // Soft-delete all artifacts inside these sets
-    await tx.artifact.updateMany({
-      where: { setId: { in: allSetIds }, deletedAt: null },
-      data: { deletedAt: new Date() },
-    });
+    await tx.query(
+      `UPDATE artifacts SET deleted_at = now()
+       WHERE set_id = ANY($1::uuid[]) AND deleted_at IS NULL`,
+      [allSetIds]
+    );
 
-    // Write audit log
-    await tx.auditLog.create({
-      data: {
-        action: "SET_DELETED",
-        actorId: ownerId,
-        targetId: setId,
-        details: {
+    await tx.query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      [
+        "SET_DELETED",
+        ownerId,
+        setId,
+        JSON.stringify({
           deletedSetCount: allSetIds.length,
           cascadeDeletedSetIds: descendantIds,
-        },
-      },
-    });
+        }),
+      ]
+    );
   });
 }
 
@@ -249,22 +341,24 @@ export async function getSets(ownerId: string, parentId: string | null | "root")
   const parentFilter = parentId === "root" ? null : parentId;
 
   if (parentFilter !== null) {
-    const parent = await db.set.findFirst({
-      where: { id: parentFilter, ownerId, deletedAt: null },
-    });
+    const parent = await queryOne<{ id: string }>(
+      `SELECT id FROM sets WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+      [parentFilter, ownerId]
+    );
     if (!parent) {
       throw new SetNotFoundError();
     }
   }
 
-  return db.set.findMany({
-    where: {
-      ownerId,
-      deletedAt: null,
-      parentId: parentFilter,
-    },
-    orderBy: { name: "asc" },
-  });
+  const rows = await query<SetRow>(
+    `SELECT * FROM sets
+     WHERE owner_id = $1 AND deleted_at IS NULL
+       AND parent_id IS NOT DISTINCT FROM $2
+     ORDER BY name ASC`,
+    [ownerId, parentFilter]
+  );
+
+  return rows.map(toSetSummary);
 }
 
 /**
@@ -274,31 +368,33 @@ export async function getSets(ownerId: string, parentId: string | null | "root")
  * Does not recurse into nested subfolders (use parentId queries to navigate).
  */
 export async function getSetDetail(ownerId: string, setId: string): Promise<SetDetail> {
-  const set = await db.set.findFirst({
-    where: { id: setId, ownerId, deletedAt: null },
-  });
+  const set = await queryOne<SetRow>(
+    `SELECT * FROM sets WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+    [setId, ownerId]
+  );
   if (!set) {
     throw new SetNotFoundError();
   }
 
   const [children, artifacts] = await Promise.all([
-    db.set.findMany({
-      where: { parentId: setId, ownerId, deletedAt: null },
-      orderBy: { name: "asc" },
-    }),
-    db.artifact.findMany({
-      where: { setId, ownerId, deletedAt: null },
-      orderBy: { updatedAt: "desc" },
-    }),
+    query<SetRow>(
+      `SELECT * FROM sets
+       WHERE parent_id = $1 AND owner_id = $2 AND deleted_at IS NULL
+       ORDER BY name ASC`,
+      [setId, ownerId]
+    ),
+    query<ArtifactRow>(
+      `SELECT * FROM artifacts
+       WHERE set_id = $1 AND owner_id = $2 AND deleted_at IS NULL
+       ORDER BY updated_at DESC`,
+      [setId, ownerId]
+    ),
   ]);
 
   return {
-    ...set,
-    children,
-    artifacts: artifacts.map((art) => ({
-      ...art,
-      tags: normalizeTags(art.tags),
-    })),
+    ...toSetSummary(set),
+    children: children.map(toSetSummary),
+    artifacts: artifacts.map(toArtifactSummary),
   };
 }
 
@@ -311,9 +407,10 @@ export async function createArtifact(
   payload: CreateArtifactPayload
 ): Promise<ArtifactDetail> {
   if (payload.setId) {
-    const parentSet = await db.set.findFirst({
-      where: { id: payload.setId, ownerId, deletedAt: null },
-    });
+    const parentSet = await queryOne<{ id: string }>(
+      `SELECT id FROM sets WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+      [payload.setId, ownerId]
+    );
     if (!parentSet) {
       throw new SetNotFoundError();
     }
@@ -325,53 +422,59 @@ export async function createArtifact(
     assertContentKeyNamespace(ownerId, payload.initialFileKey);
   }
 
-  const created = await db.$transaction(async (tx) => {
-    const artifact = await tx.artifact.create({
-      data: {
-        title: payload.title,
-        description: payload.description,
-        tags: tags as any,
-        type: payload.type,
-        visibility: payload.visibility ?? Visibility.PRIVATE,
+  return transaction(async (tx) => {
+    const { rows: artifactRows } = await tx.query<ArtifactRow>(
+      `INSERT INTO artifacts (title, description, tags, type, visibility, owner_id, set_id)
+       VALUES ($1, $2, $3::jsonb, $4, $5, $6, $7)
+       RETURNING *`,
+      [
+        payload.title,
+        payload.description ?? null,
+        JSON.stringify(tags),
+        payload.type,
+        payload.visibility ?? Visibility.PRIVATE,
         ownerId,
-        setId: payload.setId ?? null,
-      },
-    });
+        payload.setId ?? null,
+      ]
+    );
+    const artifact = artifactRows[0];
 
-    let version: any = null;
+    let version: VersionRow | null = null;
     if (payload.initialFileKey) {
-      version = await tx.version.create({
-        data: {
-          artifactId: artifact.id,
-          versionNumber: 1,
-          contentKey: payload.initialFileKey,
-          changeSummary: payload.changeSummary ?? "Initial version upload.",
-          authorId: ownerId,
-        },
-      });
+      const { rows: versionRows } = await tx.query<VersionRow>(
+        `INSERT INTO versions (artifact_id, version_number, content_key, change_summary, author_id)
+         VALUES ($1, 1, $2, $3, $4)
+         RETURNING *`,
+        [
+          artifact.id,
+          payload.initialFileKey,
+          payload.changeSummary ?? "Initial version upload.",
+          ownerId,
+        ]
+      );
+      version = versionRows[0];
     }
 
-    await tx.auditLog.create({
-      data: {
-        action: "ARTIFACT_CREATED",
-        actorId: ownerId,
-        targetId: artifact.id,
-        details: {
+    await tx.query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      [
+        "ARTIFACT_CREATED",
+        ownerId,
+        artifact.id,
+        JSON.stringify({
           title: artifact.title,
           type: artifact.type,
           hasInitialVersion: Boolean(payload.initialFileKey),
-        },
-      },
-    });
+        }),
+      ]
+    );
 
     return {
-      ...artifact,
-      tags: tags,
-      versions: version ? [version] : [],
+      ...toArtifactSummary(artifact),
+      versions: version ? [toVersionDetail(version)] : [],
     };
   });
-
-  return created;
 }
 
 export async function updateArtifact(
@@ -379,17 +482,19 @@ export async function updateArtifact(
   artifactId: string,
   payload: UpdateArtifactPayload
 ): Promise<ArtifactSummary> {
-  const existing = await db.artifact.findFirst({
-    where: { id: artifactId, ownerId, deletedAt: null },
-  });
+  const existing = await queryOne<ArtifactRow>(
+    `SELECT * FROM artifacts WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+    [artifactId, ownerId]
+  );
   if (!existing) {
     throw new ArtifactNotFoundError();
   }
 
   if (payload.setId !== undefined && payload.setId !== null) {
-    const parentSet = await db.set.findFirst({
-      where: { id: payload.setId, ownerId, deletedAt: null },
-    });
+    const parentSet = await queryOne<{ id: string }>(
+      `SELECT id FROM sets WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+      [payload.setId, ownerId]
+    );
     if (!parentSet) {
       throw new SetNotFoundError();
     }
@@ -397,18 +502,37 @@ export async function updateArtifact(
 
   const tags = payload.tags ?? normalizeTags(existing.tags);
 
-  const updated = await db.artifact.update({
-    where: { id: artifactId },
-    data: {
-      ...(payload.title !== undefined && { title: payload.title }),
-      ...(payload.description !== undefined && { description: payload.description }),
-      tags: tags as any,
-      ...(payload.visibility !== undefined && { visibility: payload.visibility }),
-      ...(payload.setId !== undefined && { setId: payload.setId }),
-    },
-  });
+  const sets: string[] = [];
+  const params: unknown[] = [];
+  let i = 1;
+  if (payload.title !== undefined) {
+    sets.push(`title = $${i++}`);
+    params.push(payload.title);
+  }
+  if (payload.description !== undefined) {
+    sets.push(`description = $${i++}`);
+    params.push(payload.description);
+  }
+  // tags are always written (replace-whole semantics, matching prior behavior).
+  sets.push(`tags = $${i++}::jsonb`);
+  params.push(JSON.stringify(tags));
+  if (payload.visibility !== undefined) {
+    sets.push(`visibility = $${i++}`);
+    params.push(payload.visibility);
+  }
+  if (payload.setId !== undefined) {
+    sets.push(`set_id = $${i++}`);
+    params.push(payload.setId);
+  }
+  sets.push(`updated_at = now()`);
+  params.push(artifactId);
 
-  // Log specific action if visibility was updated
+  const updated = await queryOne<ArtifactRow>(
+    `UPDATE artifacts SET ${sets.join(", ")} WHERE id = $${i} RETURNING *`,
+    params
+  );
+
+  // Log specific action if visibility changed.
   if (payload.visibility !== undefined && payload.visibility !== existing.visibility) {
     await writeAuditLog("ARTIFACT_VISIBILITY_CHANGED", ownerId, artifactId, {
       from: existing.visibility,
@@ -417,96 +541,116 @@ export async function updateArtifact(
   }
 
   await writeAuditLog("ARTIFACT_UPDATED", ownerId, artifactId, {
-    before: { title: existing.title, setId: existing.setId },
-    after: { title: updated.title, setId: updated.setId },
+    before: { title: existing.title, setId: existing.set_id },
+    after: { title: updated!.title, setId: updated!.set_id },
   });
 
-  return {
-    ...updated,
-    tags,
-  };
+  return toArtifactSummary(updated!);
 }
 
 export async function softDeleteArtifact(ownerId: string, artifactId: string): Promise<void> {
-  const target = await db.artifact.findFirst({
-    where: { id: artifactId, ownerId, deletedAt: null },
-  });
+  const target = await queryOne<ArtifactRow>(
+    `SELECT * FROM artifacts WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+    [artifactId, ownerId]
+  );
   if (!target) {
     throw new ArtifactNotFoundError();
   }
 
-  await db.$transaction(async (tx) => {
-    await tx.artifact.update({
-      where: { id: artifactId },
-      data: { deletedAt: new Date() },
-    });
+  await transaction(async (tx) => {
+    await tx.query(
+      `UPDATE artifacts SET deleted_at = now() WHERE id = $1`,
+      [artifactId]
+    );
 
-    await tx.auditLog.create({
-      data: {
-        action: "ARTIFACT_DELETED",
-        actorId: ownerId,
-        targetId: artifactId,
-        details: { title: target.title },
-      },
-    });
+    await tx.query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      ["ARTIFACT_DELETED", ownerId, artifactId, JSON.stringify({ title: target.title })]
+    );
   });
 }
 
 export async function getArtifacts(
   ownerId: string,
   setId: string | null | "root",
-  tags?: string[],
-  search?: string
+  options: {
+    tags?: string[];
+    search?: string;
+    type?: string;
+    starred?: boolean;
+  } = {}
 ): Promise<ArtifactSummary[]> {
+  const { tags, search, type, starred } = options;
   const setFilter = setId === "root" ? null : setId;
 
-  const whereClause: any = {
-    ownerId,
-    deletedAt: null,
-    ...(setId !== null && { setId: setFilter }),
-    ...(search && {
-      OR: [
-        { title: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-      ],
-    }),
-  };
+  const conditions: string[] = ["a.owner_id = $1", "a.deleted_at IS NULL"];
+  const params: unknown[] = [ownerId];
+  let i = 2;
 
-  const artifacts = await db.artifact.findMany({
-    where: whereClause,
-    orderBy: { updatedAt: "desc" },
-  });
-
-  const formatted = artifacts.map((art) => ({
-    ...art,
-    tags: normalizeTags(art.tags),
-  }));
-
-  // Perform tags filtering in memory
-  if (tags && tags.length > 0) {
-    return formatted.filter((art) => tags.every((t) => art.tags.includes(t)));
+  // setId === null means "all sets" (no set filter); otherwise scope to the set.
+  if (setId !== null) {
+    conditions.push(`a.set_id IS NOT DISTINCT FROM $${i++}`);
+    params.push(setFilter);
   }
 
-  return formatted;
+  // Full-text search via tsvector generated column; fall back to ILIKE for short/symbol queries.
+  if (search && search.trim()) {
+    const tsquery = search.trim().split(/\s+/).join(" & ");
+    conditions.push(
+      `(a.search_vector @@ to_tsquery('english', $${i}) OR a.title ILIKE $${i + 1})`
+    );
+    params.push(tsquery, `%${search.trim()}%`);
+    i += 2;
+  }
+
+  // jsonb containment — each tag must be present in the array (AND semantics).
+  if (tags && tags.length > 0) {
+    conditions.push(`a.tags @> $${i++}::jsonb`);
+    params.push(JSON.stringify(tags));
+  }
+
+  // Artifact type filter.
+  if (type) {
+    conditions.push(`a.type = $${i++}`);
+    params.push(type);
+  }
+
+  // Starred filter — inner join against the stars table.
+  const starJoin = starred
+    ? `JOIN stars s ON s.artifact_id = a.id AND s.user_id = $${i++}`
+    : "";
+  if (starred) params.push(ownerId);
+
+  const rows = await query<ArtifactRow>(
+    `SELECT a.*
+     FROM artifacts a
+     ${starJoin}
+     WHERE ${conditions.join(" AND ")}
+     ORDER BY a.updated_at DESC`,
+    params
+  );
+
+  return rows.map(toArtifactSummary);
 }
 
 export async function getArtifactDetails(ownerId: string, artifactId: string): Promise<ArtifactDetail> {
-  const artifact = await db.artifact.findFirst({
-    where: { id: artifactId, ownerId, deletedAt: null },
-    include: {
-      versions: {
-        orderBy: { versionNumber: "desc" },
-      },
-    },
-  });
-
+  const artifact = await queryOne<ArtifactRow>(
+    `SELECT * FROM artifacts WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+    [artifactId, ownerId]
+  );
   if (!artifact) {
     throw new ArtifactNotFoundError();
   }
 
+  const versions = await query<VersionRow>(
+    `SELECT * FROM versions WHERE artifact_id = $1 ORDER BY version_number DESC`,
+    [artifactId]
+  );
+
   return {
-    ...artifact,
-    tags: normalizeTags(artifact.tags),
+    ...toArtifactSummary(artifact),
+    versions: versions.map(toVersionDetail),
   };
 }
 
@@ -519,51 +663,53 @@ export async function commitVersion(
   artifactId: string,
   payload: CommitVersionPayload
 ): Promise<VersionDetail> {
-  const artifact = await db.artifact.findFirst({
-    where: { id: artifactId, ownerId: authorId, deletedAt: null },
-  });
+  const artifact = await queryOne<{ id: string }>(
+    `SELECT id FROM artifacts WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+    [artifactId, authorId]
+  );
   if (!artifact) {
     throw new ArtifactNotFoundError();
   }
 
   assertContentKeyNamespace(authorId, payload.contentKey);
 
-  return db.$transaction(async (tx) => {
-    const lastVersion = await tx.version.findFirst({
-      where: { artifactId },
-      orderBy: { versionNumber: "desc" },
-    });
+  return transaction(async (tx) => {
+    const { rows: lastRows } = await tx.query<{ version_number: number }>(
+      `SELECT version_number FROM versions
+       WHERE artifact_id = $1
+       ORDER BY version_number DESC
+       LIMIT 1`,
+      [artifactId]
+    );
+    const nextVersionNumber = lastRows.length > 0 ? lastRows[0].version_number + 1 : 1;
 
-    const nextVersionNumber = lastVersion ? lastVersion.versionNumber + 1 : 1;
-
-    const version = await tx.version.create({
-      data: {
+    const { rows: versionRows } = await tx.query<VersionRow>(
+      `INSERT INTO versions (artifact_id, version_number, content_key, change_summary, author_id)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [
         artifactId,
-        versionNumber: nextVersionNumber,
-        contentKey: payload.contentKey,
-        changeSummary: payload.changeSummary ?? `Committed version ${nextVersionNumber}`,
+        nextVersionNumber,
+        payload.contentKey,
+        payload.changeSummary ?? `Committed version ${nextVersionNumber}`,
         authorId,
-      },
-    });
+      ]
+    );
 
-    await tx.artifact.update({
-      where: { id: artifactId },
-      data: { updatedAt: new Date() },
-    });
+    await tx.query(`UPDATE artifacts SET updated_at = now() WHERE id = $1`, [artifactId]);
 
-    await tx.auditLog.create({
-      data: {
-        action: "ARTIFACT_VERSION_COMMITTED",
-        actorId: authorId,
-        targetId: artifactId,
-        details: {
-          versionNumber: nextVersionNumber,
-          contentKey: payload.contentKey,
-        },
-      },
-    });
+    await tx.query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      [
+        "ARTIFACT_VERSION_COMMITTED",
+        authorId,
+        artifactId,
+        JSON.stringify({ versionNumber: nextVersionNumber, contentKey: payload.contentKey }),
+      ]
+    );
 
-    return version;
+    return toVersionDetail(versionRows[0]);
   });
 }
 
@@ -578,56 +724,62 @@ export async function restoreVersion(
   artifactId: string,
   versionNumber: number
 ): Promise<VersionDetail> {
-  const artifact = await db.artifact.findFirst({
-    where: { id: artifactId, ownerId: authorId, deletedAt: null },
-  });
+  const artifact = await queryOne<{ id: string }>(
+    `SELECT id FROM artifacts WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
+    [artifactId, authorId]
+  );
   if (!artifact) {
     throw new ArtifactNotFoundError();
   }
 
-  const targetVersion = await db.version.findFirst({
-    where: { artifactId, versionNumber },
-  });
+  const targetVersion = await queryOne<VersionRow>(
+    `SELECT * FROM versions WHERE artifact_id = $1 AND version_number = $2`,
+    [artifactId, versionNumber]
+  );
   if (!targetVersion) {
     throw new VersionNotFoundError();
   }
 
-  return db.$transaction(async (tx) => {
-    const lastVersion = await tx.version.findFirst({
-      where: { artifactId },
-      orderBy: { versionNumber: "desc" },
-    });
+  return transaction(async (tx) => {
+    const { rows: lastRows } = await tx.query<{ version_number: number }>(
+      `SELECT version_number FROM versions
+       WHERE artifact_id = $1
+       ORDER BY version_number DESC
+       LIMIT 1`,
+      [artifactId]
+    );
+    const nextVersionNumber = lastRows.length > 0 ? lastRows[0].version_number + 1 : 1;
 
-    const nextVersionNumber = lastVersion ? lastVersion.versionNumber + 1 : 1;
-
-    const version = await tx.version.create({
-      data: {
+    const { rows: versionRows } = await tx.query<VersionRow>(
+      `INSERT INTO versions (artifact_id, version_number, content_key, change_summary, author_id)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [
         artifactId,
-        versionNumber: nextVersionNumber,
-        contentKey: targetVersion.contentKey,
-        changeSummary: `Restored version ${versionNumber}.`,
+        nextVersionNumber,
+        targetVersion.content_key,
+        `Restored version ${versionNumber}.`,
         authorId,
-      },
-    });
+      ]
+    );
 
-    await tx.artifact.update({
-      where: { id: artifactId },
-      data: { updatedAt: new Date() },
-    });
+    await tx.query(`UPDATE artifacts SET updated_at = now() WHERE id = $1`, [artifactId]);
 
-    await tx.auditLog.create({
-      data: {
-        action: "ARTIFACT_VERSION_RESTORED",
-        actorId: authorId,
-        targetId: artifactId,
-        details: {
+    await tx.query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      [
+        "ARTIFACT_VERSION_RESTORED",
+        authorId,
+        artifactId,
+        JSON.stringify({
           restoredFromVersion: versionNumber,
           newVersionNumber: nextVersionNumber,
-          contentKey: targetVersion.contentKey,
-        },
-      },
-    });
+          contentKey: targetVersion.content_key,
+        }),
+      ]
+    );
 
-    return version;
+    return toVersionDetail(versionRows[0]);
   });
 }

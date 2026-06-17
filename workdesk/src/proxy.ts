@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getIronSession } from "iron-session";
+import { unsealData } from "iron-session";
 import { SessionData, SESSION_OPTIONS } from "@/lib/session";
+
+// Read-only: unseal the iron-session cookie directly.
+//
+// We deliberately do NOT use getIronSession(req.cookies, …) here. At the Next.js
+// edge runtime, NextRequest.cookies is not the cookie-store shape iron-session's
+// stateful API expects, and passing it throws "adapterFn is not a function".
+// The proxy only needs to read the session, so unsealData (stateless decrypt) is
+// the correct primitive. Returns an empty object if the cookie is absent/invalid.
+async function readSession(req: NextRequest): Promise<Partial<SessionData>> {
+  const sealed = req.cookies.get(SESSION_OPTIONS.cookieName)?.value;
+  if (!sealed) return {};
+  try {
+    return await unsealData<SessionData>(sealed, {
+      password: SESSION_OPTIONS.password,
+    });
+  } catch {
+    // Tampered, expired, or rotated-secret cookie → treat as logged out.
+    return {};
+  }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Proxy — Edge Route Protection (Next.js 16 Proxy Convention)
@@ -43,10 +63,9 @@ const AUTH_ROUTES = ["/login", "/forgot-password"];
 export async function proxy(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
 
-  // Read session from the incoming request cookies.
-  // getIronSession with NextRequest/NextResponse works at edge.
+  // Read session from the incoming request cookies (stateless unseal).
   const res = NextResponse.next();
-  const session = await getIronSession<SessionData>(req.cookies as any, SESSION_OPTIONS);
+  const session = await readSession(req);
 
   const isLoggedIn = session.isLoggedIn === true && Boolean(session.userId);
   const isAdmin = isLoggedIn && session.role === "ADMIN";
