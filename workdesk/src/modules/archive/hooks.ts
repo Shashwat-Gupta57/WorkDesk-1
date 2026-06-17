@@ -11,6 +11,9 @@ import type {
   StarSummary,
   StarredLists,
   StarTargetType,
+  TrashItem,
+  TrashItemKind,
+  StorageUsage,
   CreateSetPayload,
   UpdateSetPayload,
   CreateArtifactPayload,
@@ -34,6 +37,8 @@ export const archiveKeys = {
     ["archive", "artifacts", scope] as const,
   artifact: (id: string) => ["archive", "artifact", id] as const,
   stars: () => ["archive", "stars"] as const,
+  trash: () => ["archive", "trash"] as const,
+  storage: () => ["storage", "usage"] as const,
 };
 
 // ── Sets: queries ────────────────────────────────────────────────────────────
@@ -146,7 +151,7 @@ export function useDeleteArtifact() {
 export function useCommitVersion(artifactId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (payload: { contentKey: string; changeSummary?: string | null }) =>
+    mutationFn: (payload: { contentKey: string; changeSummary?: string | null; byteSize?: number | null }) =>
       api.post<VersionDetail>(`/api/archive/artifacts/${artifactId}/versions`, payload),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["archive"] }),
   });
@@ -203,5 +208,45 @@ export function useUnstar() {
     mutationFn: ({ targetType, targetId }: { targetType: StarTargetType; targetId: string }) =>
       api.delete("/api/archive/stars", { params: { targetType, targetId } }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["archive"] }),
+  });
+}
+
+// ── Trash ────────────────────────────────────────────────────────────────────
+
+export function useTrash() {
+  return useQuery<TrashItem[]>({
+    queryKey: archiveKeys.trash(),
+    queryFn: () => api.get<TrashItem[]>("/api/archive/trash"),
+  });
+}
+
+export function useRestoreTrashItem() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ kind, id }: { kind: TrashItemKind; id: string }) =>
+      api.put("/api/archive/trash", { kind, id }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["archive"] }),
+  });
+}
+
+export function usePermanentDelete() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ kind, id }: { kind: TrashItemKind; id: string }) =>
+      api.delete("/api/archive/trash", { params: { kind, id } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["archive"] });
+      qc.invalidateQueries({ queryKey: ["storage"] });
+    },
+  });
+}
+
+// ── Storage usage ────────────────────────────────────────────────────────────
+
+export function useStorageUsage() {
+  return useQuery<StorageUsage>({
+    queryKey: archiveKeys.storage(),
+    queryFn: () => api.get<StorageUsage>("/api/storage/usage"),
+    staleTime: 30_000, // re-fetch every 30s at most
   });
 }

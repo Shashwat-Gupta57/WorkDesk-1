@@ -24,7 +24,7 @@ export class UploadError extends Error {
   }
 }
 
-export async function uploadFile(file: File): Promise<string> {
+export async function uploadFile(file: File): Promise<{ contentKey: string; byteSize: number }> {
   // Step 1 — presigned ticket.
   let ticket: UploadTicket;
   try {
@@ -32,6 +32,7 @@ export async function uploadFile(file: File): Promise<string> {
       params: {
         contentType: file.type || "application/octet-stream",
         filename: file.name,
+        byteSize: String(file.size),
       },
     });
   } catch (err) {
@@ -60,6 +61,6 @@ export async function uploadFile(file: File): Promise<string> {
     throw new UploadError(`Upload to storage failed (HTTP ${res.status}).`);
   }
 
-  // Step 3 — caller commits this key as a version.
-  return ticket.contentKey;
+  // Step 3 — return contentKey + byteSize so caller can commit the version.
+  return { contentKey: ticket.contentKey, byteSize: file.size };
 }

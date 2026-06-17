@@ -92,6 +92,7 @@ export const UpdateArtifactSchema = z
 export const CommitVersionSchema = z.object({
   contentKey: z.string({ message: "File content key is required." }).min(1, "Content key cannot be empty."),
   changeSummary: z.string().max(255, "Change summary must be at most 255 characters.").nullable().optional(),
+  byteSize: z.number().int().nonnegative().nullable().optional(),
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -169,4 +170,42 @@ export const ListArtifactsQuerySchemaV2 = z.object({
     .string()
     .optional()
     .transform((v) => v === "true"),
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Trash schemas
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const TrashActionSchema = z.object({
+  kind: z.enum(["artifact", "set"]),
+  id: z.string().uuid("id must be a valid UUID."),
+  action: z.enum(["restore", "delete"]),
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Storage / quota schemas
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const SetQuotaSchema = z.object({
+  userId: z.string().uuid("userId must be a valid UUID."),
+  quotaBytes: z.number().int().positive("quotaBytes must be a positive integer."),
+});
+
+export const UploadQuerySchemaV2 = z.object({
+  contentType: z
+    .string({ message: "contentType is required." })
+    .min(1, "contentType cannot be empty.")
+    .refine((value) => ALLOWED_UPLOAD_CONTENT_TYPES.includes(value as (typeof ALLOWED_UPLOAD_CONTENT_TYPES)[number]), {
+      message: "Unsupported content type.",
+    }),
+  filename: z
+    .string()
+    .max(255, "Filename must be at most 255 characters.")
+    .optional()
+    .default("unnamed-file"),
+  byteSize: z
+    .string()
+    .optional()
+    .transform((v) => (v ? parseInt(v, 10) : 0))
+    .pipe(z.number().nonnegative()),
 });

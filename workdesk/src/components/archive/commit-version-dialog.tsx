@@ -44,10 +44,11 @@ export function CommitVersionDialog({
     setError(null);
     setBusy(true);
     try {
-      const contentKey = await uploadFile(file);
+      const { contentKey, byteSize } = await uploadFile(file);
       await commit.mutateAsync({
         contentKey,
         changeSummary: changeSummary.trim() || null,
+        byteSize,
       });
       reset();
       onClose();

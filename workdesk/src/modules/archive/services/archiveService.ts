@@ -1,5 +1,6 @@
 import { query, queryOne, transaction } from "@/lib/db";
 import { AuditAction, ArtifactType, Visibility } from "@/lib/enums";
+import { incrementStorageUsed } from "./storageService";
 import {
   SetSummary,
   SetDetail,
@@ -49,6 +50,7 @@ interface VersionRow {
   artifact_id: string;
   version_number: number;
   content_key: string;
+  byte_size: string | null; // bigint → string from pg
   change_summary: string | null;
   author_id: string;
   created_at: Date;
@@ -683,14 +685,17 @@ export async function commitVersion(
     );
     const nextVersionNumber = lastRows.length > 0 ? lastRows[0].version_number + 1 : 1;
 
+    const byteSize = payload.byteSize ?? null;
+
     const { rows: versionRows } = await tx.query<VersionRow>(
-      `INSERT INTO versions (artifact_id, version_number, content_key, change_summary, author_id)
-       VALUES ($1, $2, $3, $4, $5)
+      `INSERT INTO versions (artifact_id, version_number, content_key, byte_size, change_summary, author_id)
+       VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
       [
         artifactId,
         nextVersionNumber,
         payload.contentKey,
+        byteSize,
         payload.changeSummary ?? `Committed version ${nextVersionNumber}`,
         authorId,
       ]
@@ -705,9 +710,16 @@ export async function commitVersion(
         "ARTIFACT_VERSION_COMMITTED",
         authorId,
         artifactId,
-        JSON.stringify({ versionNumber: nextVersionNumber, contentKey: payload.contentKey }),
+        JSON.stringify({ versionNumber: nextVersionNumber, contentKey: payload.contentKey, byteSize }),
       ]
     );
+
+    // Increment storage counter outside the transaction (non-blocking, best-effort)
+    if (byteSize && byteSize > 0) {
+      incrementStorageUsed(authorId, byteSize).catch((e) =>
+        console.error("[Storage] Failed to increment storage counter:", e)
+      );
+    }
 
     return toVersionDetail(versionRows[0]);
   });

@@ -63,7 +63,8 @@ export function ArtifactDialog({
       } else {
         let initialFileKey: string | undefined;
         if (file) {
-          initialFileKey = await uploadFile(file);
+          const { contentKey } = await uploadFile(file);
+          initialFileKey = contentKey;
         }
         await createArtifact.mutateAsync({
           title,

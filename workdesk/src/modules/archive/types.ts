@@ -78,6 +78,7 @@ export interface UpdateArtifactPayload {
 export interface CommitVersionPayload {
   contentKey: string;
   changeSummary?: string | null;
+  byteSize?: number | null;
 }
 
 // ── Stars ────────────────────────────────────────────────────────────────────
@@ -100,4 +101,25 @@ export interface StarredLists {
 export interface ToggleStarPayload {
   targetType: StarTargetType;
   targetId: string;
+}
+
+// ── Trash ─────────────────────────────────────────────────────────────────────
+
+export type TrashItemKind = "artifact" | "set";
+
+export interface TrashItem {
+  id: string;
+  kind: TrashItemKind;
+  title: string;        // artifact title or set name
+  type?: string;        // only for artifacts
+  deletedAt: Date;
+  expiresAt: Date;      // deletedAt + 30 days
+}
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+
+export interface StorageUsage {
+  usedBytes: number;
+  quotaBytes: number;
+  usedPercent: number;
 }
