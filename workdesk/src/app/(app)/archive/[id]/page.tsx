@@ -7,6 +7,7 @@ import { LoadingState, ErrorState } from "@/components/ui/states";
 import { ArtifactDialog } from "@/components/archive/artifact-dialog";
 import { CommitVersionDialog } from "@/components/archive/commit-version-dialog";
 import { ShareDialog } from "@/components/archive/share-dialog";
+import { PublishDialog } from "@/components/library/publish-dialog";
 import { VersionTimeline } from "@/components/archive/version-timeline";
 import { RichTextEditor } from "@/components/archive/rich-text-editor";
 import { RichTextViewer } from "@/components/archive/rich-text-editor";
@@ -48,6 +49,7 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
   const [editOpen, setEditOpen] = useState(false);
   const [commitOpen, setCommitOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [publishOpen, setPublishOpen] = useState(false);
   const [compareVersion, setCompareVersion] = useState<VersionDetail | null>(null);
 
   const isText = artifact?.type === ArtifactType.TEXT;
@@ -107,6 +109,9 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
         <div className="flex shrink-0 items-center gap-2">
           {isOwner && (
             <>
+              <Button variant="secondary" onClick={() => setPublishOpen(true)}>
+                Publish to Library
+              </Button>
               <Button variant="secondary" onClick={() => setShareOpen(true)}>
                 Share
               </Button>
@@ -160,7 +165,17 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
           <h2 className="mb-4 text-sm font-semibold text-text-primary">Properties</h2>
           <dl className="space-y-3 text-sm">
             <Meta label="Type" value={artifact.type} />
-            <Meta label="Visibility" value={artifact.visibility} />
+            <div>
+              <dt className="text-text-secondary">Visibility</dt>
+              <dd className="mt-0.5 flex items-center gap-1.5">
+                <span className="text-text-primary">{artifact.visibility}</span>
+                {artifact.visibility === "PUBLIC" && (
+                  <span className="rounded border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                    In Library
+                  </span>
+                )}
+              </dd>
+            </div>
             <Meta label="Created" value={fmtDate(artifact.createdAt)} />
             <Meta label="Last modified" value={fmtDate(artifact.updatedAt)} />
             {!isOwner && (
@@ -204,6 +219,12 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
           <ShareDialog
             open={shareOpen}
             onClose={() => setShareOpen(false)}
+            artifactId={artifact.id}
+            artifactTitle={artifact.title}
+          />
+          <PublishDialog
+            open={publishOpen}
+            onClose={() => setPublishOpen(false)}
             artifactId={artifact.id}
             artifactTitle={artifact.title}
           />

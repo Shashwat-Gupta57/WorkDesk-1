@@ -165,14 +165,17 @@ export async function verifyContentKeyReference(userId: string, contentKey: stri
     return;
   }
 
-  // Shared-read path: key belongs to another user — verify a share grant exists.
+  // Shared-read path: key belongs to another user — share grant or PUBLIC visibility.
   const granted = await queryOne<{ id: string }>(
     `SELECT v.id FROM versions v
      JOIN artifacts a ON a.id = v.artifact_id
-     JOIN artifact_shares s ON s.artifact_id = a.id AND s.grantee_id = $2
+     LEFT JOIN artifact_shares s ON s.artifact_id = a.id AND s.grantee_id = $2
      WHERE v.content_key = $1
        AND a.deleted_at IS NULL
-       AND a.visibility IN ('SHARED', 'PUBLIC')
+       AND (
+         a.visibility = 'PUBLIC'
+         OR (a.visibility IN ('SHARED', 'PUBLIC') AND s.id IS NOT NULL)
+       )
      LIMIT 1`,
     [contentKey, userId]
   );
@@ -673,8 +676,9 @@ export async function getArtifactDetails(
     [artifactId, userId]
   );
 
-  // If not the owner, try the shared read path.
+  // If not the owner, try the shared/public read path.
   if (!artifact && allowShared) {
+    // SHARED: grantee has an explicit share row.
     artifact = await queryOne<ArtifactRow>(
       `SELECT a.* FROM artifacts a
        JOIN artifact_shares s ON s.artifact_id = a.id AND s.grantee_id = $2
@@ -683,6 +687,13 @@ export async function getArtifactDetails(
          AND a.visibility IN ('SHARED', 'PUBLIC')`,
       [artifactId, userId]
     );
+    // PUBLIC: any authenticated user can read library-published artifacts.
+    if (!artifact) {
+      artifact = await queryOne<ArtifactRow>(
+        `SELECT * FROM artifacts WHERE id = $1 AND deleted_at IS NULL AND visibility = 'PUBLIC'`,
+        [artifactId]
+      );
+    }
   }
 
   if (!artifact) {

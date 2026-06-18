@@ -333,7 +333,11 @@ export function Explorer({ initialStarred = false }: { initialStarred?: boolean 
                 view={view}
                 icon={<FileIcon />}
                 title={a.title}
-                subtitle={a.type + (a.tags.length ? ` · ${a.tags.join(", ")}` : "")}
+                subtitle={
+                  a.type +
+                  (a.visibility === "PUBLIC" ? " · 📖 Published" : a.visibility === "SHARED" ? " · Shared" : "") +
+                  (a.tags.length ? ` · ${a.tags.join(", ")}` : "")
+                }
                 starred={starredArtifactIds.has(a.id)}
                 onStar={() => toggleStar("artifact", a.id, starredArtifactIds.has(a.id))}
                 onOpen={() => router.push(`/archive/${a.id}`)}

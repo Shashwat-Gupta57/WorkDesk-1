@@ -1,0 +1,42 @@
+import { NextRequest, NextResponse } from "next/server";
+import { requireSession, UnauthenticatedError } from "@/lib/session";
+import { ok, fail } from "@/types/common";
+import { CreateSectionSchema } from "@/modules/library/schemas";
+import {
+  listSections,
+  createSection,
+} from "@/modules/library/services/libraryService";
+
+// GET  /api/library/sections  — list all sections
+// POST /api/library/sections  — create a new section
+
+export async function GET(_req: NextRequest): Promise<NextResponse> {
+  try {
+    const session = await requireSession();
+    const sections = await listSections(session.userId);
+    return NextResponse.json(ok(sections));
+  } catch (err) {
+    if (err instanceof UnauthenticatedError)
+      return NextResponse.json(fail(err.code, err.message), { status: 401 });
+    console.error("[GET /api/library/sections]", err);
+    return NextResponse.json(fail("INTERNAL_ERROR", "An unexpected error occurred."), { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  try {
+    const session = await requireSession();
+    const body: unknown = await req.json();
+    const parsed = CreateSectionSchema.safeParse(body);
+    if (!parsed.success)
+      return NextResponse.json(fail("VALIDATION_ERROR", "Invalid input.", parsed.error.flatten()), { status: 400 });
+
+    const section = await createSection(session.userId, parsed.data.name, parsed.data.description ?? null);
+    return NextResponse.json(ok(section), { status: 201 });
+  } catch (err) {
+    if (err instanceof UnauthenticatedError)
+      return NextResponse.json(fail(err.code, err.message), { status: 401 });
+    console.error("[POST /api/library/sections]", err);
+    return NextResponse.json(fail("INTERNAL_ERROR", "An unexpected error occurred."), { status: 500 });
+  }
+}
