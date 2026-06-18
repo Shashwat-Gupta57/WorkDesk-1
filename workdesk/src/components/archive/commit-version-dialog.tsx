@@ -17,10 +17,12 @@ export function CommitVersionDialog({
   open,
   onClose,
   artifactId,
+  artifactType,
 }: {
   open: boolean;
   onClose: () => void;
   artifactId: string;
+  artifactType?: string;
 }) {
   const commit = useCommitVersion(artifactId);
   const [file, setFile] = useState<File | null>(null);

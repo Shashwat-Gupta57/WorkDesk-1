@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Textarea, Select } from "@/components/ui/input";
@@ -35,6 +36,7 @@ export function ArtifactDialog({
   const isEdit = Boolean(editing);
   const createArtifact = useCreateArtifact();
   const updateArtifact = useUpdateArtifact();
+  const router = useRouter();
 
   const [title, setTitle] = useState(editing?.title ?? "");
   const [description, setDescription] = useState(editing?.description ?? "");
@@ -43,6 +45,8 @@ export function ArtifactDialog({
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const isText = type === ArtifactType.TEXT;
 
   const parseTags = () =>
     tagsText
@@ -53,6 +57,13 @@ export function ArtifactDialog({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    // Non-TEXT types always require a file to be uploaded.
+    if (!isEdit && !isText && !file) {
+      setError("A file is required for this artifact type. Please choose a file to upload.");
+      return;
+    }
+
     setBusy(true);
     try {
       if (isEdit && editing) {
@@ -60,13 +71,14 @@ export function ArtifactDialog({
           id: editing.id,
           payload: { title, description: description || null, tags: parseTags() },
         });
+        onClose();
       } else {
         let initialFileKey: string | undefined;
         if (file) {
           const { contentKey } = await uploadFile(file);
           initialFileKey = contentKey;
         }
-        await createArtifact.mutateAsync({
+        const artifact = await createArtifact.mutateAsync({
           title,
           description: description || null,
           tags: parseTags(),
@@ -74,8 +86,12 @@ export function ArtifactDialog({
           setId,
           initialFileKey,
         });
+        onClose();
+        // TEXT artifact with no uploaded file → open the workspace with the editor ready.
+        if (isText && !file) {
+          router.push(`/archive/${artifact.id}`);
+        }
       }
-      onClose();
     } catch (err) {
       if (err instanceof UploadError) {
         setError(`File upload failed: ${err.message}`);
@@ -134,13 +150,26 @@ export function ArtifactDialog({
               </Select>
             </Field>
 
-            <Field label="File (optional — committed as version 1)" htmlFor="art-file">
+            <Field
+              label={
+                isText
+                  ? "File (optional — leave empty to start writing in the editor)"
+                  : "File (required — committed as version 1)"
+              }
+              htmlFor="art-file"
+            >
               <input
                 id="art-file"
                 type="file"
+                required={!isText}
                 onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                 className="block w-full text-sm text-text-secondary file:mr-3 file:rounded-md file:border-0 file:bg-surface-container-high file:px-3 file:py-2 file:text-sm file:text-text-primary hover:file:bg-surface-container"
               />
+              {!isText && (
+                <p className="mt-1 text-xs text-text-secondary">
+                  A file must be uploaded to create this artifact type.
+                </p>
+              )}
             </Field>
           </>
         )}

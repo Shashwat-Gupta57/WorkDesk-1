@@ -169,7 +169,7 @@ export function useRestoreVersion(artifactId: string) {
 
 // ── Text content (TEXT artifacts) ────────────────────────────────────────────
 
-export function useTextContent(artifactId: string, versionNumber?: number) {
+export function useTextContent(artifactId: string, versionNumber?: number, enabled = true) {
   const params: Record<string, string> = {};
   if (versionNumber !== undefined) params.versionNumber = String(versionNumber);
   return useQuery<Record<string, unknown> | null>({
@@ -180,6 +180,7 @@ export function useTextContent(artifactId: string, versionNumber?: number) {
         { params }
       ),
     staleTime: 60_000,
+    enabled,
   });
 }
 
