@@ -14,7 +14,10 @@ export type ActivityEventType =
   | "SET_DELETED"
   | "SET_RESTORED"
   | "ARTIFACT_SHARED"
-  | "ARTIFACT_SHARE_REVOKED";
+  | "ARTIFACT_SHARE_REVOKED"
+  | "BULLETIN_POSTED"
+  | "COUNTDOWN_ASSIGNED"
+  | "COUNTDOWN_COMPLETED";
 
 export interface ActivityEvent {
   id: string;

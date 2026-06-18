@@ -56,5 +56,23 @@ export const AuditAction = {
   ARTIFACT_VERSION_RESTORED: "ARTIFACT_VERSION_RESTORED",
   ARTIFACT_SHARED: "ARTIFACT_SHARED",
   ARTIFACT_SHARE_REVOKED: "ARTIFACT_SHARE_REVOKED",
+  BULLETIN_CREATED: "BULLETIN_CREATED",
+  BULLETIN_DELETED: "BULLETIN_DELETED",
+  BULLETIN_PINNED: "BULLETIN_PINNED",
+  COUNTDOWN_COMPLETED: "COUNTDOWN_COMPLETED",
 } as const;
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction];
+
+export const BulletinType = {
+  ANNOUNCEMENT: "ANNOUNCEMENT",
+  COUNTDOWN: "COUNTDOWN",
+} as const;
+export type BulletinType = (typeof BulletinType)[keyof typeof BulletinType];
+
+export const CountdownStatus = {
+  PENDING: "PENDING",
+  COMPLETED: "COMPLETED",
+  OVERDUE: "OVERDUE",
+  INCOMPLETE: "INCOMPLETE",
+} as const;
+export type CountdownStatus = (typeof CountdownStatus)[keyof typeof CountdownStatus];
