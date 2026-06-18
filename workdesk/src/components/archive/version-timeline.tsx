@@ -8,6 +8,8 @@ import { ApiError } from "@/lib/api-client";
 import { getDownloadUrl, useRestoreVersion } from "@/modules/archive/hooks";
 import type { VersionDetail } from "@/modules/archive/types";
 
+export type { VersionDetail };
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Version timeline — the append-only history of an artifact (newest first).
 //
@@ -26,9 +28,11 @@ function fmtDate(d: Date | string): string {
 export function VersionTimeline({
   artifactId,
   versions,
+  onCompare,
 }: {
   artifactId: string;
   versions: VersionDetail[];
+  onCompare?: (versionNumber: number) => void;
 }) {
   const restore = useRestoreVersion(artifactId);
   const [restoreTarget, setRestoreTarget] = useState<VersionDetail | null>(null);
@@ -99,6 +103,11 @@ export function VersionTimeline({
                 >
                   {downloadingId === v.id ? "…" : "Download"}
                 </Button>
+                {!isHead && onCompare && (
+                  <Button variant="ghost" className="h-8" onClick={() => onCompare(v.versionNumber)}>
+                    Compare
+                  </Button>
+                )}
                 {!isHead && (
                   <Button variant="secondary" className="h-8" onClick={() => setRestoreTarget(v)}>
                     Restore

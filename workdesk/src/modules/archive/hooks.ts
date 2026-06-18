@@ -167,6 +167,34 @@ export function useRestoreVersion(artifactId: string) {
   });
 }
 
+// ── Text content (TEXT artifacts) ────────────────────────────────────────────
+
+export function useTextContent(artifactId: string, versionNumber?: number) {
+  const params: Record<string, string> = {};
+  if (versionNumber !== undefined) params.versionNumber = String(versionNumber);
+  return useQuery<Record<string, unknown> | null>({
+    queryKey: ["archive", "content", artifactId, versionNumber ?? "head"],
+    queryFn: () =>
+      api.get<Record<string, unknown> | null>(
+        `/api/archive/artifacts/${artifactId}/content`,
+        { params }
+      ),
+    staleTime: 60_000,
+  });
+}
+
+export function useSaveTextContent(artifactId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: { doc: Record<string, unknown>; changeSummary?: string | null }) =>
+      api.put<VersionDetail>(`/api/archive/artifacts/${artifactId}/content`, payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["archive"] });
+      qc.invalidateQueries({ queryKey: ["storage"] });
+    },
+  });
+}
+
 // ── Storage: download ────────────────────────────────────────────────────────
 
 /**

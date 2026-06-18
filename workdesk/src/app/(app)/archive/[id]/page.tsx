@@ -1,15 +1,18 @@
 "use client";
 
-import { use, useState, useEffect } from "react";
+import { use, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LoadingState, ErrorState } from "@/components/ui/states";
 import { ArtifactDialog } from "@/components/archive/artifact-dialog";
 import { CommitVersionDialog } from "@/components/archive/commit-version-dialog";
 import { VersionTimeline } from "@/components/archive/version-timeline";
-import { useArtifactDetail } from "@/modules/archive/hooks";
+import { RichTextEditor } from "@/components/archive/rich-text-editor";
+import { DiffViewer } from "@/components/archive/diff-viewer";
+import { useArtifactDetail, useTextContent, useSaveTextContent } from "@/modules/archive/hooks";
 import { useRecordOpen } from "@/modules/activity/hooks";
 import { ApiError } from "@/lib/api-client";
+import type { VersionDetail } from "@/modules/archive/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Artifact workspace (Slice 2).
@@ -37,6 +40,30 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
 
   const [editOpen, setEditOpen] = useState(false);
   const [commitOpen, setCommitOpen] = useState(false);
+
+  // Compare mode: compare a selected older version against the head.
+  const [compareVersion, setCompareVersion] = useState<VersionDetail | null>(null);
+  const isText = artifact?.type === "TEXT";
+
+  // Rich-text editor state (TEXT artifacts only).
+  const { data: headContent, isLoading: contentLoading } = useTextContent(id, undefined);
+  const { data: compareContent, isLoading: compareLoading } = useTextContent(
+    id,
+    compareVersion?.versionNumber
+  );
+  const saveContent = useSaveTextContent(id);
+
+  const handleSave = useCallback(
+    async (doc: Record<string, unknown>, changeSummary: string | null) => {
+      await saveContent.mutateAsync({ doc, changeSummary });
+    },
+    [saveContent]
+  );
+
+  function handleCompare(versionNumber: number) {
+    const v = artifact?.versions.find((v) => v.versionNumber === versionNumber);
+    setCompareVersion(v ?? null);
+  }
 
   if (isLoading) {
     return (
@@ -84,8 +111,54 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
           {artifact.description && (
             <p className="mb-6 max-w-2xl text-sm text-text-secondary">{artifact.description}</p>
           )}
+
+          {isText && (
+            <div className="mb-6">
+              {compareVersion ? (
+                <>
+                  <div className="mb-3 flex items-center gap-3">
+                    <h2 className="text-sm font-semibold text-text-primary">
+                      Comparing v{compareVersion.versionNumber} → current
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={() => setCompareVersion(null)}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      ✕ Close diff
+                    </button>
+                  </div>
+                  <DiffViewer
+                    versionA={compareVersion}
+                    versionB={artifact.versions[0]}
+                    contentA={compareContent ?? null}
+                    contentB={headContent ?? null}
+                    loading={compareLoading || contentLoading}
+                  />
+                </>
+              ) : (
+                <>
+                  <h2 className="mb-3 text-sm font-semibold text-text-primary">Content</h2>
+                  {contentLoading ? (
+                    <div className="text-sm text-text-secondary">Loading content…</div>
+                  ) : (
+                    <RichTextEditor
+                      initialContent={headContent ?? null}
+                      onSave={handleSave}
+                      saving={saveContent.isPending}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           <h2 className="mb-3 text-sm font-semibold text-text-primary">Version history</h2>
-          <VersionTimeline artifactId={artifact.id} versions={artifact.versions} />
+          <VersionTimeline
+            artifactId={artifact.id}
+            versions={artifact.versions}
+            onCompare={isText ? handleCompare : undefined}
+          />
         </section>
 
         <aside className="w-80 shrink-0 overflow-y-auto border-l border-border-default bg-surface-secondary px-5 py-6">

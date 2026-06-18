@@ -667,6 +667,18 @@ export async function getArtifactDetails(ownerId: string, artifactId: string): P
   };
 }
 
+/** Update the plain-text FTS content index for a TEXT artifact (best-effort). */
+export async function updateArtifactFtsContent(
+  ownerId: string,
+  artifactId: string,
+  plainText: string
+): Promise<void> {
+  await query(
+    `UPDATE artifacts SET fts_content = $1 WHERE id = $2 AND owner_id = $3 AND deleted_at IS NULL`,
+    [plainText || null, artifactId, ownerId]
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Version Operations (Linear Append-Only Ledger)
 // ─────────────────────────────────────────────────────────────────────────────
