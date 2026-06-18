@@ -4,8 +4,13 @@ import { useState } from "react";
 import { Modal } from "./modal";
 import { Button } from "./button";
 
-// Confirmation dialog for destructive actions. Runs an async `onConfirm`,
-// shows a busy state, and surfaces any thrown error message.
+// Confirmation dialog for destructive actions.
+//
+// Two usage modes:
+//   Async mode (default): pass async onConfirm, omit busy/error.
+//     The dialog manages its own loading/error state.
+//   External mode: pass busy + optional error from a mutation hook.
+//     onConfirm is called synchronously; caller owns state and closing.
 export function Confirm({
   open,
   onClose,
@@ -13,26 +18,41 @@ export function Confirm({
   message,
   confirmLabel = "Delete",
   onConfirm,
+  busy: externalBusy,
+  error: externalError,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   message: string;
   confirmLabel?: string;
-  onConfirm: () => Promise<void>;
+  onConfirm: (() => void) | (() => Promise<void>);
+  /** External busy flag (use with mutation.isPending). Enables external mode. */
+  busy?: boolean;
+  /** External error string (use with mutation error). */
+  error?: string | null;
 }) {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [internalBusy, setInternalBusy] = useState(false);
+  const [internalError, setInternalError] = useState<string | null>(null);
+
+  const isExternal = externalBusy !== undefined;
+  const busy = isExternal ? externalBusy : internalBusy;
+  const error = isExternal ? (externalError ?? null) : internalError;
 
   async function run() {
-    setError(null);
-    setBusy(true);
+    if (isExternal) {
+      // Fire-and-forget — parent owns state.
+      (onConfirm as () => void)();
+      return;
+    }
+    setInternalError(null);
+    setInternalBusy(true);
     try {
-      await onConfirm();
+      await (onConfirm as () => Promise<void>)();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Action failed.");
-      setBusy(false);
+      setInternalError(err instanceof Error ? err.message : "Action failed.");
+      setInternalBusy(false);
     }
   }
 

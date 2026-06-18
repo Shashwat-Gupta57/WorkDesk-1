@@ -55,6 +55,7 @@ export default function TrashPage() {
   const permDelete = usePermanentDelete();
 
   const [confirmItem, setConfirmItem] = useState<TrashItem | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const items = trashQuery.data ?? [];
 
@@ -62,8 +63,16 @@ export default function TrashPage() {
     await restore.mutateAsync({ kind: item.kind, id: item.id });
   }
 
-  async function handlePermanentDelete(item: TrashItem) {
-    await permDelete.mutateAsync({ kind: item.kind, id: item.id });
+  function handlePermanentDelete(item: TrashItem) {
+    setDeleteError(null);
+    permDelete.mutate(
+      { kind: item.kind, id: item.id },
+      {
+        onSuccess: () => setConfirmItem(null),
+        onError: (err) =>
+          setDeleteError(err instanceof Error ? err.message : "Delete failed."),
+      }
+    );
   }
 
   return (
@@ -154,14 +163,13 @@ export default function TrashPage() {
       {/* Confirm permanent delete */}
       <Confirm
         open={Boolean(confirmItem)}
-        onClose={() => setConfirmItem(null)}
+        onClose={() => { setConfirmItem(null); setDeleteError(null); }}
         title="Delete forever"
         message={`Permanently delete "${confirmItem?.title}"? This cannot be undone — all versions and files will be removed.`}
         confirmLabel="Delete forever"
-        onConfirm={async () => {
-          if (confirmItem) await handlePermanentDelete(confirmItem);
-          setConfirmItem(null);
-        }}
+        busy={permDelete.isPending}
+        error={deleteError}
+        onConfirm={() => { if (confirmItem) handlePermanentDelete(confirmItem); }}
       />
     </div>
   );
