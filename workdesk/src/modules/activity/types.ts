@@ -12,7 +12,9 @@ export type ActivityEventType =
   | "SET_CREATED"
   | "SET_UPDATED"
   | "SET_DELETED"
-  | "SET_RESTORED";
+  | "SET_RESTORED"
+  | "ARTIFACT_SHARED"
+  | "ARTIFACT_SHARE_REVOKED";
 
 export interface ActivityEvent {
   id: string;

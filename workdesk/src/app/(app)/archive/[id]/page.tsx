@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LoadingState, ErrorState } from "@/components/ui/states";
 import { ArtifactDialog } from "@/components/archive/artifact-dialog";
 import { CommitVersionDialog } from "@/components/archive/commit-version-dialog";
+import { ShareDialog } from "@/components/archive/share-dialog";
 import { VersionTimeline } from "@/components/archive/version-timeline";
 import { RichTextEditor } from "@/components/archive/rich-text-editor";
 import { RichTextViewer } from "@/components/archive/rich-text-editor";
@@ -46,6 +47,7 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
 
   const [editOpen, setEditOpen] = useState(false);
   const [commitOpen, setCommitOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [compareVersion, setCompareVersion] = useState<VersionDetail | null>(null);
 
   const isText = artifact?.type === ArtifactType.TEXT;
@@ -104,9 +106,14 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
         </div>
         <div className="flex shrink-0 items-center gap-2">
           {isOwner && (
-            <Button variant="secondary" onClick={() => setEditOpen(true)}>
-              Edit metadata
-            </Button>
+            <>
+              <Button variant="secondary" onClick={() => setShareOpen(true)}>
+                Share
+              </Button>
+              <Button variant="secondary" onClick={() => setEditOpen(true)}>
+                Edit metadata
+              </Button>
+            </>
           )}
           {/* TEXT artifacts are saved via the editor; other types need a file commit. */}
           {isOwner && !isText && (
@@ -193,6 +200,12 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
             artifactId={artifact.id}
             artifactType={artifact.type}
             onClose={() => setCommitOpen(false)}
+          />
+          <ShareDialog
+            open={shareOpen}
+            onClose={() => setShareOpen(false)}
+            artifactId={artifact.id}
+            artifactTitle={artifact.title}
           />
         </>
       )}

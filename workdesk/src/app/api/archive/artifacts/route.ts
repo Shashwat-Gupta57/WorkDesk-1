@@ -30,7 +30,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       if (!idParsed.success) {
         return NextResponse.json(fail("BAD_REQUEST", "Invalid ID format."), { status: 400 });
       }
-      const artifact = await getArtifactDetails(session.userId, idParsed.data.id);
+      // allowShared=true: non-owners with a share grant can also fetch artifact details.
+      const artifact = await getArtifactDetails(session.userId, idParsed.data.id, true);
       return NextResponse.json(ok(artifact));
     }
 

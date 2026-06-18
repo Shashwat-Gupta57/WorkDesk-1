@@ -38,7 +38,8 @@ export async function GET(
     const session = await requireSession();
     const { id: artifactId } = await params;
 
-    const artifact = await getArtifactDetails(session.userId, artifactId);
+    // allowShared=true: grantees can read text content too.
+    const artifact = await getArtifactDetails(session.userId, artifactId, true);
     if (artifact.type !== "TEXT") {
       return NextResponse.json(fail("NOT_TEXT", "Content API is only available for TEXT artifacts."), { status: 400 });
     }

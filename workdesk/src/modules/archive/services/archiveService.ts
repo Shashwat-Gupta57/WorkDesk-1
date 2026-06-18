@@ -14,7 +14,7 @@ import {
   UpdateArtifactPayload,
   CommitVersionPayload,
 } from "../types";
-import { assertContentKeyNamespace, InvalidContentKeyError } from "../utils/contentKey";
+import { assertContentKeyNamespace, extractUserId, InvalidContentKeyError } from "../utils/contentKey";
 
 export { InvalidContentKeyError };
 
@@ -144,24 +144,39 @@ function toVersionDetail(row: VersionRow): VersionDetail {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Ensures a content key is in the caller's namespace and referenced by one of
- * their artifact versions (prevents downloading uncommitted upload tickets).
+ * Ensures a content key is accessible to the caller: either they own the artifact
+ * it belongs to, or they have an active share grant on it (V2 shared read path).
  */
-export async function verifyContentKeyReference(ownerId: string, contentKey: string): Promise<void> {
-  assertContentKeyNamespace(ownerId, contentKey);
+export async function verifyContentKeyReference(userId: string, contentKey: string): Promise<void> {
+  // Owner path: key must be in caller's namespace and linked to their artifact.
+  const keyOwnerId = extractUserId(contentKey);
 
-  const version = await queryOne<{ id: string }>(
-    `SELECT v.id
-     FROM versions v
-     JOIN artifacts a ON a.id = v.artifact_id
-     WHERE v.content_key = $1 AND a.owner_id = $2 AND a.deleted_at IS NULL
-     LIMIT 1`,
-    [contentKey, ownerId]
-  );
-
-  if (!version) {
-    throw new InvalidContentKeyError("Content key is not linked to any of your artifacts.");
+  if (keyOwnerId === userId) {
+    // Fast path — owner check only.
+    assertContentKeyNamespace(userId, contentKey);
+    const version = await queryOne<{ id: string }>(
+      `SELECT v.id FROM versions v
+       JOIN artifacts a ON a.id = v.artifact_id
+       WHERE v.content_key = $1 AND a.owner_id = $2 AND a.deleted_at IS NULL
+       LIMIT 1`,
+      [contentKey, userId]
+    );
+    if (!version) throw new InvalidContentKeyError("Content key is not linked to any of your artifacts.");
+    return;
   }
+
+  // Shared-read path: key belongs to another user — verify a share grant exists.
+  const granted = await queryOne<{ id: string }>(
+    `SELECT v.id FROM versions v
+     JOIN artifacts a ON a.id = v.artifact_id
+     JOIN artifact_shares s ON s.artifact_id = a.id AND s.grantee_id = $2
+     WHERE v.content_key = $1
+       AND a.deleted_at IS NULL
+       AND a.visibility IN ('SHARED', 'PUBLIC')
+     LIMIT 1`,
+    [contentKey, userId]
+  );
+  if (!granted) throw new InvalidContentKeyError("Content key is not linked to any of your artifacts.");
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -647,11 +662,29 @@ export async function getArtifacts(
   return rows.map(toArtifactSummary);
 }
 
-export async function getArtifactDetails(ownerId: string, artifactId: string): Promise<ArtifactDetail> {
-  const artifact = await queryOne<ArtifactRow>(
+export async function getArtifactDetails(
+  userId: string,
+  artifactId: string,
+  /** When true, also accept artifacts shared with this user (visibility SHARED/PUBLIC + share grant). */
+  allowShared = false
+): Promise<ArtifactDetail> {
+  let artifact = await queryOne<ArtifactRow>(
     `SELECT * FROM artifacts WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL`,
-    [artifactId, ownerId]
+    [artifactId, userId]
   );
+
+  // If not the owner, try the shared read path.
+  if (!artifact && allowShared) {
+    artifact = await queryOne<ArtifactRow>(
+      `SELECT a.* FROM artifacts a
+       JOIN artifact_shares s ON s.artifact_id = a.id AND s.grantee_id = $2
+       WHERE a.id = $1
+         AND a.deleted_at IS NULL
+         AND a.visibility IN ('SHARED', 'PUBLIC')`,
+      [artifactId, userId]
+    );
+  }
+
   if (!artifact) {
     throw new ArtifactNotFoundError();
   }

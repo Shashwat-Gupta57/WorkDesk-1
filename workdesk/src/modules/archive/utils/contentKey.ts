@@ -21,6 +21,18 @@ export function buildArchiveContentKey(userId: string, filename: string): string
 }
 
 /**
+ * Extracts the userId segment from a namespaced content key.
+ * Format: archives/{userId}/{uuid}-{filename}
+ * Returns null if the key doesn't match the expected format.
+ */
+export function extractUserId(contentKey: string): string | null {
+  if (!contentKey || contentKey.includes("..") || contentKey.includes("//")) return null;
+  const parts = contentKey.split("/");
+  if (parts.length < 3 || parts[0] !== ARCHIVE_KEY_PREFIX) return null;
+  return parts[1];
+}
+
+/**
  * Validates that a content key belongs to the requesting user's namespace
  * and does not contain path-traversal segments.
  */

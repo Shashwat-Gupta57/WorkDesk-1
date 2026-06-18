@@ -279,3 +279,70 @@ export function useStorageUsage() {
     staleTime: 30_000, // re-fetch every 30s at most
   });
 }
+
+// ── Sharing (V2 Slice 1) ─────────────────────────────────────────────────────
+
+export interface ShareGrant {
+  id: string;
+  artifactId: string;
+  ownerId: string;
+  granteeId: string;
+  granteeName: string;
+  granteeEmail: string;
+  createdAt: Date;
+}
+
+export interface SharedArtifactSummary {
+  id: string;
+  title: string;
+  description: string | null;
+  tags: string[];
+  type: string;
+  ownerId: string;
+  ownerName: string;
+  setId: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  sharedAt: Date;
+}
+
+export function useShareGrants(artifactId: string, enabled = true) {
+  return useQuery<ShareGrant[]>({
+    queryKey: ["archive", "shares", artifactId],
+    queryFn: () => api.get<ShareGrant[]>(`/api/archive/artifacts/${artifactId}/share`),
+    enabled,
+    staleTime: 30_000,
+  });
+}
+
+export function useSharedWithMe() {
+  return useQuery<SharedArtifactSummary[]>({
+    queryKey: ["archive", "shared-with-me"],
+    queryFn: () => api.get<SharedArtifactSummary[]>("/api/archive/shared"),
+    staleTime: 30_000,
+  });
+}
+
+export function useShareArtifact(artifactId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (granteeEmail: string) =>
+      api.post<ShareGrant>(`/api/archive/artifacts/${artifactId}/share`, { granteeEmail }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["archive", "shares", artifactId] });
+      qc.invalidateQueries({ queryKey: ["archive"] });
+    },
+  });
+}
+
+export function useRevokeShare(artifactId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (granteeId: string) =>
+      api.deleteWithBody(`/api/archive/artifacts/${artifactId}/share`, { granteeId }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["archive", "shares", artifactId] });
+      qc.invalidateQueries({ queryKey: ["archive"] });
+    },
+  });
+}
