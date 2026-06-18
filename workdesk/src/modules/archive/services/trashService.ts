@@ -1,5 +1,6 @@
 import { query, queryOne, transaction } from "@/lib/db";
 import { TrashItem } from "../types";
+import { emitActivityEvent } from "@/modules/activity/services/activityService";
 import fs from "fs";
 import path from "path";
 
@@ -116,6 +117,7 @@ export async function restoreFromTrash(
       [id, ownerId]
     );
     if (result.length === 0) throw new TrashItemNotFoundError();
+    emitActivityEvent({ userId: ownerId, eventType: "ARTIFACT_RESTORED", artifactId: id }).catch(() => {});
   } else {
     // Restore the set itself. Artifacts inside it remain soft-deleted — user
     // must restore them individually (matches expected trash UX).
@@ -126,6 +128,7 @@ export async function restoreFromTrash(
       [id, ownerId]
     );
     if (result.length === 0) throw new TrashItemNotFoundError();
+    emitActivityEvent({ userId: ownerId, eventType: "SET_RESTORED", setId: id }).catch(() => {});
   }
 }
 

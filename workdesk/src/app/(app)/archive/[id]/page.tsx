@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { LoadingState, ErrorState } from "@/components/ui/states";
@@ -8,6 +8,7 @@ import { ArtifactDialog } from "@/components/archive/artifact-dialog";
 import { CommitVersionDialog } from "@/components/archive/commit-version-dialog";
 import { VersionTimeline } from "@/components/archive/version-timeline";
 import { useArtifactDetail } from "@/modules/archive/hooks";
+import { useRecordOpen } from "@/modules/activity/hooks";
 import { ApiError } from "@/lib/api-client";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -24,6 +25,15 @@ function fmtDate(d: Date | string): string {
 export default function ArtifactWorkspace({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: artifact, isLoading, error } = useArtifactDetail(id);
+  const recordOpen = useRecordOpen();
+
+  // Record open on first successful load (fire-and-forget).
+  useEffect(() => {
+    if (artifact) {
+      recordOpen.mutate(id);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [artifact?.id]);
 
   const [editOpen, setEditOpen] = useState(false);
   const [commitOpen, setCommitOpen] = useState(false);

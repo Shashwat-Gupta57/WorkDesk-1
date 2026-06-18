@@ -1,30 +1,37 @@
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
+import { RecentArtifactsWidget } from "@/components/dashboard/recent-artifacts-widget";
+import { RecentlyOpenedWidget } from "@/components/dashboard/recently-opened-widget";
+import { StarredWidget } from "@/components/dashboard/starred-widget";
+import { ActivityWidget } from "@/components/dashboard/activity-widget";
+import { StorageWidget } from "@/components/dashboard/storage-widget";
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Dashboard — five widgets in a responsive grid.
+//
+// Widgets: Recent Artifacts (by updatedAt), Recently Opened (access log),
+// Starred, Activity Summary (ActivityEvent feed), Storage Usage.
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
   const { user, isLoading } = useAuth();
 
   return (
     <div className="px-8 py-6">
-      <h1 className="text-2xl font-semibold text-text-primary">Dashboard</h1>
-      <p className="mt-1 text-sm text-text-secondary">
-        {isLoading ? "Loading…" : `Welcome back, ${user?.name ?? "there"}.`}
-      </p>
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold text-text-primary">
+          {isLoading ? "Dashboard" : `Welcome back, ${user?.name?.split(" ")[0] ?? "there"}.`}
+        </h1>
+        <p className="mt-0.5 text-sm text-text-secondary">Here&apos;s what&apos;s happening in your archive.</p>
+      </div>
 
-      {/* Widgets (Recent, Recently Opened, Starred, Activity, Storage) land in Slice 6. */}
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {["Recent Artifacts", "Recently Opened", "Starred", "Activity Summary", "Storage Usage"].map(
-          (title) => (
-            <div
-              key={title}
-              className="rounded-lg border border-border-default bg-surface-container p-5"
-            >
-              <h2 className="text-sm font-medium text-text-primary">{title}</h2>
-              <p className="mt-2 text-xs text-text-secondary">Coming in a later slice.</p>
-            </div>
-          )
-        )}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <RecentArtifactsWidget />
+        <RecentlyOpenedWidget />
+        <StarredWidget />
+        <ActivityWidget />
+        <StorageWidget />
       </div>
     </div>
   );

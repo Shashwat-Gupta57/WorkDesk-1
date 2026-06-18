@@ -1,6 +1,7 @@
 import { query, queryOne, transaction } from "@/lib/db";
 import { AuditAction, ArtifactType, Visibility } from "@/lib/enums";
 import { incrementStorageUsed } from "./storageService";
+import { emitActivityEvent } from "@/modules/activity/services/activityService";
 import {
   SetSummary,
   SetDetail,
@@ -207,6 +208,7 @@ export async function createSet(ownerId: string, payload: CreateSetPayload): Pro
   );
 
   await writeAuditLog("SET_CREATED", ownerId, set!.id, { name: set!.name });
+  emitActivityEvent({ userId: ownerId, eventType: "SET_CREATED", setId: set!.id, details: { name: set!.name } }).catch(() => {});
 
   return toSetSummary(set!);
 }
@@ -278,6 +280,7 @@ export async function updateSet(
     before: { name: existing.name, parentId: existing.parent_id },
     after: { name: updated!.name, parentId: updated!.parent_id },
   });
+  emitActivityEvent({ userId: ownerId, eventType: "SET_UPDATED", setId, details: { name: updated!.name } }).catch(() => {});
 
   return toSetSummary(updated!);
 }
@@ -337,6 +340,8 @@ export async function softDeleteSet(ownerId: string, setId: string): Promise<voi
       ]
     );
   });
+
+  emitActivityEvent({ userId: ownerId, eventType: "SET_DELETED", setId, details: { name: target.name } }).catch(() => {});
 }
 
 export async function getSets(ownerId: string, parentId: string | null | "root"): Promise<SetSummary[]> {
@@ -476,6 +481,9 @@ export async function createArtifact(
       ...toArtifactSummary(artifact),
       versions: version ? [toVersionDetail(version)] : [],
     };
+  }).then((result) => {
+    emitActivityEvent({ userId: ownerId, eventType: "ARTIFACT_CREATED", artifactId: result.id, details: { title: result.title, type: result.type } }).catch(() => {});
+    return result;
   });
 }
 
@@ -546,6 +554,7 @@ export async function updateArtifact(
     before: { title: existing.title, setId: existing.set_id },
     after: { title: updated!.title, setId: updated!.set_id },
   });
+  emitActivityEvent({ userId: ownerId, eventType: "ARTIFACT_UPDATED", artifactId, details: { title: updated!.title } }).catch(() => {});
 
   return toArtifactSummary(updated!);
 }
@@ -571,6 +580,8 @@ export async function softDeleteArtifact(ownerId: string, artifactId: string): P
       ["ARTIFACT_DELETED", ownerId, artifactId, JSON.stringify({ title: target.title })]
     );
   });
+
+  emitActivityEvent({ userId: ownerId, eventType: "ARTIFACT_DELETED", artifactId, details: { title: target.title } }).catch(() => {});
 }
 
 export async function getArtifacts(
@@ -721,7 +732,9 @@ export async function commitVersion(
       );
     }
 
-    return toVersionDetail(versionRows[0]);
+    const detail = toVersionDetail(versionRows[0]);
+    emitActivityEvent({ userId: authorId, eventType: "VERSION_COMMITTED", artifactId, details: { versionNumber: nextVersionNumber } }).catch(() => {});
+    return detail;
   });
 }
 
@@ -792,6 +805,8 @@ export async function restoreVersion(
       ]
     );
 
-    return toVersionDetail(versionRows[0]);
+    const detail = toVersionDetail(versionRows[0]);
+    emitActivityEvent({ userId: authorId, eventType: "VERSION_RESTORED", artifactId, details: { restoredFromVersion: versionNumber, newVersionNumber: nextVersionNumber } }).catch(() => {});
+    return detail;
   });
 }
