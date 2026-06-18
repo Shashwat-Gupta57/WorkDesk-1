@@ -12,6 +12,7 @@ export interface SafeUser {
   id: string;
   email: string;
   name: string;
+  phone: string | null;
   role: Role;
   status: UserStatus;
   themePreference: string;

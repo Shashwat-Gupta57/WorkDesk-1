@@ -92,6 +92,44 @@ export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
 // Forgot / Reset Password Schemas
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Sign Up Schema
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const SignUpSchema = z
+  .object({
+    name: z
+      .string({ message: "Full name is required." })
+      .min(2, "Name must be at least 2 characters.")
+      .max(100, "Name must be at most 100 characters.")
+      .trim(),
+    phone: z
+      .string({ message: "Phone number is required." })
+      .min(7, "Enter a valid phone number.")
+      .max(20, "Phone number is too long.")
+      .regex(/^[+\d\s\-().]+$/, "Phone number contains invalid characters.")
+      .trim(),
+    email: z
+      .string({ message: "Email is required." })
+      .email("Invalid email address.")
+      .toLowerCase()
+      .trim(),
+    password: z
+      .string({ message: "Password is required." })
+      .min(8, "Password must be at least 8 characters.")
+      .max(72, "Password must be at most 72 characters.")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter.")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter.")
+      .regex(/[0-9]/, "Password must contain at least one number."),
+    confirmPassword: z.string({ message: "Please confirm your password." }),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
+
+export type SignUpInput = z.infer<typeof SignUpSchema>;
+
 export const ForgotPasswordSchema = z.object({
   email: z.string().email("Invalid email address.").toLowerCase().trim(),
 });

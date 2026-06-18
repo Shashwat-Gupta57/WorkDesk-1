@@ -20,6 +20,7 @@ interface UserRow {
   email: string;
   password_hash: string;
   name: string;
+  phone: string | null;
   role: Role;
   status: UserStatus;
   theme_preference: string;
@@ -81,6 +82,14 @@ export class EmailAlreadyInUseError extends Error {
   }
 }
 
+export class DuplicateEmailError extends Error {
+  readonly code = "EMAIL_ALREADY_IN_USE";
+  constructor() {
+    super("An account with that email address already exists.");
+    this.name = "DuplicateEmailError";
+  }
+}
+
 export class InvalidResetTokenError extends Error {
   readonly code = "INVALID_RESET_TOKEN";
   constructor() {
@@ -99,6 +108,7 @@ function toSafeUser(row: UserRow): SafeUser {
     id: row.id,
     email: row.email,
     name: row.name,
+    phone: row.phone ?? null,
     role: row.role,
     status: row.status,
     themePreference: row.theme_preference,
@@ -537,4 +547,47 @@ export async function resetPassword(plainToken: string, newPassword: string): Pr
     `DELETE FROM password_reset_tokens WHERE user_id = $1 AND used_at IS NULL`,
     [tokenRow.user_id]
   ).catch(() => {});
+}
+
+/**
+ * registerUser
+ *
+ * Creates a new MEMBER account. Enforces email uniqueness.
+ * Hashes password with bcrypt, writes audit log, returns safe user projection.
+ *
+ * @throws DuplicateEmailError — email already registered
+ */
+export async function registerUser(payload: {
+  name: string;
+  phone: string;
+  email: string;
+  password: string;
+}): Promise<SafeUser> {
+  const email = payload.email.toLowerCase().trim();
+
+  const existing = await queryOne<{ id: string }>(
+    `SELECT id FROM users WHERE email = $1`,
+    [email]
+  );
+  if (existing) throw new DuplicateEmailError();
+
+  const passwordHash = await bcrypt.hash(payload.password, BCRYPT_ROUNDS);
+
+  return transaction(async (tx) => {
+    const { rows } = await tx.query<UserRow>(
+      `INSERT INTO users (email, password_hash, name, phone, role, status)
+       VALUES ($1, $2, $3, $4, 'MEMBER', 'ACTIVE')
+       RETURNING *`,
+      [email, passwordHash, payload.name.trim(), payload.phone.trim()]
+    );
+    const user = rows[0];
+
+    await tx.query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ('USER_CREATED', $1, $1, $2)`,
+      [user.id, JSON.stringify({ method: "signup", email })]
+    );
+
+    return toSafeUser(user);
+  });
 }
