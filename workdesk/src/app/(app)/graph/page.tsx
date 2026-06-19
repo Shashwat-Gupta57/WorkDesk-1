@@ -19,8 +19,9 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { useGraphData } from "@/modules/relationships/hooks";
-import { buildFlowGraph, buildFloatingGraph } from "@/components/graph/layout";
+import { buildFlowGraph } from "@/components/graph/layout";
 import { MemberNode, SetNode, ArtifactNode, NODE_COLORS } from "@/components/graph/graph-nodes";
+import { FloatingCanvas } from "@/components/graph/floating-canvas";
 import { LoadingState, ErrorState } from "@/components/ui/states";
 import { Button } from "@/components/ui/button";
 import type { GraphNode } from "@/modules/relationships/types";
@@ -255,11 +256,9 @@ function Legend() {
 
 type ViewMode = "tree" | "floating";
 
-function GraphInner() {
+function GraphInner({ search }: { search: string }) {
   const router = useRouter();
   const [teamView, setTeamView] = useState(false);
-  const [search, setSearch] = useState("");
-  const [viewMode, setViewMode] = useState<ViewMode>("tree");
   const { data: graphData, isLoading, error } = useGraphData(teamView);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -269,12 +268,10 @@ function GraphInner() {
   const [selected, setSelected] = useState<GraphNode | null>(null);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
 
-  // Build flow graph when data or view mode changes, then re-fit.
+  // Build flow graph when data or search changes, then re-fit.
   useEffect(() => {
     if (!graphData) return;
-    const { nodes: fn, edges: fe } = viewMode === "floating"
-      ? buildFloatingGraph(graphData)
-      : buildFlowGraph(graphData);
+    const { nodes: fn, edges: fe } = buildFlowGraph(graphData);
 
     // Apply search dim — non-matching nodes go to 30% opacity
     const q = search.trim().toLowerCase();
@@ -297,7 +294,7 @@ function GraphInner() {
         rfInstance?.fitView({ padding: 0.25, duration: 300 });
       });
     });
-  }, [graphData, search, viewMode, setNodes, setEdges, rfInstance]);
+  }, [graphData, search, setNodes, setEdges, rfInstance]);
 
   const onNodeMouseEnter: NodeMouseHandler = useCallback((_e, node) => {
     const raw = node.data.rawNode as GraphNode;
@@ -355,7 +352,7 @@ function GraphInner() {
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative" }}>
-      {/* ── Toolbar ── */}
+      {/* ── Floating toolbar — team view only ── */}
       <div style={{
         position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)",
         zIndex: 10, display: "flex", alignItems: "center", gap: 10,
@@ -365,55 +362,6 @@ function GraphInner() {
         boxShadow: "0 4px 20px #00000066",
         fontFamily: "Inter, sans-serif",
       }}>
-        {/* Search */}
-        <div style={{ position: "relative" }}>
-          <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#8b949e", fontSize: 12 }}>⌕</span>
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search nodes…"
-            style={{
-              paddingLeft: 24, paddingRight: 10, paddingTop: 5, paddingBottom: 5,
-              borderRadius: 6, border: "1px solid #30363d",
-              background: "#0d1117", color: "#e6edf3", fontSize: 12,
-              fontFamily: "Inter, sans-serif", outline: "none", width: 160,
-              transition: "border-color 0.15s ease",
-            }}
-          />
-        </div>
-
-        <div style={{ width: 1, height: 20, background: "#30363d" }} />
-
-        {/* View mode switcher */}
-        <div style={{
-          display: "flex", alignItems: "center",
-          background: "#0d1117", border: "1px solid #30363d",
-          borderRadius: 6, overflow: "hidden", padding: 2, gap: 2,
-        }}>
-          {(["tree", "floating"] as ViewMode[]).map(mode => (
-            <button
-              key={mode}
-              onClick={() => setViewMode(mode)}
-              style={{
-                padding: "3px 10px",
-                borderRadius: 4,
-                border: "none",
-                cursor: "pointer",
-                fontSize: 11,
-                fontWeight: 500,
-                fontFamily: "Inter, sans-serif",
-                background: viewMode === mode ? "#1f6feb" : "transparent",
-                color: viewMode === mode ? "#e6edf3" : "#8b949e",
-                transition: "background 0.15s ease, color 0.15s ease",
-              }}
-            >
-              {mode === "tree" ? "Tree" : "Floating"}
-            </button>
-          ))}
-        </div>
-
-        <div style={{ width: 1, height: 20, background: "#30363d" }} />
-
         {/* Team view toggle */}
         <label style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer", userSelect: "none" }}>
           <div
@@ -438,18 +386,8 @@ function GraphInner() {
           </span>
         </label>
 
-        {search && (
-          <button onClick={() => setSearch("")} style={{
-            background: "none", border: "none", color: "#8b949e", cursor: "pointer",
-            fontSize: 11, padding: "2px 6px", borderRadius: 4,
-          }}>
-            Clear
-          </button>
-        )}
-
         <div style={{ width: 1, height: 20, background: "#30363d" }} />
 
-        {/* Selection hint */}
         <span style={{ fontSize: 10, color: "#6e7681", userSelect: "none", whiteSpace: "nowrap" }}>
           Drag to select · Ctrl+click to add
         </span>
@@ -533,21 +471,74 @@ function GraphInner() {
 }
 
 export default function GraphPage() {
+  const [viewMode, setViewMode] = useState<ViewMode>("tree");
+  const [search,   setSearch]   = useState("");
+
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Page header */}
       <div className="flex shrink-0 items-center justify-between border-b border-border-default px-5 py-3">
         <div>
-          <h1 className="text-sm font-semibold text-text-primary">Graph view</h1>
-          <p className="text-xs text-text-secondary">Your archive structure visualised. Double-click any node to open it.</p>
+          <h1 className="text-sm font-semibold text-text-primary">Graph View</h1>
+          <p className="text-xs text-text-secondary">
+            {viewMode === "floating"
+              ? "Force-directed constellation. Drag nodes · Scroll to zoom · Click to open."
+              : "Hierarchy tree. Double-click any node to open it."}
+          </p>
+        </div>
+
+        {/* View switcher + search in header */}
+        <div className="flex items-center gap-3">
+          {/* Search */}
+          <div style={{ position: "relative" }}>
+            <span style={{ position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)", color: "#8b949e", fontSize: 12 }}>⌕</span>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search nodes…"
+              className="h-7 rounded border border-border-default bg-surface-container text-[12px] text-text-primary placeholder:text-text-secondary outline-none focus:border-primary transition-colors"
+              style={{ paddingLeft: 24, paddingRight: search ? 24 : 10, width: 150 }}
+            />
+            {search && (
+              <button onClick={() => setSearch("")} style={{ position: "absolute", right: 6, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#8b949e", cursor: "pointer", fontSize: 13, lineHeight: 1 }}>✕</button>
+            )}
+          </div>
+
+          {/* Tree / Floating pill */}
+          <div style={{
+            display: "flex", alignItems: "center",
+            background: "#0d1117", border: "1px solid #30363d",
+            borderRadius: 6, padding: 2, gap: 2,
+          }}>
+            {(["tree", "floating"] as ViewMode[]).map(mode => (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                style={{
+                  padding: "3px 12px", borderRadius: 4, border: "none",
+                  cursor: "pointer", fontSize: 12, fontWeight: 500,
+                  fontFamily: "Inter, sans-serif",
+                  background: viewMode === mode ? "#1f6feb" : "transparent",
+                  color:      viewMode === mode ? "#e6edf3"  : "#8b949e",
+                  transition: "background 0.15s ease, color 0.15s ease",
+                }}
+              >
+                {mode === "tree" ? "Tree" : "Floating"}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Canvas */}
       <div className="relative flex-1 overflow-hidden">
-        <Suspense fallback={<div className="flex h-full items-center justify-center"><LoadingState label="Loading…" /></div>}>
-          <GraphInner />
-        </Suspense>
+        {viewMode === "floating" ? (
+          <FloatingCanvas search={search} />
+        ) : (
+          <Suspense fallback={<div className="flex h-full items-center justify-center"><LoadingState label="Loading…" /></div>}>
+            <GraphInner search={search} />
+          </Suspense>
+        )}
       </div>
     </div>
   );
