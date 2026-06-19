@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   User, Lock, Palette, Bell, Shield, AlertTriangle,
   CheckCircle2, Loader2, AlertCircle, Monitor, LogOut,
-  Eye, EyeOff,
+  Eye, EyeOff, Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useProfile, useUpdateProfile, useChangePassword } from "@/modules/auth/hooks";
@@ -200,15 +200,102 @@ function ProfileTab() {
   );
 }
 
+// ── Security tab helpers (module-scope — must NOT be defined inside a component) ──
+
+type PwMethod = "current" | "otp";
+type OtpStep  = "request" | "verify";
+
+function pwStrength(pw: string) {
+  if (pw.length < 8) return 1;
+  const score = [/[A-Z]/, /[0-9]/, /[^A-Za-z0-9]/].filter(r => r.test(pw)).length;
+  if (pw.length >= 12 && score === 3) return 4;
+  if (pw.length >= 10 && score >= 2) return 3;
+  return 2;
+}
+const PW_COLORS = ["", "bg-danger", "bg-warning", "bg-success", "bg-success"];
+const PW_LABELS = ["", "Weak", "Fair", "Good", "Strong"];
+
+function PwStrengthBar({ value }: { value: string }) {
+  if (!value) return null;
+  const s = pwStrength(value);
+  return (
+    <div className="space-y-1 mt-1.5">
+      <div className="flex gap-1">
+        {[1, 2, 3, 4].map(i => (
+          <div key={i} className={cn("h-1 flex-1 rounded-full transition-colors", i <= s ? PW_COLORS[s] : "bg-surface-elevated")} />
+        ))}
+      </div>
+      <p className="text-[11px] text-text-secondary">{PW_LABELS[s]}</p>
+    </div>
+  );
+}
+
 // ── Security tab ──────────────────────────────────────────────────────────────
 
 function SecurityTab() {
+  const { data: profile } = useProfile();
   const changePassword = useChangePassword();
-  const [form, setForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+
+  const [method, setMethod] = useState<PwMethod>("current");
+
+  // Method 1 — current password
+  const [form,        setForm]        = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
   const [showCurrent, setShowCurrent] = useState(false);
-  const [showNew, setShowNew] = useState(false);
-  const [state, setState] = useState<SaveState>("idle");
-  const [error, setError] = useState("");
+  const [showNew,     setShowNew]     = useState(false);
+  const [state,       setState]       = useState<SaveState>("idle");
+  const [error,       setError]       = useState("");
+
+  // Method 2 — OTP
+  const [otpStep,  setOtpStep]  = useState<OtpStep>("request");
+  const [otp,      setOtp]      = useState("");
+  const [otpPw,    setOtpPw]    = useState({ newPassword: "", confirmPassword: "" });
+  const [showOtpPw,setShowOtpPw]= useState(false);
+  const [otpState, setOtpState] = useState<SaveState>("idle");
+  const [otpError, setOtpError] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+
+  function startCooldown() {
+    setCooldown(60);
+    const id = setInterval(() => setCooldown(c => { if (c <= 1) { clearInterval(id); return 0; } return c - 1; }), 1000);
+  }
+
+  function switchMethod(m: PwMethod) {
+    setMethod(m);
+    setError(""); setOtpError("");
+  }
+
+  async function handleSendOtp() {
+    setOtpError(""); setOtpState("saving");
+    try {
+      await api.post("/api/auth/send-password-otp", {});
+      setOtpStep("verify");
+      startCooldown();
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 429) {
+        setOtpStep("verify"); startCooldown();
+      } else {
+        setOtpError(err instanceof ApiError ? err.message : "Failed to send code.");
+      }
+    } finally {
+      setOtpState("idle");
+    }
+  }
+
+  async function handleOtpPassword(e: React.FormEvent) {
+    e.preventDefault();
+    if (otpPw.newPassword !== otpPw.confirmPassword) { setOtpError("Passwords don't match"); return; }
+    if (otpPw.newPassword.length < 8) { setOtpError("At least 8 characters required"); return; }
+    setOtpError(""); setOtpState("saving");
+    try {
+      await api.post("/api/auth/verify-password-otp", { otp, newPassword: otpPw.newPassword, confirmPassword: otpPw.confirmPassword });
+      setOtpState("saved");
+      setOtp(""); setOtpPw({ newPassword: "", confirmPassword: "" }); setOtpStep("request");
+      setTimeout(() => setOtpState("idle"), 2500);
+    } catch (err) {
+      setOtpError(err instanceof ApiError ? err.message : "Failed to update password");
+      setOtpState("error");
+    }
+  }
 
   async function handlePassword(e: React.FormEvent) {
     e.preventDefault();
@@ -216,11 +303,7 @@ function SecurityTab() {
     if (form.newPassword.length < 8) { setError("At least 8 characters required"); return; }
     setState("saving"); setError("");
     try {
-      await changePassword.mutateAsync({
-        currentPassword: form.currentPassword,
-        newPassword: form.newPassword,
-        confirmPassword: form.confirmPassword,
-      });
+      await changePassword.mutateAsync({ currentPassword: form.currentPassword, newPassword: form.newPassword, confirmPassword: form.confirmPassword });
       setState("saved");
       setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
       setTimeout(() => setState("idle"), 2500);
@@ -230,72 +313,173 @@ function SecurityTab() {
     }
   }
 
-  function pwStrength(pw: string) {
-    if (pw.length < 8) return 1;
-    const score = [/[A-Z]/, /[0-9]/, /[^A-Za-z0-9]/].filter(r => r.test(pw)).length;
-    if (pw.length >= 12 && score === 3) return 4;
-    if (pw.length >= 10 && score >= 2) return 3;
-    return 2;
-  }
-  const strengthColors = ["", "bg-danger", "bg-warning", "bg-success", "bg-success"];
-  const strengthLabels = ["", "Weak", "Fair", "Good", "Strong"];
-
   return (
-    <form onSubmit={handlePassword} className="space-y-5">
+    <div className="space-y-5">
       <SectionHeader title="Change Password" description="Choose a strong password of at least 8 characters." />
-      <div className="space-y-4">
-        <Field label="Current Password">
-          <div className="relative">
-            <input
-              type={showCurrent ? "text" : "password"}
-              value={form.currentPassword}
-              onChange={e => setForm(f => ({ ...f, currentPassword: e.target.value }))}
-              required className={cn(inputCls, "pr-9")} placeholder="Current password"
-            />
-            <button type="button" onClick={() => setShowCurrent(v => !v)}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors">
-              {showCurrent ? <EyeOff size={14} /> : <Eye size={14} />}
-            </button>
-          </div>
-        </Field>
-        <Field label="New Password">
-          <div className="relative">
-            <input
-              type={showNew ? "text" : "password"}
-              value={form.newPassword}
-              onChange={e => setForm(f => ({ ...f, newPassword: e.target.value }))}
-              required className={cn(inputCls, "pr-9")} placeholder="At least 8 characters"
-            />
-            <button type="button" onClick={() => setShowNew(v => !v)}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors">
-              {showNew ? <EyeOff size={14} /> : <Eye size={14} />}
-            </button>
-          </div>
-          {form.newPassword && (
-            <div className="space-y-1 mt-1.5">
-              <div className="flex gap-1">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className={cn(
-                    "h-1 flex-1 rounded-full transition-colors",
-                    i <= pwStrength(form.newPassword) ? strengthColors[pwStrength(form.newPassword)] : "bg-surface-elevated"
-                  )} />
-                ))}
-              </div>
-              <p className="text-[11px] text-text-secondary">{strengthLabels[pwStrength(form.newPassword)]}</p>
-            </div>
-          )}
-        </Field>
-        <Field label="Confirm New Password">
-          <input
-            type="password" value={form.confirmPassword}
-            onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))}
-            required className={inputCls} placeholder="Repeat new password"
-          />
-        </Field>
+
+      {/* Method toggle */}
+      <div className="flex gap-1 p-1 bg-surface-secondary border border-border-default rounded-lg">
+        {(["current", "otp"] as PwMethod[]).map(m => (
+          <button
+            key={m} type="button"
+            onClick={() => switchMethod(m)}
+            className={cn(
+              "flex-1 h-8 text-[12px] font-medium rounded transition-colors",
+              method === m ? "bg-surface-elevated text-text-primary" : "text-text-secondary hover:text-text-primary"
+            )}
+          >
+            {m === "current" ? "Current password" : "Email OTP"}
+          </button>
+        ))}
       </div>
-      <ErrorMsg msg={error} />
-      <SaveRow state={state} label="Update password" />
-    </form>
+
+      {method === "current" ? (
+        <form onSubmit={handlePassword} className="space-y-4">
+          <Field label="Current Password">
+            <div className="relative">
+              <input
+                type={showCurrent ? "text" : "password"}
+                value={form.currentPassword}
+                onChange={e => setForm(f => ({ ...f, currentPassword: e.target.value }))}
+                required className={cn(inputCls, "pr-9")} placeholder="Current password"
+              />
+              <button type="button" onClick={() => setShowCurrent(v => !v)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors">
+                {showCurrent ? <EyeOff size={14} /> : <Eye size={14} />}
+              </button>
+            </div>
+          </Field>
+          <Field label="New Password">
+            <div className="relative">
+              <input
+                type={showNew ? "text" : "password"}
+                value={form.newPassword}
+                onChange={e => setForm(f => ({ ...f, newPassword: e.target.value }))}
+                required className={cn(inputCls, "pr-9")} placeholder="At least 8 characters"
+              />
+              <button type="button" onClick={() => setShowNew(v => !v)}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors">
+                {showNew ? <EyeOff size={14} /> : <Eye size={14} />}
+              </button>
+            </div>
+            <PwStrengthBar value={form.newPassword} />
+          </Field>
+          <Field label="Confirm New Password">
+            <input
+              type="password" value={form.confirmPassword}
+              onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))}
+              required className={inputCls} placeholder="Repeat new password"
+            />
+          </Field>
+          <ErrorMsg msg={error} />
+          <SaveRow state={state} label="Update password" />
+        </form>
+      ) : (
+        <div className="space-y-4">
+          {otpStep === "request" ? (
+            <div className="rounded-lg border border-border-default bg-surface-secondary p-4 space-y-3">
+              <div className="flex items-start gap-2.5">
+                <Mail size={15} className="text-primary shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-[13px] font-medium text-text-primary">Send a verification code</p>
+                  <p className="text-[12px] text-text-secondary mt-0.5">
+                    We&apos;ll email a 6-digit code to{" "}
+                    <span className="text-text-primary">{profile?.email ?? "your email"}</span>.
+                  </p>
+                </div>
+              </div>
+              {otpError && <ErrorMsg msg={otpError} />}
+              <button
+                type="button"
+                disabled={otpState === "saving"}
+                onClick={handleSendOtp}
+                className="flex items-center gap-1.5 h-9 px-5 text-[13px] font-medium bg-primary text-on-primary rounded hover:opacity-90 disabled:opacity-50 transition-opacity"
+              >
+                {otpState === "saving" && <Loader2 size={13} className="animate-spin" />}
+                Send code
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleOtpPassword} className="space-y-4">
+              <div className="rounded-lg border border-border-default bg-surface-secondary px-4 py-3 flex items-center justify-between gap-3">
+                <p className="text-[12px] text-text-secondary">
+                  Code sent to <span className="text-text-primary">{profile?.email}</span>
+                </p>
+                <button
+                  type="button"
+                  disabled={cooldown > 0 || otpState === "saving"}
+                  onClick={handleSendOtp}
+                  className="text-[12px] text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                >
+                  {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend"}
+                </button>
+              </div>
+
+              <Field label="Verification code">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  required
+                  value={otp}
+                  onChange={e => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  className={cn(inputCls, "text-center text-xl font-mono tracking-[0.4em]")}
+                  placeholder="000000"
+                />
+              </Field>
+
+              <Field label="New Password">
+                <div className="relative">
+                  <input
+                    type={showOtpPw ? "text" : "password"}
+                    value={otpPw.newPassword}
+                    onChange={e => setOtpPw(p => ({ ...p, newPassword: e.target.value }))}
+                    required className={cn(inputCls, "pr-9")} placeholder="At least 8 characters"
+                  />
+                  <button type="button" onClick={() => setShowOtpPw(v => !v)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary transition-colors">
+                    {showOtpPw ? <EyeOff size={14} /> : <Eye size={14} />}
+                  </button>
+                </div>
+                <PwStrengthBar value={otpPw.newPassword} />
+              </Field>
+              <Field label="Confirm New Password">
+                <input
+                  type="password" value={otpPw.confirmPassword}
+                  onChange={e => setOtpPw(p => ({ ...p, confirmPassword: e.target.value }))}
+                  required className={inputCls} placeholder="Repeat new password"
+                />
+              </Field>
+
+              {otpError && <ErrorMsg msg={otpError} />}
+
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setOtpStep("request"); setOtp(""); setOtpPw({ newPassword: "", confirmPassword: "" }); setOtpError(""); }}
+                  className="h-9 px-4 text-[13px] text-text-secondary border border-border-default rounded hover:text-text-primary hover:bg-surface-elevated transition-colors"
+                >
+                  Back
+                </button>
+                <button
+                  type="submit"
+                  disabled={otpState === "saving" || otp.length < 6}
+                  className="flex items-center gap-1.5 h-9 px-5 text-[13px] font-medium bg-primary text-on-primary rounded hover:opacity-90 disabled:opacity-50 transition-opacity"
+                >
+                  {otpState === "saving" && <Loader2 size={13} className="animate-spin" />}
+                  Update password
+                </button>
+                {otpState === "saved" && (
+                  <span className="flex items-center gap-1.5 text-[13px] text-success">
+                    <CheckCircle2 size={14} /> Saved
+                  </span>
+                )}
+              </div>
+            </form>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
 

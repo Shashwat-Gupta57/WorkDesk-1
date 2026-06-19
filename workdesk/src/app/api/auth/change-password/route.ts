@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireSession, UnauthenticatedError } from "@/lib/session";
 import {
   changePassword,
+  getUserById,
   UserNotFoundError,
   InvalidCurrentPasswordError,
 } from "@/modules/auth/services/authService";
 import { ChangePasswordSchema } from "@/modules/auth/schemas";
+import { sendPasswordChangedConfirmation } from "@/lib/email";
 import { ok, fail } from "@/types/common";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -34,6 +36,10 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
 
     const { currentPassword, newPassword } = parsed.data;
     await changePassword(sessionData.userId, currentPassword, newPassword);
+
+    getUserById(sessionData.userId)
+      .then(u => sendPasswordChangedConfirmation(u.email))
+      .catch(e => console.error("[change-password] confirmation email failed:", e));
 
     return NextResponse.json(
       ok({ message: "Password updated successfully." }),
