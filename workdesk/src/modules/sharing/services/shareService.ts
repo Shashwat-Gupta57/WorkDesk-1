@@ -1,6 +1,7 @@
 import { query, queryOne, transaction } from "@/lib/db";
 import { AuditAction, Visibility } from "@/lib/enums";
 import { emitActivityEvent } from "@/modules/activity/services/activityService";
+import { emitNotification } from "@/modules/notifications/services/notificationService";
 import type { ShareGrant, SharedArtifactSummary } from "../types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -152,6 +153,15 @@ export async function shareArtifact(
       artifactId,
       details: { granteeEmail: grantee.email, granteeName: grantee.name },
     }).catch(() => {});
+
+    // Notify the grantee (best-effort — never blocks the share).
+    emitNotification(
+      grantee.id,
+      "ARTIFACT_SHARED",
+      "Artifact shared with you",
+      `"${artifact.title}" was shared with you.`,
+      { artifactId, artifactTitle: artifact.title }
+    ).catch(() => {});
 
     return {
       id: row.id,

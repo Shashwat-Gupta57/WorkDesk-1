@@ -14,9 +14,11 @@
   --color-surface-container: #1c2128; /* elevated cards */
   --color-surface-container-low: #161b22;
   --color-surface-container-high: #21262d; /* active nav / hover-elevated */
+  --color-surface-elevated: #21262d; /* alias for modals / popovers */
 
   /* Borders */
   --color-border-default: #30363d;
+  --color-outline-variant: #484f58;
 
   /* Text */
   --color-text-primary: #e6edf3;
@@ -60,4 +62,64 @@ body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* ── Graph view animations ─────────────────────────────────────────────────── */
+
+@keyframes graphNodeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Entrance animation lives on the node's INNER div, never on the React Flow
+   wrapper (whose transform is owned by drag/positioning). Opacity-only so it
+   can never interfere with dragging. Depth stagger comes from an inline delay. */
+.graph-node-in {
+  animation: graphNodeIn 0.35s ease both;
+}
+
+@keyframes tooltipIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes panelSlideIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Graph node hover glow — applied via React Flow's node wrapper */
+.react-flow__node:hover > div {
+  box-shadow: 0 0 0 2px #58a6ff44, 0 0 18px #58a6ff22 !important;
+  transform: scale(1.04) !important;
+}
+
+/* Selected node ring */
+.react-flow__node.selected > div {
+  box-shadow: 0 0 0 2px #58a6ff, 0 0 20px #58a6ff44 !important;
+  transform: scale(1.04) !important;
+}
+
+/* Rubber-band selection box */
+.react-flow__selection {
+  background: #1f6feb18 !important;
+  border: 1px solid #388bfd !important;
+  border-radius: 4px !important;
+}
+
+/* ── Page-level fade-in for new route loads ────────────────────────────────── */
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+main, [data-page] {
+  animation: pageIn 0.25s ease;
+}
+
+/* ── Sidebar nav hover micro-animation ─────────────────────────────────────── */
+@keyframes navActive {
+  from { background-size: 0% 100%; }
+  to   { background-size: 100% 100%; }
 }

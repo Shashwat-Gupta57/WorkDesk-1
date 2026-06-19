@@ -1,5 +1,6 @@
 import { query, queryOne, transaction } from "@/lib/db";
 import { emitActivityEvent } from "@/modules/activity/services/activityService";
+import { emitNotification } from "@/modules/notifications/services/notificationService";
 import type { ConversationSummary, ConversationDetail, MessageItem } from "../types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -253,9 +254,18 @@ export async function sendMessage(
   if (otherMember) {
     emitActivityEvent({
       userId: otherMember.user_id,
-      eventType: "ARTIFACT_SHARED", // reuse closest available type; NEW_MESSAGE added in Slice 6
+      eventType: "ARTIFACT_SHARED",
       details: { conversationId, senderId, preview: body.slice(0, 80) },
     }).catch(() => {});
+
+    // Notify the recipient (best-effort).
+    emitNotification(
+      otherMember.user_id,
+      "MESSAGE_RECEIVED",
+      `New message from ${sender?.name ?? "someone"}`,
+      body.slice(0, 120),
+      { conversationId, senderId }
+    ).catch(() => {});
   }
 
   return {

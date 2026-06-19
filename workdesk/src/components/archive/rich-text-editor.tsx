@@ -23,6 +23,7 @@ interface RichTextEditorProps {
   onSave: (doc: Record<string, unknown>, changeSummary: string | null) => Promise<void>;
   saving: boolean;
   readOnly?: boolean;
+  onChange?: () => void;
 }
 
 // ── Toolbar button ────────────────────────────────────────────────────────────
@@ -143,7 +144,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 
 // ── Editor ────────────────────────────────────────────────────────────────────
 
-export function RichTextEditor({ initialContent, onSave, saving, readOnly = false }: RichTextEditorProps) {
+export function RichTextEditor({ initialContent, onSave, saving, readOnly = false, onChange }: RichTextEditorProps) {
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDirtyRef = useRef(false);
 
@@ -160,6 +161,7 @@ export function RichTextEditor({ initialContent, onSave, saving, readOnly = fals
     editable: !readOnly,
     onUpdate: () => {
       isDirtyRef.current = true;
+      onChange?.();
     },
   });
 

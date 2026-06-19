@@ -103,14 +103,30 @@ export async function GET(
 
     const buffer = fs.readFileSync(filePath);
     const filename = segments[segments.length - 1];
-    // Strip the uuid prefix to send a clean filename.
     const cleanName = filename.replace(/^[0-9a-f-]{36}-/i, "");
+    const ext = path.extname(cleanName).toLowerCase();
+
+    // Inline-displayable types: serve with correct Content-Type so browsers can
+    // render them directly (img src, iframe, etc.). Everything else is a download.
+    const INLINE: Record<string, string> = {
+      ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+      ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml",
+      ".pdf": "application/pdf",
+    };
+    const contentType = INLINE[ext] ?? "application/octet-stream";
+    // `?download=1` forces a download even for previewable types — used by the
+    // explicit Download button. Without it, previewable types render inline so
+    // <img>/<iframe> can display them.
+    const forceDownload = req.nextUrl.searchParams.get("download") === "1";
+    const isInline = ext in INLINE && !forceDownload;
 
     return new NextResponse(buffer, {
       status: 200,
       headers: {
-        "Content-Type": "application/octet-stream",
-        "Content-Disposition": `attachment; filename="${cleanName}"`,
+        "Content-Type": contentType,
+        ...(isInline
+          ? {}
+          : { "Content-Disposition": `attachment; filename="${cleanName}"` }),
         "Content-Length": buffer.byteLength.toString(),
       },
     });

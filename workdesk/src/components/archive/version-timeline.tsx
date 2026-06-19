@@ -53,7 +53,9 @@ export function VersionTimeline({
     setDownloadingId(v.id);
     try {
       const url = await getDownloadUrl(v.contentKey);
-      window.location.href = url; // browser handles the download
+      // Force a download (vs inline preview) for previewable types like images/PDFs.
+      const dlUrl = url + (url.includes("?") ? "&" : "?") + "download=1";
+      window.location.href = dlUrl; // browser handles the download
     } catch (err) {
       setDownloadError(
         err instanceof ApiError
