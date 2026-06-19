@@ -6,6 +6,7 @@ import { RecentlyOpenedWidget } from "@/components/dashboard/recently-opened-wid
 import { StarredWidget } from "@/components/dashboard/starred-widget";
 import { ActivityWidget } from "@/components/dashboard/activity-widget";
 import { StorageWidget } from "@/components/dashboard/storage-widget";
+import { NotificationsWidget } from "@/components/dashboard/notifications-widget";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Dashboard — five widgets in a responsive grid.
@@ -32,6 +33,7 @@ export default function DashboardPage() {
         <StarredWidget />
         <ActivityWidget />
         <StorageWidget />
+        <NotificationsWidget />
       </div>
     </div>
   );

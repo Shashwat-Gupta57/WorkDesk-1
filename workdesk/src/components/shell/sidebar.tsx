@@ -7,6 +7,7 @@ import { api } from "@/lib/api-client";
 import { Brand } from "@/components/brand";
 import { StorageUsageBar } from "@/components/shell/storage-usage-bar";
 import { useUnreadCount } from "@/modules/messaging/hooks";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Persistent left sidebar (V1 nav only).
@@ -110,8 +111,9 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Bottom: storage usage + user + logout */}
+      {/* Bottom: notifications + storage usage + user + logout */}
       <div className="mt-auto space-y-2 border-t border-border-default px-1 pt-4">
+        <NotificationBell />
         <StorageUsageBar />
         <div className="flex items-center gap-3 rounded border border-border-default bg-surface-container-low p-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-high text-sm font-semibold text-text-primary">

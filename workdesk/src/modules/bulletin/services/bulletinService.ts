@@ -1,6 +1,7 @@
 import { query, queryOne, transaction } from "@/lib/db";
 import { AuditAction, CountdownStatus } from "@/lib/enums";
 import { emitActivityEvent } from "@/modules/activity/services/activityService";
+import { emitNotification } from "@/modules/notifications/services/notificationService";
 import type { BulletinSummary, BulletinDetail, CountdownAssignment } from "../types";
 import type { CreateBulletinInput } from "../schemas";
 
@@ -237,7 +238,12 @@ export async function createBulletin(
       details: { bulletinId: bulletin.id, title: input.title, type: input.type },
     }).catch(() => {});
 
-    // Emit COUNTDOWN_ASSIGNED activity for each assignee (best-effort).
+    const { rows: authorRows } = await tx.query<{ name: string }>(
+      `SELECT name FROM users WHERE id = $1`,
+      [authorId]
+    );
+
+    // Emit COUNTDOWN_ASSIGNED activity + notification for each assignee (best-effort).
     if (input.type === "COUNTDOWN") {
       for (const uid of input.assigneeIds) {
         emitActivityEvent({
@@ -245,13 +251,33 @@ export async function createBulletin(
           eventType: "COUNTDOWN_ASSIGNED",
           details: { bulletinId: bulletin.id, title: input.title, dueAt: input.dueAt },
         }).catch(() => {});
+
+        emitNotification(
+          uid,
+          "BULLETIN_POSTED",
+          `You've been assigned: ${input.title}`,
+          `Countdown due ${input.dueAt}`,
+          { bulletinId: bulletin.id, bulletinTitle: input.title }
+        ).catch(() => {});
       }
     }
 
-    const { rows: authorRows } = await tx.query<{ name: string }>(
-      `SELECT name FROM users WHERE id = $1`,
+    // Notify all other active members of the new bulletin (best-effort, outside tx).
+    const authorName = authorRows[0]?.name ?? "Someone";
+    query<{ id: string }>(
+      `SELECT id FROM users WHERE id <> $1 AND status = 'ACTIVE'`,
       [authorId]
-    );
+    ).then(members => {
+      for (const m of members) {
+        emitNotification(
+          m.id,
+          "BULLETIN_POSTED",
+          `New bulletin: ${input.title}`,
+          `Posted by ${authorName}`,
+          { bulletinId: bulletin.id, bulletinTitle: input.title }
+        ).catch(() => {});
+      }
+    }).catch(() => {});
 
     return {
       id: bulletin.id,

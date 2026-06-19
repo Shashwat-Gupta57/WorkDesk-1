@@ -1,5 +1,6 @@
 import { query, queryOne, transaction } from "@/lib/db";
 import { AuditAction } from "@/lib/enums";
+import { emitNotification } from "@/modules/notifications/services/notificationService";
 import type { LibrarySectionSummary, LibraryArtifactItem } from "../types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -250,6 +251,15 @@ export async function publishArtifact(
       ]
     );
   });
+
+  // Notify the owner (self-publish confirmation) and subscribers (best-effort).
+  emitNotification(
+    ownerId,
+    "ARTIFACT_PUBLISHED",
+    "Artifact published to Library",
+    `"${artifact.title}" is now public in the Library.`,
+    { artifactId, artifactTitle: artifact.title, sectionId }
+  ).catch(() => {});
 }
 
 // ── unpublishArtifact ─────────────────────────────────────────────────────────
