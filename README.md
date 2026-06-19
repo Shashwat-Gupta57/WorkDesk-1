@@ -103,7 +103,7 @@ Copy `.env.example` to `.env.local`. Required variables:
 | Phase | Status | Scope |
 |---|---|---|
 | **V1 — Knowledge Archive Foundation** | ✅ Complete | Auth, folders (Sets), documents (Artifacts), immutable versioning, file storage, FTS search, trash, stars, PWA, activity feed, dashboard, admin tools, rich-text editor, version diff |
-| **V2 — Collaboration & Library** | 🔄 In progress (Slices 1–4 done) | Artifact sharing, bulletin board, 1:1 messaging, library sections & publishing, relationships + graph view (Slice 5), notifications + knowledge packs (Slice 6) |
+| **V2 — Collaboration & Library** | ✅ Complete | Artifact sharing, bulletin board, 1:1 messaging, library sections & publishing, artifact relationships, graph view, in-app notifications |
 | **V3 — Collaboration Workspace** | 📋 Planned | DMs/groups, comments, mentions, review states, real-time (socket.io), bulk operations |
 | **V4 — Operations Hub** | 📋 Planned | Mail hub (Gmail/Outlook), tool dock, Discord share |
 | **V5 — Ecosystem** | 📋 Planned | GDrive/GitHub/Figma/Canva imports, developer API + webhooks, backups |
@@ -134,6 +134,9 @@ Per-feature documentation lives in `workdesk/docs/`:
 | [V2 Slice 2 — Bulletin](workdesk/docs/v2-slice2-bulletin.md) | Bulletin board, countdown tasks |
 | [V2 Slice 3 — Messaging](workdesk/docs/v2-slice3-messaging.md) | Internal 1:1 messaging |
 | [V2 Slice 4 — Library](workdesk/docs/v2-slice4-library.md) | Library sections, artifact publishing |
+| [V2 Slice 5 — Graph](workdesk/docs/v2-slice5-graph.md) | Artifact relationships, graph view |
+| [V2 Slice 6 — Notifications](workdesk/docs/v2-slice6-notifications.md) | In-app notification inbox |
+| [UI Redesign — Editor & Settings](workdesk/docs/ui-redesign-editor-settings.md) | Three-panel editor, settings page, prose styles, toggle animation |
 
 ---
 
@@ -152,5 +155,7 @@ Per-feature documentation lives in `workdesk/docs/`:
 | **LibrarySection** | Named grouping of published artifacts. |
 | **LibraryArtifact** | Join row: section ↔ artifact (reference only, never a copy). |
 | **LibrarySubscription** | User follows a section. |
+| **ArtifactRelationship** | Typed edge between two artifacts (`BELONGS_TO` / `RELATED_TO` / `DERIVED_FROM` / `REPLACES`). |
+| **Notification** | In-app inbox row scoped to one recipient. Types: `ARTIFACT_SHARED`, `MESSAGE_RECEIVED`, `BULLETIN_POSTED`, `ARTIFACT_PUBLISHED`. |
 | **AuditLog** | Append-only record of critical actions. |
 | **ActivityEvent** | User-scoped feed events (creates, shares, bulletins, etc.). |

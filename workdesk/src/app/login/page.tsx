@@ -142,23 +142,33 @@ function SignInForm({ onSwitch }: { onSwitch: () => void }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Sign Up
+// Sign Up — two-step: collect info → verify email OTP → create account
 // ─────────────────────────────────────────────────────────────────────────────
 
 function SignUpForm({ onSwitch }: { onSwitch: () => void }) {
   const router = useRouter();
   const { setUser } = useAuth();
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  // Step 1 state
+  const [name,            setName]            = useState("");
+  const [phone,           setPhone]           = useState("");
+  const [email,           setEmail]           = useState("");
+  const [password,        setPassword]        = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [submitting, setSubmitting] = useState(false);
+  const [error,           setError]           = useState<string | null>(null);
+  const [fieldErrors,     setFieldErrors]     = useState<Record<string, string>>({});
+  const [submitting,      setSubmitting]      = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  // Step 2 state
+  const [step,            setStep]            = useState<"form" | "verify">("form");
+  const [otp,             setOtp]             = useState("");
+  const [otpError,        setOtpError]        = useState<string | null>(null);
+  const [verifying,       setVerifying]       = useState(false);
+  const [resending,       setResending]       = useState(false);
+  const [resendCooldown,  setResendCooldown]  = useState(0);
+
+  // Step 1 — validate form & send OTP
+  async function handleStep1(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setFieldErrors({});
@@ -170,6 +180,54 @@ function SignUpForm({ onSwitch }: { onSwitch: () => void }) {
 
     setSubmitting(true);
     try {
+      await api.post<null>("/api/auth/send-email-otp", { email });
+      setStep("verify");
+      startCooldown();
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 429) {
+        setError("Please wait a moment before requesting a new code.");
+        setStep("verify");
+        startCooldown();
+      } else {
+        setError(err instanceof ApiError ? err.message : "Something went wrong.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  function startCooldown() {
+    setResendCooldown(60);
+    const id = setInterval(() => {
+      setResendCooldown(c => {
+        if (c <= 1) { clearInterval(id); return 0; }
+        return c - 1;
+      });
+    }, 1000);
+  }
+
+  async function handleResend() {
+    setResending(true);
+    setOtpError(null);
+    try {
+      await api.post<null>("/api/auth/send-email-otp", { email });
+      startCooldown();
+    } catch (err) {
+      setOtpError(err instanceof ApiError ? err.message : "Failed to resend code.");
+    } finally {
+      setResending(false);
+    }
+  }
+
+  // Step 2 — verify OTP then create account
+  async function handleVerify(e: React.FormEvent) {
+    e.preventDefault();
+    setOtpError(null);
+    setVerifying(true);
+    try {
+      // Verify the OTP first
+      await api.post<null>("/api/auth/verify-email-otp", { email, otp });
+      // OTP valid — create the account
       const user = await api.post<SafeUser>("/api/auth/signup", { name, phone, email, password, confirmPassword });
       setUser(user);
       router.replace("/dashboard");
@@ -179,23 +237,89 @@ function SignUpForm({ onSwitch }: { onSwitch: () => void }) {
         if (err.status === 400 && err.details) {
           const flat = err.details as { fieldErrors?: Record<string, string[]> };
           if (flat.fieldErrors) {
+            // Signup validation failure — go back to form
             const mapped: Record<string, string> = {};
             for (const [k, msgs] of Object.entries(flat.fieldErrors)) {
               mapped[k] = (msgs as string[])[0] ?? "";
             }
             setFieldErrors(mapped);
-            setSubmitting(false);
+            setStep("form");
+            setVerifying(false);
             return;
           }
         }
-        setError(err.message);
+        setOtpError(err.message);
       } else {
-        setError("Something went wrong. Please try again.");
+        setOtpError("Something went wrong. Please try again.");
       }
-      setSubmitting(false);
+      setVerifying(false);
     }
   }
 
+  // ── Step 2: OTP entry ──────────────────────────────────────────────────────
+  if (step === "verify") {
+    return (
+      <>
+        <h1 className="text-xl font-semibold text-text-primary">Verify your email</h1>
+        <p className="mt-1 mb-6 text-sm text-text-secondary">
+          We sent a 6-digit code to <span className="text-text-primary font-medium">{email}</span>.
+          Enter it below to continue.
+        </p>
+
+        <form onSubmit={handleVerify} className="space-y-4">
+          <div>
+            <label htmlFor="signup-otp" className="mb-1.5 block text-sm text-text-secondary">
+              Verification code
+            </label>
+            <input
+              id="signup-otp"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]{6}"
+              maxLength={6}
+              required
+              autoFocus
+              value={otp}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              className="w-full rounded-md border border-border-default bg-surface-container px-3 py-2 text-center text-2xl font-mono tracking-widest text-text-primary placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+              placeholder="000000"
+            />
+          </div>
+
+          {otpError && (
+            <div role="alert" className="rounded-md border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger">
+              {otpError}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={verifying || otp.length < 6}
+            className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-on-primary transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {verifying ? "Verifying…" : "Verify & create account"}
+          </button>
+        </form>
+
+        <div className="mt-4 flex items-center justify-between text-sm text-text-secondary">
+          <button type="button" onClick={() => { setStep("form"); setOtp(""); setOtpError(null); }}
+            className="hover:text-text-primary hover:underline">
+            ← Back
+          </button>
+          <button
+            type="button"
+            disabled={resending || resendCooldown > 0}
+            onClick={handleResend}
+            className="text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {resending ? "Sending…" : resendCooldown > 0 ? `Resend in ${resendCooldown}s` : "Resend code"}
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  // ── Step 1: sign-up form ───────────────────────────────────────────────────
   return (
     <>
       <h1 className="text-xl font-semibold text-text-primary">Create an account</h1>
@@ -203,7 +327,7 @@ function SignUpForm({ onSwitch }: { onSwitch: () => void }) {
         Join your Flex Studios workspace.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleStep1} className="space-y-4">
         <div>
           <label htmlFor="signup-name" className="mb-1.5 block text-sm text-text-secondary">
             Full name
@@ -305,7 +429,7 @@ function SignUpForm({ onSwitch }: { onSwitch: () => void }) {
           disabled={submitting}
           className="h-10 w-full rounded-md bg-primary text-sm font-semibold text-on-primary transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {submitting ? "Creating account…" : "Create account"}
+          {submitting ? "Sending verification…" : "Continue"}
         </button>
       </form>
 

@@ -26,9 +26,11 @@
     "@tiptap/react": "^3.27.0",
     "@tiptap/starter-kit": "^3.27.0",
     "@types/bcryptjs": "^2.4.6",
+    "@types/d3": "^7.4.3",
     "@types/pg": "^8.20.0",
     "@xyflow/react": "^12.11.0",
     "bcryptjs": "^3.0.3",
+    "d3": "^7.9.0",
     "diff": "^9.0.0",
     "iron-session": "^8.0.4",
     "lucide-react": "^1.21.0",
@@ -36,6 +38,7 @@
     "pg": "^8.21.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "resend": "^6.14.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -45,7 +45,34 @@ export function useChangePassword() {
 export function useForgotPassword() {
   return useMutation({
     mutationFn: (email: string) =>
-      api.post<{ resetToken?: string } | null>("/api/auth/forgot-password", { email }),
+      api.post<null>("/api/auth/forgot-password", { email }),
+  });
+}
+
+export function useSendEmailOtp() {
+  return useMutation({
+    mutationFn: (email: string) =>
+      api.post<null>("/api/auth/send-email-otp", { email }),
+  });
+}
+
+export function useVerifyEmailOtp() {
+  return useMutation({
+    mutationFn: (payload: { email: string; otp: string }) =>
+      api.post<null>("/api/auth/verify-email-otp", payload),
+  });
+}
+
+export function useSendPasswordOtp() {
+  return useMutation({
+    mutationFn: () => api.post<null>("/api/auth/send-password-otp", {}),
+  });
+}
+
+export function useVerifyPasswordOtp() {
+  return useMutation({
+    mutationFn: (payload: { otp: string; newPassword: string; confirmPassword: string }) =>
+      api.post<null>("/api/auth/verify-password-otp", payload),
   });
 }
 

@@ -246,6 +246,34 @@ export async function changePassword(
 }
 
 /**
+ * setPasswordDirectly
+ *
+ * Sets a new password without verifying the current one.
+ * Only call this after the caller has independently verified the user's identity
+ * (e.g. via OTP, or after a valid password-reset token).
+ *
+ * @throws UserNotFoundError — user does not exist
+ */
+export async function setPasswordDirectly(userId: string, newPassword: string): Promise<void> {
+  const user = await queryOne<UserRow>(`SELECT id FROM users WHERE id = $1`, [userId]);
+  if (!user) throw new UserNotFoundError();
+
+  const newHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+
+  await transaction(async (tx) => {
+    await tx.query(
+      `UPDATE users SET password_hash = $1, updated_at = now() WHERE id = $2`,
+      [newHash, userId]
+    );
+    await tx.query(
+      `INSERT INTO audit_logs (action, actor_id, target_id, details)
+       VALUES ($1, $2, $3, $4)`,
+      ["PASSWORD_CHANGED", userId, userId, JSON.stringify({ method: "otp" })]
+    );
+  });
+}
+
+/**
  * listAllUsers
  *
  * Returns all users as UserSummary (Admin only — enforced at route handler level).
