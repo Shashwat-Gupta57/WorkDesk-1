@@ -14,20 +14,21 @@ next16.2.7(app-router,RSC,react19.2) ts5-strict-no-any tailwind4 tanstack-query-
 # MIGRATIONS @workdesk/migrations/*.sql forward-only, runner @scripts/migrate.ts (tracks _migrations table, each in own txn). npm run migrate. npm run seed (seed admin from SEED_ADMIN_* env vars, ON CONFLICT DO NOTHING).
 # deploy target: Vercel + hosted Postgres. search: postgres-FTS(built). realtime: none in V2 (V3+ socket.io). graph: react-flow (Slice 5).
 
-## BUILD-STATE (2026-06, post-V2-Slice-4)
-BUILT-BACKEND: auth(full), archive(sets/artifacts/versions/search/FTS/trash/stars/storage-quota/ownership), storage(local-FS presign-like), sharing(artifact_shares,shareService), bulletin(bulletins+countdown_assignments,bulletinService), messaging(conversations+messages,messagingService), library(library_sections+artifacts+subscriptions,libraryService), activity(activityService), members-list-api. Proxy(edge-RBAC). All 12 migrations applied. typecheck clean.
-BUILT-FRONTEND: auth(login/forgot-pw/reset-pw), dashboard(activity+starred+quick-open widgets), archive(explorer,workspace/[id],shared,starred,trash), bulletin, messaging(two-pane), library(section-grid+detail), profile, settings(account+admin). Sidebar(all V2 nav+unread-badge). PWA manifest.
-?UNBUILT: Slice5(relationships+graph-view), Slice6(notifications+knowledge-packs+V2-polish). V3+ (comments,mentions,review,real-time). V4+ (mail-hub,tool-dock). V5+ (external imports,API).
+## BUILD-STATE (2026-06, post-V2-Slice-6 + UI-redesign)
+BUILT-BACKEND: auth(full), archive(sets/artifacts/versions/search/FTS/trash/stars/storage-quota/ownership), storage(local-FS presign-like), sharing(artifact_shares,shareService), bulletin(bulletins+countdown_assignments,bulletinService), messaging(conversations+messages,messagingService), library(library_sections+artifacts+subscriptions,libraryService), activity(activityService), relationships(relationshipService+graph-data), notifications(notificationService+table), members-list-api. Proxy(edge-RBAC). All 14 migrations applied. typecheck clean.
+BUILT-FRONTEND: auth(login/forgot-pw/reset-pw), dashboard(activity+starred+quick-open widgets), archive(explorer,workspace/[id] THREE-PANEL-REDESIGN,shared,starred,trash), bulletin, messaging(two-pane), library(section-grid+detail), graph-view(react-flow full impl), profile/settings(FULL-SETTINGS-PAGE 5-tabs), settings(account+admin). Sidebar(all V2 nav+unread-badge). PWA manifest.
+?UNBUILT: V3+ (comments,mentions,review,real-time). V4+ (mail-hub,tool-dock). V5+ (external imports,API).
 
 ## ROADMAP
 V1=archive-foundation ← COMPLETE (auth,sets,artifacts,versions,search,trash,storage-quota,stars,PWA,activity-feed,dashboard,admin,rich-text-editor,version-diff)
-V2=collab+library ← IN-PROGRESS (slices 1-4 complete; 5-6 remaining)
+V2=collab+library ← COMPLETE (all 6 slices done)
   Slice1 DONE: artifact-sharing, SHARED read path, share-dialog, "Shared with me" page
   Slice2 DONE: bulletin board, countdown tasks, progress bars, mark-complete, admin pin/delete
   Slice3 DONE: 1:1 messaging, conversation list, thread pane, unread badge, artifact-ref cards
   Slice4 DONE: library sections, publish/unpublish artifacts (visibility=PUBLIC), subscribe, section detail, sidebar Library nav, Published badge in explorer
-  Slice5 TODO: artifact_relationships table, relationshipService, graph view (react-flow)
-  Slice6 TODO: notifications table/service, knowledge packs (is_pack flag on library_sections), V2 polish
+  Slice5 DONE: artifact_relationships table+service, graph view (react-flow, full impl at /graph-view)
+  Slice6 DONE: notifications table (0014)+service, graph view polish
+UI-REDESIGN DONE (v0.3+): artifact editor three-panel layout, settings page 5-tab redesign, vertical formatting toolbar, ProseMirror prose styles, animated toggles, heading bug fix
 V3=collab-workspace(DM-groups,comments,mentions,review-states,real-time/socket.io,bulk-ops)
 V4=ops-hub(mail-hub gmail/outlook,tool-dock,discord-share)
 V5=ecosystem(gdrive,github,figma,canva imports,dev-API+webhooks,backups)
@@ -42,8 +43,8 @@ x server-side-validation mandatory(zod safeParse). db-transactions for critical 
 VISIBILITY: PRIVATE(owner-only) → SHARED(per artifact_shares grant) → PUBLIC(via library_artifacts, any authed member reads).
 READ-PATH: getArtifactDetails(userId,id,allowShared=false) — owner OR SHARED(JOIN artifact_shares) OR PUBLIC(visibility='PUBLIC'). allowShared=true on artifact detail+content routes.
 
-## DB-SCHEMA (migrations 0001-0012, postgres, uuid-pk, snake_case)
-# Migration files: 0001_baseline 0002_audit_target_polymorphic 0003_stars_fts 0004_trash_storage 0005_password_reset 0006_activity 0007_fts_content 0008_sharing 0009_bulletin 0010_messaging 0011_library 0012_relationships(migration created, NOT YET RUN — Slice5 pending)
+## DB-SCHEMA (migrations 0001-0014, postgres, uuid-pk, snake_case)
+# Migration files: 0001_baseline 0002_audit_target_polymorphic 0003_stars_fts 0004_trash_storage 0005_password_reset 0006_activity 0007_fts_content 0008_sharing 0009_bulletin 0010_messaging 0011_library 0012_relationships 0013_user_phone 0014_notifications — ALL APPLIED
 
 ### Core (0001)
 enum Role{MEMBER ADMIN} UserStatus{ACTIVE SUSPENDED} Visibility{PRIVATE SHARED PUBLIC}
@@ -75,9 +76,14 @@ LibrarySection{id name(<=100) description(<=500)? createdBy createdAt updatedAt}
 LibraryArtifact{id sectionId→CASCADE artifactId→CASCADE addedBy addedAt; UNIQUE(sectionId,artifactId)}
 LibrarySubscription{userId sectionId createdAt; PK(userId,sectionId)}
 
-### Slice 5 pending (0012 — migration file EXISTS, not run yet)
+### Slice 5 (0012 — APPLIED)
 relationship_type enum{BELONGS_TO RELATED_TO DERIVED_FROM REPLACES}
 ArtifactRelationship{id fromId toId type createdBy createdAt; UNIQUE(fromId,toId,type); CHECK from<>to; idx on from_id+to_id}
+
+### Slice 6 (0013-0014 — APPLIED)
+User.phone column added (0013)
+notification_type enum{ARTIFACT_SHARED MESSAGE_RECEIVED BULLETIN_POSTED ARTIFACT_PUBLISHED}
+Notification{id userId→CASCADE type title body meta:JSONB is_read=false createdAt; idx(userId,is_read,createdAt DESC)}
 
 ## MODULES & SERVICES @src/modules/
 
@@ -149,14 +155,15 @@ activity/feed GET | activity/recently-opened GET | activity/record-open POST
 ## FRONTEND PAGES @src/app/(app)/
 dashboard/page.tsx — activity feed + starred artifacts + recent opens + bulletin/countdown widgets
 archive/page.tsx — Explorer (sets+artifacts, grid/list, search, star, new set/artifact, upload)
-archive/[id]/page.tsx — Artifact workspace: viewer(TEXT=rich-text/Tiptap,files=download), version timeline, commit-new-version, restore, edit-metadata, share-dialog(owner), publish-dialog(owner), version-diff
+archive/[id]/page.tsx — THREE-PANEL WORKSPACE: [200px left nav: back+Document/VersionHistory+history-list] | [36px vertical format toolbar] | [flex-1 canvas: large-title-input+frameless-Tiptap] | [260px metadata: type/visibility/owner/dates/versions/tags/description/actions]. Save draft + Commit in top bar. CommitModal for named versions. No "Edit info" modal — all metadata inline.
 archive/shared/page.tsx — "Shared with me" list
 archive/starred/page.tsx — Starred artifacts/sets
 archive/trash/page.tsx — Soft-deleted items, restore + permanent-delete
 bulletin/page.tsx — BulletinCard grid, create-bulletin-dialog, mark-complete, admin pin/delete
 messaging/page.tsx — ConversationList aside + ThreadPane (Suspense-wrapped for useSearchParams)
 library/page.tsx — Section cards (subscribe toggle, delete) + section detail (artifact list)
-profile/page.tsx — Change name/email/password, theme toggle
+graph-view/page.tsx — Full react-flow graph (nodes=artifacts+sets+members, edges=hierarchy+relationships, tooltip, side panel, search, team-view toggle, legend)
+profile/page.tsx — FULL SETTINGS PAGE 5-tab layout: Profile(name/email/role/status) | Security(change-pw+strength-meter) | Appearance(theme-selector+date-format) | Notifications(toggles+localStorage+desktop-permission) | Account(sign-out+danger-zone)
 settings/page.tsx — Admin: user list, suspend/activate/role, audit log
 
 ## SIDEBAR @src/components/shell/sidebar.tsx
@@ -167,16 +174,26 @@ Active-state: exact match OR prefix-match; deeperActive suppression prevents /ar
 ## UI PRIMITIVES @src/components/ui/
 Button(primary/secondary/ghost/danger) Modal Confirm(external busy+error props) Field/Input/Textarea/Select
 LoadingState EmptyState(title+hint+action) ErrorState states.tsx
-StorageUsageBar VersionTimeline RichTextEditor DiffViewer
+StorageUsageBar VersionTimeline DiffViewer
+
+## EDITOR COMPONENTS @src/components/archive/
+RichTextEditor — FRAMELESS Tiptap editor. Props: initialContent onSave saving readOnly? onChange? onSaveDraftReady? onEditorReady?. Exports: RichTextEditor EditorToolbar CommitModal RichTextViewer.
+EditorToolbar — vertical flex-col toolbar with lucide icons. Receives Editor instance from parent. onMouseDown preventDefault keeps ProseMirror selection. No .focus() in chains (fixes heading-applies-to-wrong-block bug).
+CommitModal — dialog with optional changeSummary input. Called by page toolbar Commit button.
+TagPicker — inline tag add/remove, saves via useUpdateArtifact on each change.
+
+## GLOBALS.CSS ADDITIONS
+ProseMirror prose styles (scoped .ProseMirror): h1/h2/h3 sizes, paragraphs, bold/italic/strike, inline-code, code-block, blockquote, hr, ul/ol/li, task-list with checkboxes, links, selection highlight.
+Toggle animation: .toggle-track (200ms ease, ON=glow ring), .toggle-thumb (280ms cubic-bezier(0.34,1.56,0.64,1) spring + :active squash to 22px).
 
 ## KNOWN WATCH-ITEMS (⚠)
 1. Storage is LOCAL-FS only. For prod deployment, a real object store (R2/S3/GCS) must be wired back in behind the storageService interface. contentKey format stays same.
 2. Messaging has no real-time (no WebSocket). Polling at 15-30s intervals via TanStack Query. V3 adds socket.io.
-3. Notifications not yet built (Slice 6). Services (shareService, bulletinService, messagingService) have notification emit placeholders/TODOs.
-4. Library deleteSection does not yet send LIBRARY_SECTION_DELETED notifications to affected artifact owners (Slice 6 backfill).
+3. Notifications table+service built (0014 applied). Frontend bell/inbox not yet wired to the notification row data — services emit rows but UI only shows static count badge.
+4. Library deleteSection does not yet send LIBRARY_SECTION_DELETED notifications to affected artifact owners (backfill when notification inbox UI is built).
 5. tags filter in-memory in getArtifacts — won't scale; move to pg jsonb-containment when search module lands.
 6. proxy `req.cookies as any` cast — type-escape, watch on next-upgrade.
 7. audit writeAuditLog swallows errors — audit-gaps invisible, acceptable per-x but monitor.
-8. 0012_relationships.sql migration file created but NOT RUN — Slice 5 must run migrate before service code executes.
-9. No rate-limiting, no CSRF token (relies sameSite=lax).
-10. Knowledge Packs (is_pack flag on library_sections) not yet added — Slice 6.
+8. No rate-limiting, no CSRF token (relies sameSite=lax).
+9. Knowledge Packs (is_pack flag on library_sections) not yet added — deferred to V3+.
+10. EditorToolbar headings are block-level (ProseMirror behavior) — they apply to the block containing the cursor, not a text selection. This is correct but may surprise users expecting inline-style behavior.

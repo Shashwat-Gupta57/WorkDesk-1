@@ -438,12 +438,13 @@ function NotificationsTab() {
           aria-checked={value}
           onClick={() => onChange(!value)}
           className={cn(
-            "relative inline-flex w-11 h-6 rounded-full shrink-0 transition-colors duration-200 mt-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary",
+            "toggle-track relative inline-flex w-11 h-6 rounded-full shrink-0 mt-0.5",
+            "focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary outline-offset-2",
             value ? "bg-primary" : "bg-surface-container border border-border-default"
           )}
         >
           <span className={cn(
-            "absolute top-[3px] left-[3px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform duration-200",
+            "toggle-thumb absolute top-[3px] left-[3px] w-[18px] h-[18px] rounded-full bg-white",
             value ? "translate-x-5" : "translate-x-0"
           )} />
         </button>

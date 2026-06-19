@@ -99,40 +99,13 @@ export function ArtifactGrid({
   }
 
   return (
-    <div className="flex-1 overflow-y-auto">
-      {view === "grid" ? (
-        <div className="p-4 grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
-          {artifacts.map(a => (
-            <GridCard
-              key={a.id}
-              artifact={a}
-              selected={selectedArtifactId === a.id}
-              renaming={renamingId === a.id}
-              renameVal={renameVal}
-              renameInputRef={renamingId === a.id ? renameInputRef : undefined}
-              onClick={() => onSelect(a.id)}
-              onDoubleClick={() => router.push(`/archive/${a.id}`)}
-              onContextMenu={e => handleContextMenu(e, a)}
-              onRenameChange={setRenameVal}
-              onRenameCommit={commitRename}
-              onRenameCancel={() => setRenamingId(null)}
-            />
-          ))}
-        </div>
-      ) : (
-        <table className="w-full text-[12px]">
-          <thead>
-            <tr className="border-b border-border-default text-text-secondary">
-              <th className="px-4 py-2.5 text-left font-medium">Name</th>
-              <th className="px-4 py-2.5 text-left font-medium">Type</th>
-              <th className="px-4 py-2.5 text-left font-medium">Visibility</th>
-              <th className="px-4 py-2.5 text-left font-medium">Modified</th>
-              <th className="w-8" />
-            </tr>
-          </thead>
-          <tbody>
+    <div className="flex-1 flex flex-col overflow-hidden">
+      {/* Scrollable content area */}
+      <div className="flex-1 overflow-y-auto">
+        {view === "grid" ? (
+          <div className="p-4 grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-3">
             {artifacts.map(a => (
-              <ListRow
+              <GridCard
                 key={a.id}
                 artifact={a}
                 selected={selectedArtifactId === a.id}
@@ -145,15 +118,45 @@ export function ArtifactGrid({
                 onRenameChange={setRenameVal}
                 onRenameCommit={commitRename}
                 onRenameCancel={() => setRenamingId(null)}
-                onRename={() => startRename(a)}
               />
             ))}
-          </tbody>
-        </table>
-      )}
+          </div>
+        ) : (
+          <table className="w-full text-[12px]">
+            <thead>
+              <tr className="border-b border-border-default text-text-secondary">
+                <th className="px-4 py-2.5 text-left font-medium">Name</th>
+                <th className="px-4 py-2.5 text-left font-medium">Type</th>
+                <th className="px-4 py-2.5 text-left font-medium">Visibility</th>
+                <th className="px-4 py-2.5 text-left font-medium">Modified</th>
+                <th className="w-8" />
+              </tr>
+            </thead>
+            <tbody>
+              {artifacts.map(a => (
+                <ListRow
+                  key={a.id}
+                  artifact={a}
+                  selected={selectedArtifactId === a.id}
+                  renaming={renamingId === a.id}
+                  renameVal={renameVal}
+                  renameInputRef={renamingId === a.id ? renameInputRef : undefined}
+                  onClick={() => onSelect(a.id)}
+                  onDoubleClick={() => router.push(`/archive/${a.id}`)}
+                  onContextMenu={e => handleContextMenu(e, a)}
+                  onRenameChange={setRenameVal}
+                  onRenameCommit={commitRename}
+                  onRenameCancel={() => setRenamingId(null)}
+                  onRename={() => startRename(a)}
+                />
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
-      {/* Status bar */}
-      <div className="sticky bottom-0 border-t border-border-default bg-surface-secondary px-4 py-1.5 text-[11px] text-text-secondary">
+      {/* Status bar — always at the bottom of the panel */}
+      <div className="shrink-0 border-t border-border-default bg-surface-secondary px-4 py-1.5 text-[11px] text-text-secondary">
         {artifacts.length} artifact{artifacts.length !== 1 ? "s" : ""}
         {selectedArtifactId && " · 1 selected"}
       </div>

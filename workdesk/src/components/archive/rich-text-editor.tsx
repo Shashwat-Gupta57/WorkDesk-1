@@ -41,18 +41,20 @@ interface RichTextEditorProps {
 }
 
 // ── Toolbar button ────────────────────────────────────────────────────────────
-
-function ToolBtn({
-  active, disabled, title, onClick, children,
+// onMouseDown preventDefault keeps ProseMirror selection alive before click fires.
+function Btn({
+  editor, active, disabled, title, run, children,
 }: {
-  active?: boolean; disabled?: boolean; title: string; onClick: () => void; children: React.ReactNode;
+  editor: Editor; active?: boolean; disabled?: boolean; title: string;
+  run: (editor: Editor) => void; children: React.ReactNode;
 }) {
   return (
     <button
       type="button"
       title={title}
       disabled={disabled}
-      onMouseDown={(e) => { e.preventDefault(); onClick(); }}
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={() => run(editor)}
       className={cn(
         "flex h-7 w-7 items-center justify-center rounded text-[13px] transition-colors",
         active
@@ -76,97 +78,103 @@ export function EditorToolbar({ editor }: { editor: Editor }) {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
 
-  function setLink() {
+  function promptLink() {
+    // Save selection before the prompt dialog steals focus
+    const { from, to } = editor.state.selection;
     const prev = editor.getAttributes("link").href as string | undefined;
     const url = window.prompt("URL", prev ?? "https://");
     if (url === null) return;
-    if (url === "") { editor.chain().focus().unsetLink().run(); return; }
-    editor.chain().focus().setLink({ href: url }).run();
+    // Restore selection then apply link
+    editor.chain()
+      .setTextSelection({ from, to })
+      .focus()
+      .command(({ commands }) => url === "" ? commands.unsetLink() : commands.setLink({ href: url }))
+      .run();
   }
 
   return (
     <div className="flex flex-col items-center gap-0.5 py-3 px-1">
-      {/* Headings */}
-      <ToolBtn title="Heading 1" active={editor.isActive("heading", { level: 1 })}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
+      {/* Headings — block-level: apply to the block where cursor sits */}
+      <Btn editor={editor} title="Heading 1 (current block)" active={editor.isActive("heading", { level: 1 })}
+        run={e => e.chain().toggleHeading({ level: 1 }).run()}>
         <Heading1 size={14} />
-      </ToolBtn>
-      <ToolBtn title="Heading 2" active={editor.isActive("heading", { level: 2 })}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+      </Btn>
+      <Btn editor={editor} title="Heading 2 (current block)" active={editor.isActive("heading", { level: 2 })}
+        run={e => e.chain().toggleHeading({ level: 2 }).run()}>
         <Heading2 size={14} />
-      </ToolBtn>
-      <ToolBtn title="Heading 3" active={editor.isActive("heading", { level: 3 })}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
+      </Btn>
+      <Btn editor={editor} title="Heading 3 (current block)" active={editor.isActive("heading", { level: 3 })}
+        run={e => e.chain().toggleHeading({ level: 3 }).run()}>
         <Heading3 size={14} />
-      </ToolBtn>
+      </Btn>
 
       <HDivider />
 
-      {/* Inline marks */}
-      <ToolBtn title="Bold (Ctrl+B)" active={editor.isActive("bold")}
-        onClick={() => editor.chain().focus().toggleBold().run()}>
+      {/* Inline marks — apply to selection */}
+      <Btn editor={editor} title="Bold (Ctrl+B)" active={editor.isActive("bold")}
+        run={e => e.chain().toggleBold().run()}>
         <Bold size={14} />
-      </ToolBtn>
-      <ToolBtn title="Italic (Ctrl+I)" active={editor.isActive("italic")}
-        onClick={() => editor.chain().focus().toggleItalic().run()}>
+      </Btn>
+      <Btn editor={editor} title="Italic (Ctrl+I)" active={editor.isActive("italic")}
+        run={e => e.chain().toggleItalic().run()}>
         <Italic size={14} />
-      </ToolBtn>
-      <ToolBtn title="Strikethrough" active={editor.isActive("strike")}
-        onClick={() => editor.chain().focus().toggleStrike().run()}>
+      </Btn>
+      <Btn editor={editor} title="Strikethrough" active={editor.isActive("strike")}
+        run={e => e.chain().toggleStrike().run()}>
         <Strikethrough size={14} />
-      </ToolBtn>
-      <ToolBtn title="Inline code" active={editor.isActive("code")}
-        onClick={() => editor.chain().focus().toggleCode().run()}>
+      </Btn>
+      <Btn editor={editor} title="Inline code" active={editor.isActive("code")}
+        run={e => e.chain().toggleCode().run()}>
         <Code size={14} />
-      </ToolBtn>
-      <ToolBtn title="Link" active={editor.isActive("link")}
-        onClick={setLink}>
+      </Btn>
+      <Btn editor={editor} title="Link" active={editor.isActive("link")}
+        run={() => promptLink()}>
         <Link2 size={14} />
-      </ToolBtn>
+      </Btn>
 
       <HDivider />
 
       {/* Lists */}
-      <ToolBtn title="Bullet list" active={editor.isActive("bulletList")}
-        onClick={() => editor.chain().focus().toggleBulletList().run()}>
+      <Btn editor={editor} title="Bullet list" active={editor.isActive("bulletList")}
+        run={e => e.chain().toggleBulletList().run()}>
         <List size={14} />
-      </ToolBtn>
-      <ToolBtn title="Numbered list" active={editor.isActive("orderedList")}
-        onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+      </Btn>
+      <Btn editor={editor} title="Numbered list" active={editor.isActive("orderedList")}
+        run={e => e.chain().toggleOrderedList().run()}>
         <ListOrdered size={14} />
-      </ToolBtn>
-      <ToolBtn title="Task list" active={editor.isActive("taskList")}
-        onClick={() => editor.chain().focus().toggleTaskList().run()}>
+      </Btn>
+      <Btn editor={editor} title="Task list" active={editor.isActive("taskList")}
+        run={e => e.chain().toggleTaskList().run()}>
         <ListChecks size={14} />
-      </ToolBtn>
+      </Btn>
 
       <HDivider />
 
       {/* Block formats */}
-      <ToolBtn title="Blockquote" active={editor.isActive("blockquote")}
-        onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+      <Btn editor={editor} title="Blockquote" active={editor.isActive("blockquote")}
+        run={e => e.chain().toggleBlockquote().run()}>
         <Quote size={14} />
-      </ToolBtn>
-      <ToolBtn title="Code block" active={editor.isActive("codeBlock")}
-        onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
+      </Btn>
+      <Btn editor={editor} title="Code block" active={editor.isActive("codeBlock")}
+        run={e => e.chain().toggleCodeBlock().run()}>
         <FileCode2 size={14} />
-      </ToolBtn>
-      <ToolBtn title="Horizontal rule"
-        onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+      </Btn>
+      <Btn editor={editor} title="Horizontal rule"
+        run={e => e.chain().setHorizontalRule().run()}>
         <Minus size={14} />
-      </ToolBtn>
+      </Btn>
 
       <HDivider />
 
       {/* History */}
-      <ToolBtn title="Undo (Ctrl+Z)" disabled={!canUndo}
-        onClick={() => editor.chain().focus().undo().run()}>
+      <Btn editor={editor} title="Undo (Ctrl+Z)" disabled={!canUndo}
+        run={e => e.chain().undo().run()}>
         <Undo2 size={14} />
-      </ToolBtn>
-      <ToolBtn title="Redo (Ctrl+Y)" disabled={!canRedo}
-        onClick={() => editor.chain().focus().redo().run()}>
+      </Btn>
+      <Btn editor={editor} title="Redo (Ctrl+Y)" disabled={!canRedo}
+        run={e => e.chain().redo().run()}>
         <Redo2 size={14} />
-      </ToolBtn>
+      </Btn>
     </div>
   );
 }
