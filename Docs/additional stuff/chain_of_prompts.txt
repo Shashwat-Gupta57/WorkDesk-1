@@ -1,0 +1,474 @@
+This should be the exact order fed into Stitch.
+
+Prompt 1 — Design System
+
+
+You are designing WorkDesk.
+
+Read the attached context.txt first.
+
+Task:
+
+Create the complete design system.
+
+Include:
+
+Color tokens
+Typography scale
+Spacing scale
+Border radius scale
+Shadows
+States
+Tables
+Forms
+Buttons
+Dropdowns
+Modals
+Toasts
+Tabs
+Toolbars
+Breadcrumbs
+Context menus
+
+Output:
+
+Design system overview
+Component catalog
+Reusable UI primitives
+
+Do not design pages yet.
+
+Focus only on creating a scalable design language.
+
+
+
+
+
+
+
+
+
+
+
+Prompt 2 — Application Shell
+
+
+
+
+Read context.txt.
+
+Using the design system previously generated:
+
+Design the application shell.
+
+Include:
+
+Sidebar
+Header
+Main content area
+Right context panel
+User menu
+Notification center
+Storage usage widget
+
+Provide:
+
+Desktop layout
+
+Tablet layout
+
+Mobile layout
+
+Focus on navigation and information hierarchy.
+
+Do not design feature pages yet.
+
+
+
+
+
+
+
+Prompt 3 — Dashboard
+
+
+
+
+Read context.txt.
+
+Design the Dashboard.
+
+Widgets:
+
+Recent Artifacts
+Recently Opened
+Starred
+Notifications
+Activity Feed
+Storage Usage
+
+Create:
+
+Desktop version
+
+Tablet version
+
+Mobile version
+
+Focus on productivity and quick access.
+
+
+
+
+
+
+
+
+
+Prompt 4 — Archive Explorer
+
+
+
+
+Read context.txt.
+
+Design the Archive Explorer.
+
+Features:
+
+Tree Navigation
+Nested Sets
+Artifact List
+Search
+Filters
+Multi Select
+Context Menus
+Drag and Drop
+
+Include:
+
+Explorer View
+
+List View
+
+Empty States
+
+Loading States
+
+Large Archive States
+
+Focus on drive-like usability.
+
+
+
+
+
+Prompt 5 — Artifact Workspace
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Read context.txt.
+
+Design the Artifact Workspace.
+
+Layout:
+
+Left:
+Navigation
+
+Center:
+Editor
+
+Right:
+Metadata Panel
+
+Top:
+Version Controls
+
+Include:
+
+Rich Text Editing
+
+Version History
+
+Publishing
+
+Sharing
+
+Comments
+
+Auto Save Indicators
+
+Focus on deep work and long editing sessions.
+
+
+
+
+
+
+
+
+Prompt 6 — Library
+
+
+
+
+
+
+
+
+
+
+
+Read context.txt.
+
+Design the Library.
+
+Include:
+
+Library Home
+
+Section Pages
+
+Artifact Cards
+
+Search
+
+Subscriptions
+
+Publishing Workflow
+
+Discovery Experience
+
+Focus on knowledge exploration.
+
+
+
+
+
+
+
+Prompt 7 — Graph View
+
+
+
+
+
+
+
+
+
+
+
+
+
+Read context.txt.
+
+Design the Graph View.
+
+Include:
+
+Node Styling
+
+Filters
+
+Zoom Controls
+
+Search
+
+Relationship Legend
+
+Large Graph Performance States
+
+Focus on readability and navigation.
+
+
+
+
+
+Prompt 8 — Messaging
+
+
+
+
+
+
+Read context.txt.
+
+Design the Messaging Module.
+
+Include:
+
+Conversation List
+
+Chat View
+
+Artifact Sharing
+
+Search
+
+Notifications
+
+Empty States
+
+Focus on productivity rather than social interaction.
+
+
+
+
+
+
+
+
+Prompt 9 — Bulletin
+
+
+
+
+
+
+
+
+Read context.txt.
+
+Design the Bulletin Board.
+
+Include:
+
+Announcements
+
+Countdowns
+
+Completion Tracking
+
+Deadline Cards
+
+Status Indicators
+
+Create and Edit Flows
+
+Focus on organizational operations.
+
+
+
+
+
+
+
+
+
+
+Prompt 10 — Mail Hub
+
+
+
+
+
+
+
+
+
+
+Read context.txt.
+
+Design the Mail Hub.
+
+Include:
+
+Unified Inbox
+
+Multiple Mailboxes
+
+Sender Tags
+
+Color Labels
+
+Search
+
+Mail Reading Experience
+
+Focus on handling large volumes of email.
+
+
+
+
+
+
+Prompt 11 — Settings & Profile
+
+
+
+
+
+Read context.txt.
+
+Design:
+
+Settings
+
+Profile
+
+Account Security
+
+Theme Preferences
+
+Connected Services
+
+Storage Management
+
+Notification Preferences
+
+Focus on clarity and maintainability.
+
+
+
+
+
+
+
+
+
+
+Prompt 12 — Design Review
+
+
+
+
+
+
+
+
+
+Review every previously designed screen.
+
+Audit for:
+
+Visual consistency
+
+Accessibility
+
+Information hierarchy
+
+Component reuse
+
+Responsiveness
+
+Developer implementation complexity
+
+Suggest improvements.
+
+Generate final design recommendations before development begins.

@@ -346,3 +346,44 @@ export function useRevokeShare(artifactId: string) {
     },
   });
 }
+
+// ── Move ─────────────────────────────────────────────────────────────────────
+
+export function useMoveArtifact() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ artifactId, targetSetId }: { artifactId: string; targetSetId: string }) =>
+      api.post(`/api/archive/artifacts/${artifactId}/move`, { setId: targetSetId }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["archive"] }),
+  });
+}
+
+// ── File upload (presigned PUT via storage route) ─────────────────────────────
+
+export function useUploadFile() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ artifactId, file }: { artifactId: string; file: File }) => {
+      // 1. Request an upload ticket (presigned PUT URL + contentKey)
+      const ticket = await api.post<{ uploadUrl: string; contentKey: string }>(
+        "/api/storage/upload",
+        { filename: file.name, contentType: file.type, byteSize: file.size }
+      );
+      // 2. PUT the file directly to R2
+      await fetch(ticket.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      // 3. Commit the version with the contentKey
+      return api.post<{ version: unknown }>(
+        `/api/archive/artifacts/${artifactId}/versions`,
+        { contentKey: ticket.contentKey, byteSize: file.size }
+      );
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["archive"] });
+      qc.invalidateQueries({ queryKey: ["storage"] });
+    },
+  });
+}

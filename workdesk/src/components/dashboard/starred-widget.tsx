@@ -19,7 +19,7 @@ export function StarredWidget() {
   const sets = (data?.sets ?? []).slice(0, 3);
   const all = [
     ...artifacts.map((a) => ({ id: a.id, label: a.title, sub: a.type, href: `/archive/${a.id}` })),
-    ...sets.map((s) => ({ id: s.id, label: s.name, sub: "Folder", href: `/archive?setId=${s.id}` })),
+    ...sets.map((s) => ({ id: s.id, label: s.name, sub: "Set", href: `/archive?setId=${s.id}` })),
   ].slice(0, 6);
 
   return (

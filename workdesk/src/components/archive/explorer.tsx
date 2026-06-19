@@ -38,7 +38,7 @@ const ARTIFACT_TYPES: ArtifactType[] = ["TEXT", "PDF", "DOCX", "PPTX", "IMAGE", 
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
-function FolderIcon() {
+function SetIcon() {
   return (
     <svg className="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
@@ -132,8 +132,8 @@ export function Explorer({ initialStarred = false }: { initialStarred?: boolean 
   // When filters are active, sets aren't scoped by set (show all at root level in list)
   const hasFilters = Boolean(debouncedSearch || typeFilter || starredOnly);
 
-  function openFolder(s: SetSummary) {
-    if (hasFilters) return; // don't navigate into folders while searching
+  function openSet(s: SetSummary) {
+    if (hasFilters) return; // don't navigate into Sets while searching
     setPath((p) => [...p, { id: s.id, name: s.name }]);
   }
   function jumpTo(index: number) {
@@ -156,7 +156,7 @@ export function Explorer({ initialStarred = false }: { initialStarred?: boolean 
 
   const loading = setsQuery.isLoading || artifactsQuery.isLoading;
   const error = setsQuery.error || artifactsQuery.error;
-  const sets = hasFilters ? [] : (setsQuery.data ?? []); // hide folders while searching
+  const sets = hasFilters ? [] : (setsQuery.data ?? []); // hide Sets while searching
   const artifacts = artifactsQuery.data ?? [];
   const isEmpty = !loading && !error && sets.length === 0 && artifacts.length === 0;
 
@@ -187,7 +187,7 @@ export function Explorer({ initialStarred = false }: { initialStarred?: boolean 
           )}
           {hasFilters && (
             <p className="mt-1 text-sm text-text-secondary">
-              Searching across all folders ·{" "}
+              Searching across all Sets ·{" "}
               <button className="text-primary hover:underline" onClick={clearFilters}>
                 clear filters
               </button>
@@ -212,7 +212,7 @@ export function Explorer({ initialStarred = false }: { initialStarred?: boolean 
             </button>
           </div>
           <Button variant="secondary" onClick={() => setSetDialog({ open: true })}>
-            New folder
+            New Set
           </Button>
           <Button onClick={() => setArtifactDialog({ open: true })}>New artifact</Button>
         </div>
@@ -284,11 +284,11 @@ export function Explorer({ initialStarred = false }: { initialStarred?: boolean 
         )}
         {isEmpty && !loading && !error && (
           <EmptyState
-            title={hasFilters ? "No results" : "This folder is empty"}
+            title={hasFilters ? "No results" : "This Set is empty"}
             hint={
               hasFilters
                 ? "Try different search terms or clear the filters."
-                : "Create a folder to organize your work, or add an artifact."
+                : "Create a Set to organize your work, or add an artifact."
             }
             action={
               hasFilters ? (
@@ -310,17 +310,17 @@ export function Explorer({ initialStarred = false }: { initialStarred?: boolean 
                 : "divide-y divide-border-default rounded-lg border border-border-default"
             }
           >
-            {/* Folders (hidden while filters active) */}
+            {/* Sets (hidden while filters active) */}
             {sets.map((s) => (
               <Row
                 key={s.id}
                 view={view}
-                icon={<FolderIcon />}
+                icon={<SetIcon />}
                 title={s.name}
-                subtitle="Folder"
+                subtitle="Set"
                 starred={starredSetIds.has(s.id)}
                 onStar={() => toggleStar("set", s.id, starredSetIds.has(s.id))}
-                onOpen={() => openFolder(s)}
+                onOpen={() => openSet(s)}
                 onEdit={() => setSetDialog({ open: true, editing: s })}
                 editLabel="Rename"
                 onDelete={() => setDeleteSetTarget(s)}
@@ -365,7 +365,7 @@ export function Explorer({ initialStarred = false }: { initialStarred?: boolean 
       <Confirm
         open={Boolean(deleteSetTarget)}
         onClose={() => setDeleteSetTarget(null)}
-        title="Delete folder"
+        title="Delete Set"
         message={`Delete "${deleteSetTarget?.name}" and everything inside it? Items move to Trash (restorable for 30 days).`}
         onConfirm={async () => {
           if (deleteSetTarget) await deleteSet.mutateAsync(deleteSetTarget.id);

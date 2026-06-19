@@ -14,9 +14,11 @@
   --color-surface-container: #1c2128; /* elevated cards */
   --color-surface-container-low: #161b22;
   --color-surface-container-high: #21262d; /* active nav / hover-elevated */
+  --color-surface-elevated: #21262d; /* alias for modals / popovers */
 
   /* Borders */
   --color-border-default: #30363d;
+  --color-outline-variant: #484f58;
 
   /* Text */
   --color-text-primary: #e6edf3;
