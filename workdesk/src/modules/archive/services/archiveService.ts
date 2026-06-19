@@ -763,7 +763,7 @@ export async function commitVersion(
         nextVersionNumber,
         payload.contentKey,
         byteSize,
-        payload.changeSummary ?? `Committed version ${nextVersionNumber}`,
+        payload.changeSummary ?? null,
         authorId,
       ]
     );

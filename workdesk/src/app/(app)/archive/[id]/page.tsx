@@ -22,6 +22,7 @@ import type { Editor } from "@tiptap/react";
 import { FileViewer } from "@/components/archive/file-viewer";
 import { MoveModal } from "@/components/archive/move-modal";
 import { ShareDialog } from "@/components/archive/share-dialog";
+import { VersionTimeline } from "@/components/archive/version-timeline";
 import type { VersionDetail } from "@/modules/archive/types";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -264,38 +265,13 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
           />
         </div>
 
-        {/* Version history list */}
-        {historyOpen && artifact.versions.length > 0 && (
-          <div className="flex-1 overflow-y-auto px-2 py-2">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-text-secondary px-1 mb-2">
-              History
-            </p>
-            <div className="space-y-1.5">
-              {artifact.versions.map(v => (
-                <div key={v.id} className="p-2 rounded bg-surface-elevated border border-border-default">
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-[11px] font-medium text-text-primary">v{v.versionNumber}</span>
-                    <span className="text-[9px] text-text-secondary">
-                      {fmtDate(v.createdAt)}
-                    </span>
-                  </div>
-                  {v.changeSummary && (
-                    <p className="text-[10px] text-text-secondary truncate mb-1">{v.changeSummary}</p>
-                  )}
-                  {isOwner && v.versionNumber !== headVersion?.versionNumber && (
-                    <button
-                      onClick={() => handleRestore(v)}
-                      className="flex items-center gap-1 text-[10px] text-primary hover:underline"
-                    >
-                      <RotateCcw size={9} /> Restore
-                    </button>
-                  )}
-                  {v.versionNumber === headVersion?.versionNumber && (
-                    <span className="text-[9px] text-success font-medium">Current</span>
-                  )}
-                </div>
-              ))}
-            </div>
+        {/* Version history — git graph */}
+        {historyOpen && (
+          <div className="flex-1 overflow-y-auto px-3 py-3">
+            <VersionTimeline
+              artifactId={id}
+              versions={artifact.versions}
+            />
           </div>
         )}
       </div>
@@ -471,46 +447,6 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
             <MetaRow icon={<Clock size={12} />} label="Modified">
               <span className="text-[12px] text-text-primary">{fmtDate(artifact.updatedAt)}</span>
             </MetaRow>
-          </MetaSection>
-
-          {/* Versions summary */}
-          <MetaSection title={`Versions (${artifact.versions.length})`}>
-            {artifact.versions.length === 0 ? (
-              <p className="text-[12px] text-text-secondary">No versions yet.</p>
-            ) : (
-              <div className="space-y-1.5">
-                {artifact.versions.slice(0, 5).map(v => (
-                  <div key={v.id} className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="text-[12px] text-text-primary shrink-0">v{v.versionNumber}</span>
-                      {v.changeSummary && (
-                        <span className="text-[10px] text-text-secondary truncate">{v.changeSummary}</span>
-                      )}
-                    </div>
-                    {isOwner && v.versionNumber !== headVersion?.versionNumber && (
-                      <button
-                        onClick={() => handleRestore(v)}
-                        title="Restore this version"
-                        className="text-text-secondary hover:text-primary transition-colors shrink-0 ml-1"
-                      >
-                        <RotateCcw size={11} />
-                      </button>
-                    )}
-                    {v.versionNumber === headVersion?.versionNumber && (
-                      <CheckCircle2 size={11} className="text-success shrink-0 ml-1" />
-                    )}
-                  </div>
-                ))}
-                {artifact.versions.length > 5 && (
-                  <button
-                    onClick={() => setHistoryOpen(true)}
-                    className="text-[11px] text-primary hover:underline"
-                  >
-                    +{artifact.versions.length - 5} more
-                  </button>
-                )}
-              </div>
-            )}
           </MetaSection>
 
           {/* Tags */}
