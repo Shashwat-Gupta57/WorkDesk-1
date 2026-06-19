@@ -17,7 +17,8 @@ import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api-client";
 import { ArtifactType, Visibility } from "@/lib/enums";
 import { TagPicker } from "@/components/archive/tag-picker";
-import { RichTextEditor, CommitModal } from "@/components/archive/rich-text-editor";
+import { RichTextEditor, CommitModal, EditorToolbar } from "@/components/archive/rich-text-editor";
+import type { Editor } from "@tiptap/react";
 import { FileViewer } from "@/components/archive/file-viewer";
 import { MoveModal } from "@/components/archive/move-modal";
 import { ShareDialog } from "@/components/archive/share-dialog";
@@ -81,6 +82,9 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
 
   // Set by RichTextEditor.onSaveDraftReady — takes optional changeSummary
   const saveDraftFnRef = useRef<((summary: string | null) => Promise<void>) | null>(null);
+
+  // Editor instance — received via onEditorReady, used to render EditorToolbar externally
+  const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
 
   // Title draft
   const [titleDraft, setTitleDraft] = useState("");
@@ -299,11 +303,14 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
       {/* ── CENTER EDITOR ──────────────────────────────────────────────────── */}
       <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
 
-        {/* Slim toolbar */}
+        {/* Slim top bar: word count · status · buttons */}
         <div className="h-10 shrink-0 flex items-center justify-between px-4 border-b border-border-default bg-surface-secondary">
-          {/* Left: word count + status */}
           <div className="flex items-center gap-3">
-            {isText && <span className="text-[11px] text-text-secondary">{wordCount} words · {countChars(headContent)} chars</span>}
+            {isText && (
+              <span className="text-[11px] text-text-secondary">
+                {wordCount} words · {countChars(headContent)} chars
+              </span>
+            )}
             {isDirty && saveState === "idle" && (
               <span className="flex items-center gap-1 text-[11px] text-text-secondary">
                 <span className="w-1.5 h-1.5 rounded-full bg-warning inline-block" />
@@ -313,14 +320,12 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
             <SaveIndicator state={saveState} />
           </div>
 
-          {/* Right: version badge + history toggle + Save draft + Commit */}
           <div className="flex items-center gap-2">
             {headVersion && (
               <span className="text-[11px] text-text-secondary">
                 v{headVersion.versionNumber}{saveState === "idle" && isDirty ? " · draft" : ""}
               </span>
             )}
-
             {isOwner && isText && (
               <>
                 <button
@@ -335,7 +340,6 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
                 >
                   <Clock size={13} />
                 </button>
-
                 <button
                   onClick={handleSaveDraft}
                   disabled={saveState === "saving" || !isDirty}
@@ -343,7 +347,6 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
                 >
                   Save draft
                 </button>
-
                 <button
                   onClick={() => setCommitOpen(true)}
                   disabled={saveState === "saving"}
@@ -353,69 +356,80 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
                 </button>
               </>
             )}
-
             {isOwner && !isText && headVersion && (
               <span className="text-[11px] text-text-secondary">{artifact.type}</span>
             )}
           </div>
         </div>
 
-        {/* Editor / content area */}
-        <div className="flex-1 overflow-y-auto bg-surface-primary">
-          <div className="max-w-[740px] mx-auto px-8 py-8">
-            {/* Title */}
-            {isOwner ? (
-              <input
-                value={titleDraft}
-                onChange={e => setTitleDraft(e.target.value)}
-                onBlur={handleTitleBlur}
-                onKeyDown={e => { if (e.key === "Enter") e.currentTarget.blur(); }}
-                className="w-full text-[26px] font-semibold text-text-primary bg-transparent
-                           border-none outline-none placeholder:text-text-secondary/50 mb-6
-                           leading-tight tracking-tight"
-                placeholder="Untitled artifact"
-              />
-            ) : (
-              <h1 className="text-[26px] font-semibold text-text-primary mb-6 leading-tight">{artifact.title}</h1>
-            )}
+        {/* Body: [vertical format toolbar] | [scrollable editor canvas] */}
+        <div className="flex-1 min-h-0 flex overflow-hidden">
 
-            {/* Content */}
-            {isText ? (
-              contentLoading ? (
-                <div className="text-[13px] text-text-secondary">Loading content…</div>
-              ) : isOwner ? (
-                <RichTextEditor
-                  initialContent={headContent ?? null}
-                  onSave={handleSave}
-                  saving={saveState === "saving"}
-                  onChange={() => setIsDirty(true)}
-                  onSaveDraftReady={fn => { saveDraftFnRef.current = fn; }}
+          {/* Vertical formatting toolbar — only for text artifacts when owner */}
+          {isOwner && isText && editorInstance && (
+            <div className="w-9 shrink-0 border-r border-border-default bg-surface-secondary overflow-y-auto">
+              <EditorToolbar editor={editorInstance} />
+            </div>
+          )}
+
+          {/* Scrollable canvas */}
+          <div className="flex-1 overflow-y-auto bg-surface-primary">
+            <div className="max-w-[740px] mx-auto px-8 py-8">
+
+              {/* Title */}
+              {isOwner ? (
+                <input
+                  value={titleDraft}
+                  onChange={e => setTitleDraft(e.target.value)}
+                  onBlur={handleTitleBlur}
+                  onKeyDown={e => { if (e.key === "Enter") e.currentTarget.blur(); }}
+                  className="w-full text-[26px] font-semibold text-text-primary bg-transparent
+                             border-none outline-none placeholder:text-text-secondary/50 mb-6
+                             leading-tight tracking-tight"
+                  placeholder="Untitled artifact"
                 />
               ) : (
-                <div>
-                  <p className="mb-4 text-[11px] text-text-secondary border border-border-default rounded px-3 py-1.5 inline-block">Read-only — you are not the owner</p>
+                <h1 className="text-[26px] font-semibold text-text-primary mb-6 leading-tight">{artifact.title}</h1>
+              )}
+
+              {/* Content */}
+              {isText ? (
+                contentLoading ? (
+                  <div className="text-[13px] text-text-secondary">Loading content…</div>
+                ) : isOwner ? (
                   <RichTextEditor
                     initialContent={headContent ?? null}
-                    onSave={async () => {}}
-                    saving={false}
-                    readOnly
+                    onSave={handleSave}
+                    saving={saveState === "saving"}
+                    onChange={() => setIsDirty(true)}
+                    onSaveDraftReady={fn => { saveDraftFnRef.current = fn; }}
+                    onEditorReady={setEditorInstance}
                   />
-                </div>
-              )
-            ) : (
-              /* Non-text artifact */
-              headVersion ? (
-                <FileViewer contentKey={headVersion.contentKey} artifactType={artifact.type} title={artifact.title} />
+                ) : (
+                  <div>
+                    <p className="mb-4 text-[11px] text-text-secondary border border-border-default rounded px-3 py-1.5 inline-block">
+                      Read-only — you are not the owner
+                    </p>
+                    <RichTextEditor
+                      initialContent={headContent ?? null}
+                      onSave={async () => {}}
+                      saving={false}
+                      readOnly
+                    />
+                  </div>
+                )
               ) : (
-                <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border-default py-16 text-center text-text-secondary">
-                  <FileText size={36} className="opacity-30" />
-                  <p className="text-[14px] font-medium">No versions committed yet.</p>
-                  {isOwner && (
-                    <p className="text-[12px]">Use "Commit version" to upload the first file.</p>
-                  )}
-                </div>
-              )
-            )}
+                headVersion ? (
+                  <FileViewer contentKey={headVersion.contentKey} artifactType={artifact.type} title={artifact.title} />
+                ) : (
+                  <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-border-default py-16 text-center text-text-secondary">
+                    <FileText size={36} className="opacity-30" />
+                    <p className="text-[14px] font-medium">No versions committed yet.</p>
+                    {isOwner && <p className="text-[12px]">Use "Commit version" to upload the first file.</p>}
+                  </div>
+                )
+              )}
+            </div>
           </div>
         </div>
       </div>

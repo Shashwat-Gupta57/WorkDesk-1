@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -36,6 +36,8 @@ interface RichTextEditorProps {
   onChange?: () => void;
   /** Called once editor is ready; parent stores the fn to trigger save from toolbar buttons. */
   onSaveDraftReady?: (fn: (summary: string | null) => Promise<void>) => void;
+  /** Called with the editor instance once initialized — parent can render EditorToolbar externally. */
+  onEditorReady?: (editor: Editor) => void;
 }
 
 // ── Toolbar button ────────────────────────────────────────────────────────────
@@ -64,13 +66,13 @@ function ToolBtn({
   );
 }
 
-function Divider() {
-  return <div className="mx-1 h-4 w-px bg-border-default shrink-0" />;
+function HDivider() {
+  return <div className="my-1 h-px w-5 bg-border-default shrink-0 mx-auto" />;
 }
 
-// ── Toolbar ──────────────────────────────────────────────────────────────────
+// ── Vertical toolbar — exported so the page can render it in its own column ──
 
-function Toolbar({ editor }: { editor: Editor }) {
+export function EditorToolbar({ editor }: { editor: Editor }) {
   const canUndo = editor.can().undo();
   const canRedo = editor.can().redo();
 
@@ -83,7 +85,7 @@ function Toolbar({ editor }: { editor: Editor }) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 border-b border-border-default bg-surface-secondary/60 px-3 py-1.5 sticky top-0 z-10 backdrop-blur-sm">
+    <div className="flex flex-col items-center gap-0.5 py-3 px-1">
       {/* Headings */}
       <ToolBtn title="Heading 1" active={editor.isActive("heading", { level: 1 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
@@ -98,7 +100,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         <Heading3 size={14} />
       </ToolBtn>
 
-      <Divider />
+      <HDivider />
 
       {/* Inline marks */}
       <ToolBtn title="Bold (Ctrl+B)" active={editor.isActive("bold")}
@@ -122,7 +124,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         <Link2 size={14} />
       </ToolBtn>
 
-      <Divider />
+      <HDivider />
 
       {/* Lists */}
       <ToolBtn title="Bullet list" active={editor.isActive("bulletList")}
@@ -138,7 +140,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         <ListChecks size={14} />
       </ToolBtn>
 
-      <Divider />
+      <HDivider />
 
       {/* Block formats */}
       <ToolBtn title="Blockquote" active={editor.isActive("blockquote")}
@@ -154,7 +156,7 @@ function Toolbar({ editor }: { editor: Editor }) {
         <Minus size={14} />
       </ToolBtn>
 
-      <Divider />
+      <HDivider />
 
       {/* History */}
       <ToolBtn title="Undo (Ctrl+Z)" disabled={!canUndo}
@@ -172,7 +174,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 // ── Editor ────────────────────────────────────────────────────────────────────
 
 export function RichTextEditor({
-  initialContent, onSave, saving, readOnly = false, onChange, onSaveDraftReady,
+  initialContent, onSave, saving, readOnly = false, onChange, onSaveDraftReady, onEditorReady,
 }: RichTextEditorProps) {
   const isDirtyRef = useRef(false);
 
@@ -192,6 +194,12 @@ export function RichTextEditor({
       onChange?.();
     },
   });
+
+  // Give parent access to the editor instance for external toolbar rendering.
+  useEffect(() => {
+    if (editor) onEditorReady?.(editor);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor]);
 
   // Register save fn with parent so toolbar "Save draft" and "Commit" buttons can trigger it.
   useEffect(() => {
@@ -217,13 +225,10 @@ export function RichTextEditor({
   if (!editor) return null;
 
   return (
-    <div className="flex flex-col">
-      {!readOnly && <Toolbar editor={editor} />}
-      <EditorContent
-        editor={editor}
-        className="flex-1 [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[400px]"
-      />
-    </div>
+    <EditorContent
+      editor={editor}
+      className="flex-1 [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[400px]"
+    />
   );
 }
 

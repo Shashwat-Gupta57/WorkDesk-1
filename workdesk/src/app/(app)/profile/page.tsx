@@ -432,14 +432,19 @@ function NotificationsTab() {
           <p className="text-[12px] text-text-secondary mt-0.5">{hint}</p>
           {extra}
         </div>
-        <button type="button" onClick={() => onChange(!value)}
+        <button
+          type="button"
+          role="switch"
+          aria-checked={value}
+          onClick={() => onChange(!value)}
           className={cn(
-            "relative w-10 h-5 rounded-full shrink-0 transition-colors mt-0.5",
-            value ? "bg-primary" : "bg-surface-elevated border border-border-default"
-          )}>
+            "relative inline-flex w-11 h-6 rounded-full shrink-0 transition-colors duration-200 mt-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary",
+            value ? "bg-primary" : "bg-surface-container border border-border-default"
+          )}
+        >
           <span className={cn(
-            "absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform",
-            value ? "translate-x-5" : "translate-x-0.5"
+            "absolute top-[3px] left-[3px] w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform duration-200",
+            value ? "translate-x-5" : "translate-x-0"
           )} />
         </button>
       </div>
