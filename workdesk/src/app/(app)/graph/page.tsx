@@ -19,7 +19,7 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { useGraphData } from "@/modules/relationships/hooks";
-import { buildFlowGraph } from "@/components/graph/layout";
+import { buildFlowGraph, buildFloatingGraph } from "@/components/graph/layout";
 import { MemberNode, SetNode, ArtifactNode, NODE_COLORS } from "@/components/graph/graph-nodes";
 import { LoadingState, ErrorState } from "@/components/ui/states";
 import { Button } from "@/components/ui/button";
@@ -253,10 +253,13 @@ function Legend() {
 // Main graph page
 // ─────────────────────────────────────────────────────────────────────────────
 
+type ViewMode = "tree" | "floating";
+
 function GraphInner() {
   const router = useRouter();
   const [teamView, setTeamView] = useState(false);
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("tree");
   const { data: graphData, isLoading, error } = useGraphData(teamView);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
@@ -266,11 +269,12 @@ function GraphInner() {
   const [selected, setSelected] = useState<GraphNode | null>(null);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
 
-  // Build flow graph when data arrives, then re-fit after a frame so React Flow
-  // has had a chance to measure the new node dimensions.
+  // Build flow graph when data or view mode changes, then re-fit.
   useEffect(() => {
     if (!graphData) return;
-    const { nodes: fn, edges: fe } = buildFlowGraph(graphData);
+    const { nodes: fn, edges: fe } = viewMode === "floating"
+      ? buildFloatingGraph(graphData)
+      : buildFlowGraph(graphData);
 
     // Apply search dim — non-matching nodes go to 30% opacity
     const q = search.trim().toLowerCase();
@@ -293,7 +297,7 @@ function GraphInner() {
         rfInstance?.fitView({ padding: 0.25, duration: 300 });
       });
     });
-  }, [graphData, search, setNodes, setEdges, rfInstance]);
+  }, [graphData, search, viewMode, setNodes, setEdges, rfInstance]);
 
   const onNodeMouseEnter: NodeMouseHandler = useCallback((_e, node) => {
     const raw = node.data.rawNode as GraphNode;
@@ -376,6 +380,36 @@ function GraphInner() {
               transition: "border-color 0.15s ease",
             }}
           />
+        </div>
+
+        <div style={{ width: 1, height: 20, background: "#30363d" }} />
+
+        {/* View mode switcher */}
+        <div style={{
+          display: "flex", alignItems: "center",
+          background: "#0d1117", border: "1px solid #30363d",
+          borderRadius: 6, overflow: "hidden", padding: 2, gap: 2,
+        }}>
+          {(["tree", "floating"] as ViewMode[]).map(mode => (
+            <button
+              key={mode}
+              onClick={() => setViewMode(mode)}
+              style={{
+                padding: "3px 10px",
+                borderRadius: 4,
+                border: "none",
+                cursor: "pointer",
+                fontSize: 11,
+                fontWeight: 500,
+                fontFamily: "Inter, sans-serif",
+                background: viewMode === mode ? "#1f6feb" : "transparent",
+                color: viewMode === mode ? "#e6edf3" : "#8b949e",
+                transition: "background 0.15s ease, color 0.15s ease",
+              }}
+            >
+              {mode === "tree" ? "Tree" : "Floating"}
+            </button>
+          ))}
         </div>
 
         <div style={{ width: 1, height: 20, background: "#30363d" }} />
