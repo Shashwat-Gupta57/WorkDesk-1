@@ -12,21 +12,21 @@
 //   getPresignedDownloadUrl(key)            → URL the client GETs bytes from
 // ─────────────────────────────────────────────────────────────────────────────
 
-function baseUrl(): string {
-  return process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-}
-
+// Return a RELATIVE URL so the client PUTs/GETs to the same origin it loaded
+// the app from. Hardcoding http://localhost:3000 breaks when the app is opened
+// via 127.0.0.1, a LAN IP, or a tunneled host: the PUT becomes cross-origin and
+// the browser blocks it (surfacing as a "network" upload failure).
 export async function getPresignedUploadUrl(
   key: string,
   _contentType: string,
   _expiresInSeconds = 3600
 ): Promise<string> {
-  return `${baseUrl()}/api/storage/local/${key}`;
+  return `/api/storage/local/${key}`;
 }
 
 export async function getPresignedDownloadUrl(
   key: string,
   _expiresInSeconds = 3600
 ): Promise<string> {
-  return `${baseUrl()}/api/storage/local/${key}`;
+  return `/api/storage/local/${key}`;
 }

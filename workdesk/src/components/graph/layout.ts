@@ -88,15 +88,14 @@ export function buildFlowGraph(data: GraphData): { nodes: Node[]; edges: Edge[] 
         tags: n.tags ?? [],
         ownerName: n.ownerName,
         ownerId: n.ownerId,
+        depth: n.depth ?? 0,
         rawNode: n,
       },
-      // Animate in with a staggered delay based on depth
-      style: {
-        opacity: 0,
-        transform: "scale(0.85)",
-        animation: `graphNodeIn 0.35s ease forwards`,
-        animationDelay: `${(n.depth ?? 0) * 80}ms`,
-      },
+      draggable: true,
+      // NOTE: no `style.animation`/`transform` here. React Flow drives the
+      // wrapper's `transform` for positioning & dragging — animating transform
+      // on the wrapper freezes the node in place. The entrance animation lives
+      // on each node component's inner <div> instead (opacity-only).
     };
   });
 

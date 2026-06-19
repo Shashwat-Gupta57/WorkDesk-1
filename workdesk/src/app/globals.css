@@ -65,8 +65,15 @@ body {
 /* ── Graph view animations ─────────────────────────────────────────────────── */
 
 @keyframes graphNodeIn {
-  from { opacity: 0; transform: scale(0.82) translateY(-6px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Entrance animation lives on the node's INNER div, never on the React Flow
+   wrapper (whose transform is owned by drag/positioning). Opacity-only so it
+   can never interfere with dragging. Depth stagger comes from an inline delay. */
+.graph-node-in {
+  animation: graphNodeIn 0.35s ease both;
 }
 
 @keyframes tooltipIn {
@@ -83,6 +90,19 @@ body {
 .react-flow__node:hover > div {
   box-shadow: 0 0 0 2px #58a6ff44, 0 0 18px #58a6ff22 !important;
   transform: scale(1.04) !important;
+}
+
+/* Selected node ring */
+.react-flow__node.selected > div {
+  box-shadow: 0 0 0 2px #58a6ff, 0 0 20px #58a6ff44 !important;
+  transform: scale(1.04) !important;
+}
+
+/* Rubber-band selection box */
+.react-flow__selection {
+  background: #1f6feb18 !important;
+  border: 1px solid #388bfd !important;
+  border-radius: 4px !important;
 }
 
 /* ── Page-level fade-in for new route loads ────────────────────────────────── */

@@ -64,16 +64,7 @@ export function FileViewer({ contentKey, artifactType, title }: FileViewerProps)
   const type = artifactType as ArtifactType;
 
   if (type === ArtifactType.IMAGE) {
-    return (
-      <div className="flex justify-center rounded-lg border border-border-default bg-surface-container p-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={url}
-          alt={title}
-          className="max-h-[70vh] max-w-full rounded object-contain"
-        />
-      </div>
-    );
+    return <ImagePreview url={url} title={title} />;
   }
 
   if (type === ArtifactType.PDF) {
@@ -114,6 +105,8 @@ export function FileViewer({ contentKey, artifactType, title }: FileViewerProps)
     );
   }
 
+  /* unreachable — all known types handled above */
+
   // ZIP / OTHER / unknown — download prompt only.
   return (
     <div className="flex flex-col items-center gap-4 rounded-lg border border-border-default bg-surface-container px-8 py-12 text-center">
@@ -129,6 +122,44 @@ export function FileViewer({ contentKey, artifactType, title }: FileViewerProps)
       >
         Download file
       </a>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ImagePreview — renders the image with an explicit loaded/failed state so a
+// broken fetch shows a clear message instead of an empty container.
+// ─────────────────────────────────────────────────────────────────────────────
+
+function ImagePreview({ url, title }: { url: string; title: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return (
+      <div className="flex flex-col items-center gap-3 rounded-lg border border-border-default bg-surface-container px-8 py-12 text-center">
+        <div className="text-4xl">🖼️</div>
+        <p className="text-sm text-text-secondary">Couldn&apos;t display this image.</p>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-primary hover:underline"
+        >
+          Open it in a new tab
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex justify-center rounded-lg border border-border-default bg-surface-container p-4">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={url}
+        alt={title}
+        onError={() => setFailed(true)}
+        className="max-h-[70vh] max-w-full rounded object-contain"
+      />
     </div>
   );
 }

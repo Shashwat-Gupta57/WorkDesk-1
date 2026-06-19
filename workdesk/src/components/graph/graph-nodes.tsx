@@ -40,12 +40,13 @@ const handleStyle = { background: "transparent", border: "none", width: 8, heigh
 // MemberNode — team member root (team view only)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const MemberNode = memo(({ data }: { data: { label: string } }) => {
+export const MemberNode = memo(({ data }: { data: { label: string; depth?: number } }) => {
   const color = NODE_COLORS.member;
   return (
     <div
-      className="graph-node graph-node--member"
+      className="graph-node graph-node--member graph-node-in"
       style={{
+        animationDelay: `${(data.depth ?? 0) * 80}ms`,
         background: color.bg,
         border: `2px solid ${color.border}`,
         borderRadius: "50%",
@@ -72,13 +73,15 @@ MemberNode.displayName = "MemberNode";
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const SetNode = memo(({ data }: {
-  data: { label: string; nodeType: "set" | "subset"; artifactType?: string }
+  data: { label: string; nodeType: "set" | "subset"; artifactType?: string; depth?: number }
 }) => {
   const color = colorFor(data.nodeType, data.artifactType);
   const isRoot = data.nodeType === "set";
   return (
     <div
+      className="graph-node-in"
       style={{
+        animationDelay: `${(data.depth ?? 0) * 80}ms`,
         background: color.bg,
         border: `1.5px solid ${color.border}`,
         borderRadius: isRoot ? 10 : 8,
@@ -124,6 +127,7 @@ export const ArtifactNode = memo(({ data }: {
     visibility?: string;
     tags?: string[];
     ownerName?: string;
+    depth?: number;
   }
 }) => {
   const color = colorFor("artifact", data.artifactType);
@@ -131,7 +135,9 @@ export const ArtifactNode = memo(({ data }: {
 
   return (
     <div
+      className="graph-node-in"
       style={{
+        animationDelay: `${(data.depth ?? 0) * 80}ms`,
         background: color.bg,
         border: `1.5px solid ${color.border}`,
         borderRadius: 7,

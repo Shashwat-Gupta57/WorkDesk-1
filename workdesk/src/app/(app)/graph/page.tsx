@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState, useEffect, Suspense } from "react";
+import { useCallback, useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import {
   ReactFlow,
@@ -9,9 +9,11 @@ import {
   MiniMap,
   useNodesState,
   useEdgesState,
+  SelectionMode,
   type NodeMouseHandler,
   type Node,
   type Edge,
+  type ReactFlowInstance,
   BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
@@ -262,8 +264,10 @@ function GraphInner() {
 
   const [hovered, setHovered] = useState<{ node: GraphNode; x: number; y: number } | null>(null);
   const [selected, setSelected] = useState<GraphNode | null>(null);
+  const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
 
-  // Build flow graph when data arrives
+  // Build flow graph when data arrives, then re-fit after a frame so React Flow
+  // has had a chance to measure the new node dimensions.
   useEffect(() => {
     if (!graphData) return;
     const { nodes: fn, edges: fe } = buildFlowGraph(graphData);
@@ -282,7 +286,14 @@ function GraphInner() {
 
     setNodes(mapped);
     setEdges(fe);
-  }, [graphData, search, setNodes, setEdges]);
+
+    // Fit after nodes are painted (two rAFs to be safe)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        rfInstance?.fitView({ padding: 0.25, duration: 300 });
+      });
+    });
+  }, [graphData, search, setNodes, setEdges, rfInstance]);
 
   const onNodeMouseEnter: NodeMouseHandler = useCallback((_e, node) => {
     const raw = node.data.rawNode as GraphNode;
@@ -401,6 +412,13 @@ function GraphInner() {
             Clear
           </button>
         )}
+
+        <div style={{ width: 1, height: 20, background: "#30363d" }} />
+
+        {/* Selection hint */}
+        <span style={{ fontSize: 10, color: "#6e7681", userSelect: "none", whiteSpace: "nowrap" }}>
+          Drag to select · Ctrl+click to add
+        </span>
       </div>
 
       {/* ── React Flow canvas ── */}
@@ -410,14 +428,23 @@ function GraphInner() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
+        onInit={setRfInstance}
         onNodeMouseEnter={onNodeMouseEnter}
         onNodeMouseLeave={onNodeMouseLeave}
         onNodeClick={onNodeClick}
         onNodeDoubleClick={onNodeDoubleClick}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
-        minZoom={0.15}
+        fitViewOptions={{ padding: 0.25 }}
+        minZoom={0.1}
         maxZoom={2.5}
+        nodesDraggable
+        // Left-drag on empty canvas = rubber-band selection.
+        // Pan with right-click drag or scroll-middle. Space+drag also pans.
+        selectionOnDrag
+        selectionMode={SelectionMode.Partial}
+        panOnDrag={[1, 2]}
+        multiSelectionKeyCode="Control"
+        zoomOnScroll
         proOptions={{ hideAttribution: true }}
         style={{ background: "#0d1117" }}
       >
