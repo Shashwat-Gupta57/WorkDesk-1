@@ -3,9 +3,9 @@
 import { use, useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft, Save, GitCommit, Clock, CheckCircle2, Loader2,
-  AlertTriangle, RotateCcw, ChevronDown, ChevronUp, Eye, User,
-  Calendar, FileText, Trash2, Share2, MoveRight, X,
+  ArrowLeft, Clock, CheckCircle2, Loader2,
+  AlertTriangle, RotateCcw, Eye, User,
+  Calendar, FileText, Trash2, Share2, MoveRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -17,7 +17,7 @@ import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api-client";
 import { ArtifactType, Visibility } from "@/lib/enums";
 import { TagPicker } from "@/components/archive/tag-picker";
-import { RichTextEditor } from "@/components/archive/rich-text-editor";
+import { RichTextEditor, CommitModal } from "@/components/archive/rich-text-editor";
 import { FileViewer } from "@/components/archive/file-viewer";
 import { MoveModal } from "@/components/archive/move-modal";
 import { ShareDialog } from "@/components/archive/share-dialog";
@@ -77,6 +77,10 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
   const [moveOpen, setMoveOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [commitOpen, setCommitOpen] = useState(false);
+
+  // Set by RichTextEditor.onSaveDraftReady — takes optional changeSummary
+  const saveDraftFnRef = useRef<((summary: string | null) => Promise<void>) | null>(null);
 
   // Title draft
   const [titleDraft, setTitleDraft] = useState("");
@@ -128,6 +132,19 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
     },
     [saveContent]
   );
+
+  // ── Save draft / commit ────────────────────────────────────────────────────
+  // saveDraftFnRef is set by RichTextEditor via onSaveDraftReady.
+  // It captures the editor's current doc and calls handleSave.
+
+  async function handleSaveDraft() {
+    if (saveDraftFnRef.current) await saveDraftFnRef.current(null);
+  }
+
+  async function handleCommit(summary: string) {
+    if (saveDraftFnRef.current) await saveDraftFnRef.current(summary || null);
+    setCommitOpen(false);
+  }
 
   // ── Navigation guard ───────────────────────────────────────────────────────
 
@@ -185,6 +202,16 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
   }
 
   const wordCount = countWords(headContent);
+
+  function countChars(doc: Record<string, unknown> | null | undefined): number {
+    if (!doc) return 0;
+    function walk(node: Record<string, unknown>): string {
+      if (node.type === "text") return (node.text as string) ?? "";
+      const children = (node.content as Record<string, unknown>[]) ?? [];
+      return children.map(walk).join("");
+    }
+    return walk(doc).length;
+  }
 
   // ── Loading / error states ─────────────────────────────────────────────────
 
@@ -274,42 +301,63 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
 
         {/* Slim toolbar */}
         <div className="h-10 shrink-0 flex items-center justify-between px-4 border-b border-border-default bg-surface-secondary">
+          {/* Left: word count + status */}
           <div className="flex items-center gap-3">
-            <span className="text-[11px] text-text-secondary">{wordCount} words</span>
+            {isText && <span className="text-[11px] text-text-secondary">{wordCount} words · {countChars(headContent)} chars</span>}
             {isDirty && saveState === "idle" && (
-              <span className="flex items-center gap-1 text-[11px] text-warning">
+              <span className="flex items-center gap-1 text-[11px] text-text-secondary">
                 <span className="w-1.5 h-1.5 rounded-full bg-warning inline-block" />
-                Unsaved
+                Unsaved changes
               </span>
             )}
             <SaveIndicator state={saveState} />
           </div>
 
-          {isOwner && isText && (
-            <div className="flex items-center gap-2">
-              {headVersion && (
-                <span className="text-[11px] text-text-secondary">v{headVersion.versionNumber}</span>
-              )}
-              <button
-                onClick={() => setHistoryOpen(v => !v)}
-                className={cn(
-                  "flex items-center gap-1 h-7 px-2.5 text-[12px] rounded border transition-colors",
-                  historyOpen
-                    ? "border-primary/50 text-primary bg-primary/10"
-                    : "border-border-default text-text-secondary hover:text-text-primary hover:bg-surface-elevated"
-                )}
-              >
-                <Clock size={12} />
-                {historyOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
-              </button>
-            </div>
-          )}
+          {/* Right: version badge + history toggle + Save draft + Commit */}
+          <div className="flex items-center gap-2">
+            {headVersion && (
+              <span className="text-[11px] text-text-secondary">
+                v{headVersion.versionNumber}{saveState === "idle" && isDirty ? " · draft" : ""}
+              </span>
+            )}
 
-          {isOwner && !isText && headVersion && (
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] text-text-secondary">v{headVersion.versionNumber} · {artifact.type}</span>
-            </div>
-          )}
+            {isOwner && isText && (
+              <>
+                <button
+                  onClick={() => setHistoryOpen(v => !v)}
+                  title="Toggle version history"
+                  className={cn(
+                    "flex items-center justify-center w-7 h-7 rounded border transition-colors",
+                    historyOpen
+                      ? "border-primary/50 text-primary bg-primary/10"
+                      : "border-border-default text-text-secondary hover:text-text-primary hover:bg-surface-elevated"
+                  )}
+                >
+                  <Clock size={13} />
+                </button>
+
+                <button
+                  onClick={handleSaveDraft}
+                  disabled={saveState === "saving" || !isDirty}
+                  className="flex items-center gap-1.5 h-7 px-3 text-[12px] font-medium border border-border-default rounded text-text-secondary hover:text-text-primary hover:bg-surface-elevated disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Save draft
+                </button>
+
+                <button
+                  onClick={() => setCommitOpen(true)}
+                  disabled={saveState === "saving"}
+                  className="flex items-center gap-1.5 h-7 px-3 text-[12px] font-medium bg-primary text-on-primary rounded hover:opacity-90 disabled:opacity-50 transition-opacity"
+                >
+                  Commit
+                </button>
+              </>
+            )}
+
+            {isOwner && !isText && headVersion && (
+              <span className="text-[11px] text-text-secondary">{artifact.type}</span>
+            )}
+          </div>
         </div>
 
         {/* Editor / content area */}
@@ -341,6 +389,7 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
                   onSave={handleSave}
                   saving={saveState === "saving"}
                   onChange={() => setIsDirty(true)}
+                  onSaveDraftReady={fn => { saveDraftFnRef.current = fn; }}
                 />
               ) : (
                 <div>
@@ -576,6 +625,14 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
           onClose={() => setMoveOpen(false)}
         />
       )}
+
+      {/* ── COMMIT MODAL ──────────────────────────────────────────────────────── */}
+      <CommitModal
+        open={commitOpen}
+        saving={saveState === "saving"}
+        onConfirm={handleCommit}
+        onCancel={() => setCommitOpen(false)}
+      />
     </div>
   );
 }

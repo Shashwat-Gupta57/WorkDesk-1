@@ -8,15 +8,25 @@ import Typography from "@tiptap/extension-typography";
 import Link from "@tiptap/extension-link";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
+import {
+  Bold, Italic, Strikethrough, Code, Heading1, Heading2, Heading3,
+  List, ListOrdered, ListChecks, Quote, FileCode2, Minus, Undo2, Redo2, Link2,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Rich-text editor for TEXT artifacts (Tiptap / ProseMirror).
 //
-// Toolbar: bold, italic, strike, code, h1/h2/h3, bullet list, ordered list,
-//   task list, blockquote, code block, link, horizontal rule.
-// Auto-save: debounced 2 s after the last keystroke; sets `isDirty`.
-// Manual save: "Save version" button commits a named version.
+// FRAMELESS — renders bare ProseMirror content with no wrapping border box.
+// The toolbar floats above the content area. Prose styles live in globals.css.
+//
+// Toolbar buttons use lucide icons. All formatting commands are fully wired.
+// Save / Commit buttons live in the page-level toolbar (passed via callbacks).
 // ─────────────────────────────────────────────────────────────────────────────
+
+export interface RichTextEditorHandle {
+  getDoc: () => Record<string, unknown>;
+}
 
 interface RichTextEditorProps {
   initialContent: Record<string, unknown> | null;
@@ -24,22 +34,16 @@ interface RichTextEditorProps {
   saving: boolean;
   readOnly?: boolean;
   onChange?: () => void;
+  /** Called once editor is ready; parent stores the fn to trigger save from toolbar buttons. */
+  onSaveDraftReady?: (fn: (summary: string | null) => Promise<void>) => void;
 }
 
 // ── Toolbar button ────────────────────────────────────────────────────────────
 
 function ToolBtn({
-  active,
-  disabled,
-  title,
-  onClick,
-  children,
+  active, disabled, title, onClick, children,
 }: {
-  active?: boolean;
-  disabled?: boolean;
-  title: string;
-  onClick: () => void;
-  children: React.ReactNode;
+  active?: boolean; disabled?: boolean; title: string; onClick: () => void; children: React.ReactNode;
 }) {
   return (
     <button
@@ -47,13 +51,13 @@ function ToolBtn({
       title={title}
       disabled={disabled}
       onMouseDown={(e) => { e.preventDefault(); onClick(); }}
-      className={
-        "flex h-7 w-7 items-center justify-center rounded text-sm transition-colors " +
-        (active
+      className={cn(
+        "flex h-7 w-7 items-center justify-center rounded text-[13px] transition-colors",
+        active
           ? "bg-primary/20 text-primary"
-          : "text-text-secondary hover:bg-surface-container hover:text-text-primary") +
-        (disabled ? " opacity-40 cursor-not-allowed" : "")
-      }
+          : "text-text-secondary hover:bg-surface-container-high hover:text-text-primary",
+        disabled && "opacity-30 cursor-not-allowed pointer-events-none"
+      )}
     >
       {children}
     </button>
@@ -67,36 +71,55 @@ function Divider() {
 // ── Toolbar ──────────────────────────────────────────────────────────────────
 
 function Toolbar({ editor }: { editor: Editor }) {
-  const can = editor.can().chain().focus();
+  const canUndo = editor.can().undo();
+  const canRedo = editor.can().redo();
+
+  function setLink() {
+    const prev = editor.getAttributes("link").href as string | undefined;
+    const url = window.prompt("URL", prev ?? "https://");
+    if (url === null) return;
+    if (url === "") { editor.chain().focus().unsetLink().run(); return; }
+    editor.chain().focus().setLink({ href: url }).run();
+  }
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 border-b border-border-default bg-surface-container px-3 py-1.5">
+    <div className="flex flex-wrap items-center gap-0.5 border-b border-border-default bg-surface-secondary/60 px-3 py-1.5 sticky top-0 z-10 backdrop-blur-sm">
       {/* Headings */}
       <ToolBtn title="Heading 1" active={editor.isActive("heading", { level: 1 })}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>H1</ToolBtn>
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}>
+        <Heading1 size={14} />
+      </ToolBtn>
       <ToolBtn title="Heading 2" active={editor.isActive("heading", { level: 2 })}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>H2</ToolBtn>
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
+        <Heading2 size={14} />
+      </ToolBtn>
       <ToolBtn title="Heading 3" active={editor.isActive("heading", { level: 3 })}
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>H3</ToolBtn>
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}>
+        <Heading3 size={14} />
+      </ToolBtn>
 
       <Divider />
 
       {/* Inline marks */}
       <ToolBtn title="Bold (Ctrl+B)" active={editor.isActive("bold")}
         onClick={() => editor.chain().focus().toggleBold().run()}>
-        <strong>B</strong>
+        <Bold size={14} />
       </ToolBtn>
       <ToolBtn title="Italic (Ctrl+I)" active={editor.isActive("italic")}
         onClick={() => editor.chain().focus().toggleItalic().run()}>
-        <em>I</em>
+        <Italic size={14} />
       </ToolBtn>
       <ToolBtn title="Strikethrough" active={editor.isActive("strike")}
         onClick={() => editor.chain().focus().toggleStrike().run()}>
-        <s>S</s>
+        <Strikethrough size={14} />
       </ToolBtn>
       <ToolBtn title="Inline code" active={editor.isActive("code")}
         onClick={() => editor.chain().focus().toggleCode().run()}>
-        {"<>"}
+        <Code size={14} />
+      </ToolBtn>
+      <ToolBtn title="Link" active={editor.isActive("link")}
+        onClick={setLink}>
+        <Link2 size={14} />
       </ToolBtn>
 
       <Divider />
@@ -104,48 +127,53 @@ function Toolbar({ editor }: { editor: Editor }) {
       {/* Lists */}
       <ToolBtn title="Bullet list" active={editor.isActive("bulletList")}
         onClick={() => editor.chain().focus().toggleBulletList().run()}>
-        ≡
+        <List size={14} />
       </ToolBtn>
       <ToolBtn title="Numbered list" active={editor.isActive("orderedList")}
         onClick={() => editor.chain().focus().toggleOrderedList().run()}>
-        №
+        <ListOrdered size={14} />
       </ToolBtn>
       <ToolBtn title="Task list" active={editor.isActive("taskList")}
         onClick={() => editor.chain().focus().toggleTaskList().run()}>
-        ☑
+        <ListChecks size={14} />
       </ToolBtn>
 
       <Divider />
 
-      {/* Blocks */}
+      {/* Block formats */}
       <ToolBtn title="Blockquote" active={editor.isActive("blockquote")}
         onClick={() => editor.chain().focus().toggleBlockquote().run()}>
-        "
+        <Quote size={14} />
       </ToolBtn>
       <ToolBtn title="Code block" active={editor.isActive("codeBlock")}
         onClick={() => editor.chain().focus().toggleCodeBlock().run()}>
-        {"{}"}
+        <FileCode2 size={14} />
       </ToolBtn>
       <ToolBtn title="Horizontal rule"
         onClick={() => editor.chain().focus().setHorizontalRule().run()}>
-        —
+        <Minus size={14} />
       </ToolBtn>
 
       <Divider />
 
-      {/* Undo / Redo */}
-      <ToolBtn title="Undo (Ctrl+Z)" disabled={!can.undo().run()}
-        onClick={() => editor.chain().focus().undo().run()}>↩</ToolBtn>
-      <ToolBtn title="Redo (Ctrl+Y)" disabled={!can.redo().run()}
-        onClick={() => editor.chain().focus().redo().run()}>↪</ToolBtn>
+      {/* History */}
+      <ToolBtn title="Undo (Ctrl+Z)" disabled={!canUndo}
+        onClick={() => editor.chain().focus().undo().run()}>
+        <Undo2 size={14} />
+      </ToolBtn>
+      <ToolBtn title="Redo (Ctrl+Y)" disabled={!canRedo}
+        onClick={() => editor.chain().focus().redo().run()}>
+        <Redo2 size={14} />
+      </ToolBtn>
     </div>
   );
 }
 
 // ── Editor ────────────────────────────────────────────────────────────────────
 
-export function RichTextEditor({ initialContent, onSave, saving, readOnly = false, onChange }: RichTextEditorProps) {
-  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+export function RichTextEditor({
+  initialContent, onSave, saving, readOnly = false, onChange, onSaveDraftReady,
+}: RichTextEditorProps) {
   const isDirtyRef = useRef(false);
 
   const editor = useEditor({
@@ -165,7 +193,17 @@ export function RichTextEditor({ initialContent, onSave, saving, readOnly = fals
     },
   });
 
-  // When initialContent changes (e.g. switching versions), replace editor content.
+  // Register save fn with parent so toolbar "Save draft" and "Commit" buttons can trigger it.
+  useEffect(() => {
+    if (!onSaveDraftReady || !editor) return;
+    onSaveDraftReady(async (summary: string | null) => {
+      await onSave(editor.getJSON() as Record<string, unknown>, summary);
+      isDirtyRef.current = false;
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, onSave]);
+
+  // Replace content when version changes.
   useEffect(() => {
     if (!editor) return;
     const incoming = initialContent ?? { type: "doc", content: [{ type: "paragraph" }] };
@@ -176,73 +214,76 @@ export function RichTextEditor({ initialContent, onSave, saving, readOnly = fals
     }
   }, [editor, initialContent]);
 
-  // Cleanup timer on unmount.
-  useEffect(() => () => { if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current); }, []);
-
-  const handleManualSave = useCallback(
-    async (changeSummary: string | null) => {
-      if (!editor) return;
-      await onSave(editor.getJSON() as Record<string, unknown>, changeSummary);
-      isDirtyRef.current = false;
-    },
-    [editor, onSave]
-  );
-
   if (!editor) return null;
 
   return (
-    <div className="flex flex-col rounded-lg border border-border-default bg-surface-secondary overflow-hidden">
+    <div className="flex flex-col">
       {!readOnly && <Toolbar editor={editor} />}
       <EditorContent
         editor={editor}
-        className="prose prose-invert max-w-none flex-1 px-6 py-5 text-sm focus-within:outline-none [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[320px]"
+        className="flex-1 [&_.ProseMirror]:outline-none [&_.ProseMirror]:min-h-[400px]"
       />
-      {!readOnly && (
-        <SaveBar onSave={handleManualSave} saving={saving} />
-      )}
     </div>
   );
 }
 
-// ── Save bar ──────────────────────────────────────────────────────────────────
+// ── Commit modal — shown by page toolbar's "Commit" button ────────────────────
 
-function SaveBar({
-  onSave,
+export function CommitModal({
+  open,
   saving,
+  onConfirm,
+  onCancel,
 }: {
-  onSave: (changeSummary: string | null) => Promise<void>;
+  open: boolean;
   saving: boolean;
+  onConfirm: (summary: string) => void;
+  onCancel: () => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
-  async function handleClick() {
-    const summary = inputRef.current?.value.trim() || null;
-    await onSave(summary);
-    if (inputRef.current) inputRef.current.value = "";
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    onConfirm(inputRef.current?.value.trim() ?? "");
   }
 
+  if (!open) return null;
+
   return (
-    <div className="flex items-center gap-2 border-t border-border-default bg-surface-container px-4 py-2">
-      <input
-        ref={inputRef}
-        type="text"
-        placeholder="Change summary (optional)"
-        maxLength={255}
-        className="min-w-0 flex-1 rounded border border-border-default bg-surface-secondary px-3 py-1.5 text-xs text-text-primary placeholder:text-text-secondary focus:border-primary focus:outline-none"
-      />
-      <button
-        type="button"
-        disabled={saving}
-        onClick={handleClick}
-        className="inline-flex h-8 items-center gap-1.5 rounded bg-primary px-3 text-xs font-medium text-on-primary transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {saving ? "Saving…" : "Save version"}
-      </button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+      <div className="bg-surface-elevated border border-border-default rounded-lg shadow-xl p-5 w-[380px] space-y-4"
+        onClick={e => e.stopPropagation()}>
+        <p className="text-[14px] font-semibold text-text-primary">Commit version</p>
+        <p className="text-[13px] text-text-secondary">
+          Save this as a named, permanent version. Add an optional change summary.
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Change summary (optional)"
+            maxLength={255}
+            autoFocus
+            className="w-full h-9 px-3 text-[13px] bg-surface-secondary border border-border-default rounded
+                       outline-none text-text-primary placeholder:text-text-secondary focus:border-primary transition-colors"
+          />
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={onCancel}
+              className="h-8 px-3 text-[13px] border border-border-default rounded text-text-secondary hover:text-text-primary transition-colors">
+              Cancel
+            </button>
+            <button type="submit" disabled={saving}
+              className="flex items-center gap-1.5 h-8 px-4 text-[13px] font-medium bg-primary text-on-primary rounded hover:opacity-90 disabled:opacity-50 transition-opacity">
+              {saving ? "Committing…" : "Commit"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
 
-// ── Read-only viewer (for diff / version preview) ────────────────────────────
+// ── Read-only viewer ──────────────────────────────────────────────────────────
 
 export function RichTextViewer({ content }: { content: Record<string, unknown> | null }) {
   return (
