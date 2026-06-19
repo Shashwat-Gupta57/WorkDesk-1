@@ -14,6 +14,7 @@ import { RichTextViewer } from "@/components/archive/rich-text-editor";
 import { DiffViewer } from "@/components/archive/diff-viewer";
 import { FileViewer } from "@/components/archive/file-viewer";
 import { useArtifactDetail, useTextContent, useSaveTextContent } from "@/modules/archive/hooks";
+import { RelationshipsPanel } from "@/components/archive/relationships-panel";
 import { useRecordOpen } from "@/modules/activity/hooks";
 import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api-client";
@@ -198,6 +199,11 @@ export default function ArtifactWorkspace({ params }: { params: Promise<{ id: st
               </dd>
             </div>
           </dl>
+
+          {/* Relationships */}
+          <div className="mt-6 border-t border-border-default pt-5">
+            <RelationshipsPanel artifactId={artifact.id} artifactTitle={artifact.title} />
+          </div>
         </aside>
       </div>
 

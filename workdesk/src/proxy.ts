@@ -51,6 +51,7 @@ const PROTECTED_PREFIXES = [
   "/bulletin",
   "/mail-hub",
   "/graph-view",
+  "/graph",
   "/settings",
   "/profile",
 ];
