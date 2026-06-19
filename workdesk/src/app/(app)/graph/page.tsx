@@ -471,7 +471,7 @@ function GraphInner({ search }: { search: string }) {
 }
 
 export default function GraphPage() {
-  const [viewMode, setViewMode] = useState<ViewMode>("tree");
+  const [viewMode, setViewMode] = useState<ViewMode>("floating");
   const [search,   setSearch]   = useState("");
 
   return (
