@@ -1,0 +1,1448 @@
+Yes, but I would strongly advise against generating hundreds of implementation prompts up front.
+
+For a project of this size, the AI-generated code from Prompt #120 will almost certainly conflict with architectural decisions made during Prompt #15.
+
+A better workflow is:
+
+PRD
+↓
+Architecture
+↓
+V1 Roadmap
+↓
+Feature Roadmap
+↓
+Feature Prompt Chain
+↓
+Implementation
+↓
+Review
+↓
+Next Feature
+
+not
+
+PRD
+↓
+500 prompts
+↓
+Chaos
+Estimated Prompt Count
+
+Assuming you are vibe-coding with Claude, GPT-5, Gemini, Cursor, Windsurf, etc.
+
+Each feature generally needs:
+
+Planning Prompt
+DB Design Prompt
+Backend Prompt
+Frontend Prompt
+Integration Prompt
+Testing Prompt
+
+≈ 5–8 prompts per medium feature.
+
+Module	Complexity	Prompt Count
+Project Bootstrap	Medium	8
+Authentication	Medium	10
+User Profiles	Low	4
+Dashboard	Medium	8
+Archive Explorer	High	20
+Set Management	Medium	8
+Artifact System	High	20
+Rich Text Editor	High	12
+File Uploads	Medium	8
+Versioning Engine	Very High	25
+Search Engine	High	15
+Trash System	Medium	6
+Favorites	Low	4
+Storage Quotas	Medium	5
+Audit Logs	Medium	8
+Ownership Transfer	Medium	6
+Library System	High	18
+Graph View	High	15
+Messaging	Very High	25
+Notifications	High	12
+Bulletin Board	Medium	10
+Countdown System	Medium	10
+Mail Hub	Very High	35
+Tool Dock	Low	4
+Discord Integration	Medium	10
+Integrations Platform	Very High	30
+API Layer	High	15
+PWA	Medium	8
+Backup System	Medium	8
+
+Total:
+
+~390 prompts
+
+Realistically:
+
+300–450 prompts
+
+for WorkDesk V1–V5.
+
+Suggested Tech Stack
+
+This is what I'd build if the goal is:
+
+Fast
+Modern
+Easy to vibe-code
+Frontend
+Next.js 15
+TypeScript
+Tailwind
+shadcn/ui
+TanStack Query
+Backend
+Next.js Route Handlers
+
+or
+
+NestJS
+
+For GBN:
+
+Next.js Fullstack
+
+is enough.
+
+Database
+PostgreSQL
+ORM
+Prisma
+Authentication
+Better Auth
+
+or
+
+Auth.js
+Storage
+Cloudflare R2
+
+for artifacts.
+
+Search
+PostgreSQL Full Text Search
+
+Initially.
+
+Later:
+
+Meilisearch
+Realtime
+Pusher
+
+or
+
+Socket.io
+Graph View
+React Flow
+architecture.md Structure
+
+The actual file should look like:
+
+# WorkDesk Architecture
+
+## Core Principle
+
+Artifacts are first-class objects.
+
+Everything revolves around artifacts.
+
+Users do not own files.
+
+Users own references to files.
+
+Organization retains archival rights.
+
+---
+
+## Domain Model
+
+User
+ ├── Sets
+ ├── Artifacts
+ ├── Messages
+ ├── Notifications
+
+Set
+ ├── Child Sets
+ ├── Artifacts
+
+Artifact
+ ├── Versions
+ ├── Metadata
+ ├── Visibility
+
+Version
+ ├── Content
+ ├── Author
+ ├── Timestamp
+
+Library
+ ├── Sections
+ ├── Published References
+
+Message
+ ├── Sender
+ ├── Receiver
+ ├── Artifact References
+
+---
+
+## Storage Architecture
+
+Postgres
+    Metadata
+
+Cloudflare R2
+    Files
+
+Redis
+    Cache
+
+---
+
+## Visibility Model
+
+Private
+Shared
+Public
+
+---
+
+## Versioning Model
+
+Artifact
+ ├── Version 1
+ ├── Version 2
+ ├── Version 3
+
+Never overwrite.
+
+Always append.
+
+---
+
+## Ownership Model
+
+Creator
+Organizational Steward
+Administrator
+
+---
+
+## Search Architecture
+
+Indexed:
+
+- Titles
+- Tags
+- Descriptions
+- Text Content
+
+---
+
+## Deployment
+
+Vercel
+Postgres
+R2
+roadmap.md Structure
+
+For example:
+
+# Archive Explorer Roadmap
+
+## Goal
+
+Create drive-like archive navigation.
+
+---
+
+## Milestone 1
+
+Create database schema.
+
+Deliverables:
+
+- Set table
+- Artifact table
+
+---
+
+## Milestone 2
+
+Create APIs
+
+Deliverables:
+
+- Create Set
+- Rename Set
+- Delete Set
+
+---
+
+## Milestone 3
+
+Frontend Explorer
+
+Deliverables:
+
+- Tree View
+- Selection
+- Double Click Open
+
+---
+
+## Milestone 4
+
+Testing
+
+Deliverables:
+
+- Navigation
+- Nesting
+- Performance
+chain_of_prompts.txt Structure
+
+This is the most important file.
+
+I would structure it like:
+
+================================
+FEATURE:
+Archive Explorer
+================================
+
+READ FIRST:
+
+Goal:
+Create a drive-like archive explorer.
+
+Requirements:
+- Nested sets
+- Artifacts
+- Single click select
+- Double click open
+
+Architecture:
+(brief architecture excerpt)
+
+--------------------------------
+PROMPT 1
+--------------------------------
+
+Design Prisma schema for:
+Set
+Artifact
+
+Requirements:
+...
+
+--------------------------------
+PROMPT 2
+--------------------------------
+
+Create migration files for the schema.
+
+Requirements:
+...
+
+--------------------------------
+PROMPT 3
+--------------------------------
+
+Create REST endpoints:
+
+POST /sets
+PATCH /sets/:id
+
+Requirements:
+...
+
+--------------------------------
+PROMPT 4
+--------------------------------
+
+Create React components:
+
+ExplorerTree
+ExplorerNode
+
+Requirements:
+...
+
+--------------------------------
+PROMPT 5
+--------------------------------
+
+Create integration tests.
+
+Requirements:
+...
+
+For WorkDesk specifically, I would not start by generating all feature roadmaps.
+
+I would generate these first:
+
+1. architecture.md
+
+2. v1-roadmap.md
+
+3. auth-roadmap.md
+4. archive-roadmap.md
+5. artifact-roadmap.md
+6. versioning-roadmap.md
+7. search-roadmap.md
+
+8. corresponding prompt chains
+
+because those five modules alone represent roughly 70% of the entire platform's foundation. Once those are stable, every later feature becomes much easier to build.
+
+btw what i meant by those docs were that one byt one for the features, suppose a feture has 5 prompts in it, so... you will generate the roadmap.md for that feature, then the chain_of_prompts doc for that feature containing those 5 prompts
+
+and the human dev vibe coding this will test everythign after every prompt, no the prompts should at last ask the AI LLM to tell the user what and how to test the new features it just coded, ok? and ask it to devellop it like a senior software developer wh is 5 years into this field and not write any Ai-ish feel code, ok?
+
+now prepare a TRD first, then we will proceed with the stitch prompts and desiginign prompts to design each page ok?
+
+That's a much better workflow.
+
+What you're describing is essentially:
+
+PRD
+↓
+TRD
+↓
+Feature Roadmap
+↓
+Feature Prompt Chain
+↓
+Prompt 1
+(Test)
+↓
+Prompt 2
+(Test)
+↓
+Prompt 3
+(Test)
+↓
+...
+
+This is how experienced teams actually use AI-assisted development. Small validated increments beat giant one-shot generations every time.
+
+For your process, every prompt chain should include a permanent instruction block like:
+
+You are a senior software engineer with 5+ years of production experience.
+
+Requirements:
+
+- Write maintainable production-quality code.
+- Avoid placeholder implementations.
+- Avoid mock logic unless explicitly requested.
+- Follow existing project architecture.
+- Keep code modular and extensible.
+- Do not rewrite unrelated files.
+- Explain architectural decisions.
+- At the end provide:
+    1. Files created
+    2. Files modified
+    3. Manual testing instructions
+    4. Expected results
+    5. Rollback instructions
+
+That alone will improve vibe-coding quality substantially.
+
+What should TRD contain?
+
+The PRD explains what WorkDesk does.
+
+The TRD explains how WorkDesk will be built.
+
+A good TRD should be written before a single line of code.
+
+For WorkDesk I would structure it as follows:
+
+WorkDesk Technical Requirements Document (TRD)
+Purpose
+
+This document defines the technical architecture, technology stack, domain model, system boundaries, development standards, and implementation principles for WorkDesk.
+
+WorkDesk serves as the permanent knowledge repository and operational workspace of GoBitsNBytes Prayagraj.
+
+Architecture Principles
+Knowledge First
+
+WorkDesk is fundamentally an archival system.
+
+All features revolve around preserving, discovering, and distributing organizational knowledge.
+
+Artifacts are first-class entities.
+
+Reference-Based Sharing
+
+Files must never be duplicated across WorkDesk modules.
+
+Sharing transfers references only.
+
+Ownership remains attached to the original artifact.
+
+Immutable History
+
+No historical version may be permanently overwritten.
+
+Versioning follows append-only principles.
+
+Every modification creates a recoverable historical record.
+
+Modular Development
+
+Every major feature must be independently deployable.
+
+Modules should have minimal coupling.
+
+Examples:
+
+Authentication
+Archive
+Library
+Messaging
+Bulletin
+Mail Hub
+
+Each module owns its own services and UI components.
+
+Technology Stack
+
+Frontend
+
+Next.js 15
+TypeScript
+TailwindCSS
+shadcn/ui
+TanStack Query
+
+Backend
+
+Next.js Route Handlers
+
+Database
+
+PostgreSQL
+
+ORM
+
+Prisma
+
+Storage
+
+Cloudflare R2
+
+Search
+
+Phase 1:
+
+PostgreSQL Full Text Search
+
+Phase 2:
+
+Meilisearch
+
+Realtime
+
+Socket.io
+
+Graph Visualization
+
+React Flow
+
+Deployment
+
+Vercel
+PostgreSQL Hosting
+Cloudflare R2
+Domain Model
+
+User
+Set
+Artifact
+Version
+LibrarySection
+Message
+Notification
+Announcement
+Countdown
+Mailbox
+
+Relationships
+
+User
+├── Sets
+├── Artifacts
+├── Messages
+
+Set
+├── Child Sets
+├── Artifacts
+
+Artifact
+├── Versions
+├── Visibility
+├── Metadata
+
+Version
+├── Content
+├── Author
+├── Timestamp
+
+LibrarySection
+├── Published Artifact References
+
+Message
+├── Sender
+├── Receiver
+├── Artifact References
+
+Visibility Model
+
+Private
+
+Visible only to owner.
+
+Shared
+
+Visible only to explicitly shared users.
+
+Public
+
+Visible through Library.
+
+Storage Architecture
+
+PostgreSQL
+
+Stores:
+
+Users
+Metadata
+Permissions
+Versions
+Notifications
+
+Cloudflare R2
+
+Stores:
+
+Files
+Images
+Documents
+Archives
+
+Redis (Future)
+
+Stores:
+
+Search cache
+Session cache
+Notification cache
+Versioning Architecture
+
+Artifact
+├── Version 1
+├── Version 2
+├── Version 3
+
+Versions are immutable.
+
+Restore creates a new version.
+
+No version replacement allowed.
+
+Ownership Architecture
+
+Artifact Creator
+
+Primary owner.
+
+Organization
+
+Permanent archival rights.
+
+Administrator
+
+Transfer authority.
+
+Users leaving the organization must not cause knowledge loss.
+
+Search Architecture
+
+Search Index Sources
+
+Artifact Titles
+Descriptions
+Tags
+Set Names
+Artifact Content
+
+Future:
+
+OCR Content
+PDF Text Extraction
+Security Requirements
+
+Authentication required for all private resources.
+
+Authorization enforced at API level.
+
+Role-Based Access Control:
+
+Member
+Administrator
+
+Passwords stored using modern password hashing.
+
+Audit logs maintained for critical actions.
+
+Development Standards
+
+TypeScript strict mode enabled.
+
+No any types.
+
+No duplicated business logic.
+
+Reusable UI components required.
+
+Server-side validation mandatory.
+
+Database transactions required for critical operations.
+
+Testing Requirements
+
+Every feature implementation prompt must conclude with:
+
+Manual testing instructions
+Expected outcomes
+Edge cases
+Rollback procedure
+
+No feature is considered complete without validation.
+
+PWA Requirements
+
+Installable
+
+Offline asset caching
+
+Responsive layout
+
+Push notification support
+
+Desktop and mobile compatibility
+
+Future Integrations
+
+Discord
+GitHub
+Figma
+Canva
+Google Drive
+Gmail
+Outlook
+
+All integrations must use reference-based workflows whenever possible.
+
+This TRD becomes the document that both:
+
+Human developer reads first.
+AI model receives as context before every feature prompt chain.
+
+After this, the next logical step is not coding.
+
+The next step is:
+
+1. Information Architecture
+2. Navigation Structure
+3. Screen Inventory
+4. User Flows
+5. Stitch Design Prompts
+
+Because once the UI structure is finalized, your feature roadmaps and prompt chains become dramatically more accurate. For a product as interface-heavy as WorkDesk, designing the entire application flow before implementation will save a huge amount of rework.
+
+okay, now generate a context.txt file to attach with stitch, then the chain_of_prompts doc, for stitch to generate the UI componnents one by one or in a group, however you like, you may choose a dark color schema before hand ok?
+
+For Stitch, don't ask it to design individual pages randomly.
+
+Have it design the system in layers:
+
+Design System
+↓
+Shell Layout
+↓
+Navigation
+↓
+Core Archive Views
+↓
+Artifact Workspace
+↓
+Library
+↓
+Messaging
+↓
+Operations Hub
+↓
+Mail Hub
+↓
+Settings
+
+Otherwise page #15 will look completely different from page #2.
+
+context.txt
+WorkDesk UI Context
+
+Product Name:
+WorkDesk
+
+Organization:
+GoBitsNBytes Prayagraj
+
+Purpose:
+
+WorkDesk is a knowledge archive, collaboration workspace, and organizational operating system.
+
+The product serves as the permanent institutional memory of the organization.
+
+Primary users are:
+
+Marketing Leads
+Creative Leads
+Developers
+Team Members
+Administrators
+
+The interface should feel like a blend of:
+
+Linear
+Notion
+Obsidian
+GitHub
+Google Drive
+
+Avoid copying any product directly.
+
+Design Philosophy
+
+Professional
+
+Focused
+
+Dense but not cluttered
+
+Fast
+
+Information-first
+
+Minimal visual noise
+
+Built for daily usage
+
+No playful startup aesthetics.
+
+No excessive gradients.
+
+No glassmorphism.
+
+No neumorphism.
+
+The UI should feel like a serious productivity application.
+
+Visual Identity
+
+Theme:
+
+Dark Only (V1)
+
+Primary Background:
+#0D1117
+
+Secondary Background:
+#161B22
+
+Elevated Surfaces:
+#1C2128
+
+Borders:
+#30363D
+
+Primary Text:
+#E6EDF3
+
+Secondary Text:
+#8B949E
+
+Accent:
+#58A6FF
+
+Success:
+#3FB950
+
+Warning:
+#D29922
+
+Danger:
+#F85149
+
+Typography
+
+Font:
+
+Inter
+
+Hierarchy:
+
+Page Title
+Section Title
+Card Title
+Body
+Caption
+
+Use strong hierarchy.
+
+Avoid oversized typography.
+
+Layout Principles
+
+Application Shell Layout
+
+Persistent Left Sidebar
+
+Main Content Area
+
+Optional Right Context Panel
+
+Desktop First
+
+Responsive Mobile Support
+
+Sidebar Structure
+
+Logo
+
+Dashboard
+
+Archive
+
+Library
+
+Messages
+
+Bulletin
+
+Mail Hub
+
+Graph View
+
+Settings
+
+Profile
+
+Bottom Area:
+
+Storage Usage
+
+User Profile
+
+Core Product Concepts
+
+Set
+
+Acts like a folder.
+
+Artifact
+
+Acts like a document.
+
+Version
+
+Historical snapshot.
+
+Library
+
+Published artifact repository.
+
+Message
+
+Reference-based communication.
+
+Explorer Interaction Rules
+
+Single Click:
+Select
+
+Double Click:
+Open
+
+Right Click:
+Context Menu
+
+Multi Select:
+Supported
+
+Drag and Drop:
+Supported
+
+Artifact Workspace
+
+When an artifact is opened:
+
+Left:
+Artifact Navigation
+
+Center:
+Editor
+
+Right:
+Metadata Panel
+
+Top:
+Version Controls
+
+Actions:
+
+Save
+
+Commit Version
+
+Restore Version
+
+Publish
+
+Share
+
+Library Philosophy
+
+Looks like a curated knowledge repository.
+
+Not a file dump.
+
+Should encourage discovery.
+
+Messaging Philosophy
+
+Looks similar to Slack or Discord.
+
+Cleaner and more focused.
+
+Artifact sharing should be visually prominent.
+
+Bulletin Philosophy
+
+School notice board meets project management.
+
+Supports:
+
+Announcements
+
+Countdowns
+
+Deadlines
+
+Status tracking
+
+Mail Hub Philosophy
+
+Looks like a modern unified inbox.
+
+Support:
+
+Multiple Accounts
+
+Tags
+
+Sender Labels
+
+Search
+
+Color Coding
+
+Graph View Philosophy
+
+Inspired by Obsidian Graph.
+
+Nodes:
+
+Sets
+
+Artifacts
+
+Library Sections
+
+Relationships:
+
+Belongs To
+
+Published In
+
+Related To
+
+Derived From
+
+Must remain readable at scale.
+
+UX Requirements
+
+Keyboard Friendly
+
+Fast Navigation
+
+Minimal Clicks
+
+Consistent Actions
+
+Clear Status Indicators
+
+Auto Save Visibility
+
+Loading States
+
+Empty States
+
+Error States
+
+Deliverables
+
+Generate complete UI designs.
+
+Generate reusable design system.
+
+Generate reusable components.
+
+Generate responsive layouts.
+
+Prioritize usability over visual novelty.
+
+chain_of_prompts.txt
+
+This should be the exact order fed into Stitch.
+
+Prompt 1 — Design System
+
+You are designing WorkDesk.
+
+Read the attached context.txt first.
+
+Task:
+
+Create the complete design system.
+
+Include:
+
+Color tokens
+Typography scale
+Spacing scale
+Border radius scale
+Shadows
+States
+Tables
+Forms
+Buttons
+Dropdowns
+Modals
+Toasts
+Tabs
+Toolbars
+Breadcrumbs
+Context menus
+
+Output:
+
+Design system overview
+Component catalog
+Reusable UI primitives
+
+Do not design pages yet.
+
+Focus only on creating a scalable design language.
+
+Prompt 2 — Application Shell
+
+Read context.txt.
+
+Using the design system previously generated:
+
+Design the application shell.
+
+Include:
+
+Sidebar
+Header
+Main content area
+Right context panel
+User menu
+Notification center
+Storage usage widget
+
+Provide:
+
+Desktop layout
+
+Tablet layout
+
+Mobile layout
+
+Focus on navigation and information hierarchy.
+
+Do not design feature pages yet.
+
+Prompt 3 — Dashboard
+
+Read context.txt.
+
+Design the Dashboard.
+
+Widgets:
+
+Recent Artifacts
+Recently Opened
+Starred
+Notifications
+Activity Feed
+Storage Usage
+
+Create:
+
+Desktop version
+
+Tablet version
+
+Mobile version
+
+Focus on productivity and quick access.
+
+Prompt 4 — Archive Explorer
+
+Read context.txt.
+
+Design the Archive Explorer.
+
+Features:
+
+Tree Navigation
+Nested Sets
+Artifact List
+Search
+Filters
+Multi Select
+Context Menus
+Drag and Drop
+
+Include:
+
+Explorer View
+
+List View
+
+Empty States
+
+Loading States
+
+Large Archive States
+
+Focus on drive-like usability.
+
+Prompt 5 — Artifact Workspace
+
+Read context.txt.
+
+Design the Artifact Workspace.
+
+Layout:
+
+Left:
+Navigation
+
+Center:
+Editor
+
+Right:
+Metadata Panel
+
+Top:
+Version Controls
+
+Include:
+
+Rich Text Editing
+
+Version History
+
+Publishing
+
+Sharing
+
+Comments
+
+Auto Save Indicators
+
+Focus on deep work and long editing sessions.
+
+Prompt 6 — Library
+
+Read context.txt.
+
+Design the Library.
+
+Include:
+
+Library Home
+
+Section Pages
+
+Artifact Cards
+
+Search
+
+Subscriptions
+
+Publishing Workflow
+
+Discovery Experience
+
+Focus on knowledge exploration.
+
+Prompt 7 — Graph View
+
+Read context.txt.
+
+Design the Graph View.
+
+Include:
+
+Node Styling
+
+Filters
+
+Zoom Controls
+
+Search
+
+Relationship Legend
+
+Large Graph Performance States
+
+Focus on readability and navigation.
+
+Prompt 8 — Messaging
+
+Read context.txt.
+
+Design the Messaging Module.
+
+Include:
+
+Conversation List
+
+Chat View
+
+Artifact Sharing
+
+Search
+
+Notifications
+
+Empty States
+
+Focus on productivity rather than social interaction.
+
+Prompt 9 — Bulletin
+
+Read context.txt.
+
+Design the Bulletin Board.
+
+Include:
+
+Announcements
+
+Countdowns
+
+Completion Tracking
+
+Deadline Cards
+
+Status Indicators
+
+Create and Edit Flows
+
+Focus on organizational operations.
+
+Prompt 10 — Mail Hub
+
+Read context.txt.
+
+Design the Mail Hub.
+
+Include:
+
+Unified Inbox
+
+Multiple Mailboxes
+
+Sender Tags
+
+Color Labels
+
+Search
+
+Mail Reading Experience
+
+Focus on handling large volumes of email.
+
+Prompt 11 — Settings & Profile
+
+Read context.txt.
+
+Design:
+
+Settings
+
+Profile
+
+Account Security
+
+Theme Preferences
+
+Connected Services
+
+Storage Management
+
+Notification Preferences
+
+Focus on clarity and maintainability.
+
+Prompt 12 — Design Review
+
+Review every previously designed screen.
+
+Audit for:
+
+Visual consistency
+
+Accessibility
+
+Information hierarchy
+
+Component reuse
+
+Responsiveness
+
+Developer implementation complexity
+
+Suggest improvements.
+
+Generate final design recommendations before development begins.
+
+This sequence gives you a complete WorkDesk design system before you write a single line of code, which will make the later roadmap.md and feature prompt chains significantly more consistent.

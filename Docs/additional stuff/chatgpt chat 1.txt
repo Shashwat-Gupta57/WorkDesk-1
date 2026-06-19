@@ -1,0 +1,1215 @@
+Yes. What you're describing is no longer just an "archive section." It's becoming an internal operating system for your organization.
+
+The closest real-world inspirations would be:
+
+Notion (knowledge management)
+Obsidian (graph view)
+Google Drive (file storage)
+Slack (internal communication)
+Linear (task tracking)
+Arc Browser Spaces (tool shortcuts)
+
+combined into a single platform.
+
+My biggest suggestion:
+
+Do NOT build everything in V1.
+
+Your current idea is roughly a 6–12 month project if built properly.
+
+Instead:
+
+Product Vision
+
+WorkDesk
+"The internal operating system of GoBitsNBytes Prayagraj."
+
+Purpose:
+
+Store organizational knowledge
+Preserve work history
+Enable collaboration
+Reduce dependency on scattered platforms
+Create continuity when team members leave
+User Roles
+Member
+
+Can:
+
+Create artifacts
+Create sets
+Publish to library
+View public artifacts
+Send messages
+Manage profile
+Admin
+
+Can:
+
+Manage users
+Manage library sections
+Moderate content
+View activity logs
+Sidebar
+🏠 Home
+
+📂 My Archive
+
+📚 Library
+
+✉ Messages
+
+📧 Mail Hub
+
+📢 Bulletin
+
+⏳ Deadlines
+
+🔗 Tools
+
+⚙ Account
+Core Concept
+Artifact
+
+Smallest unit.
+
+Examples:
+
+Marketing Analysis.txt
+
+Email Template.md
+
+Poster Design.fig
+
+Client Proposal.pdf
+
+Website Wireframe.png
+
+Each artifact contains:
+
+title
+description
+tags
+owner
+versions
+status
+Sets
+
+Sets are folders.
+
+Example:
+
+Marketing Campaign Q4
+
+├ Analysis.txt
+├ Draft Email.txt
+├ Final Proposal.pdf
+
+Users can:
+
+Create
+Rename
+Delete
+Search
+Login Flow
+workdesk.prayagraj.gobitsnbytes.org
+
+Page opens:
+
+GBN WorkDesk
+
+Dark theme.
+
+Center card.
+
+Fields:
+
+Email
+
+Password
+
+[ Login ]
+
+Options:
+
+Forgot Password
+
+Remember Me
+
+After login:
+
+Dashboard
+Dashboard
+
+Shows:
+
+Recent Work
+Marketing Analysis
+
+Poster Draft
+
+Client Report
+Deadlines
+Website Launch
+3 Days Left
+Messages
+2 unread
+Library Updates
+New public artifact
+Archive Module
+
+Main feature.
+
+Two views.
+
+Explorer View
+
+Looks like:
+
+📂 Campaigns
+
+    📂 Summer Campaign
+
+        📄 Analysis
+
+        📄 Email Draft
+
+        📄 Final Assets
+
+Double click:
+
+Open artifact.
+
+Single click:
+
+Select.
+
+Graph View
+
+Like Obsidian.
+
+Campaign Set
+
+    ○ Analysis
+
+    ○ Draft
+
+    ○ Assets
+
+Connected visually.
+
+Clustered by set.
+
+Search available.
+
+This becomes powerful later.
+
+Artifact Editor
+
+Artifact can be:
+
+Text
+Rich text editor
+
+or
+
+Uploaded file
+PDF
+DOCX
+PNG
+ZIP
+FIG
+
+etc.
+
+Versioning
+
+Inside artifact:
+
+Draft 1
+
+Draft 2
+
+Draft 3
+
+Final
+
+When satisfied:
+
+Commit Final Version
+
+System stores all versions.
+
+Never overwrite.
+
+This is extremely important.
+
+Tool Dock
+
+Top bar.
+
+Notebook-bookmark style.
+
+Example:
+
+GPT
+
+Claude
+
+Stitch
+
+Canva
+
+Figma
+
+GitHub
+
+Click:
+
+Opens new tab.
+
+After work:
+
+Paste/import results into artifact.
+
+This is very achievable.
+
+Library
+
+Public knowledge base.
+
+Members can publish artifacts.
+
+Example:
+
+Marketing
+
+Design
+
+Coding
+
+Operations
+
+Events
+Important Rule
+
+Publishing does NOT transfer ownership.
+
+Library only stores references.
+
+Artifact still belongs to owner.
+
+Exactly like you described.
+
+Section Deletion Flow
+
+If someone deletes:
+
+Marketing
+
+All contributors receive notification:
+
+Marketing section scheduled for deletion.
+
+Move artifacts?
+
+[ Move ]
+[ Remove from Library ]
+
+Artifact never disappears from owner's archive.
+
+This is excellent design.
+
+Keep it.
+
+Internal Messaging
+
+Users can:
+
+Send Message
+
+Send Artifact
+
+Artifact is shared as:
+
+Reference
+
+not duplicated.
+
+Very good architectural decision.
+
+Less storage.
+
+No synchronization issues.
+
+Bulletin Board
+
+I would rename:
+
+Bulletin
+
+instead of Guillotine.
+
+Looks more professional.
+
+Contains:
+
+Announcements
+New client onboarded.
+Deadlines
+Website Launch
+
+5 days remaining
+Countdown System
+
+This is one of the strongest ideas.
+
+Create:
+
+Task
+
+Target Members
+
+Due Date
+
+Before expiry:
+
+Mark Complete
+
+If not:
+
+Status = Incomplete
+
+Dashboard should show:
+
+Pending
+
+Completed
+
+Overdue
+Mail Hub
+
+Very useful.
+
+Users connect:
+
+Gmail
+Outlook
+
+View:
+
+Inbox A
+
+Inbox B
+
+Inbox C
+
+in one interface.
+
+Extra:
+
+color coding
+tags
+sender labels
+search
+
+This should be Phase 3 though.
+
+Email integrations are surprisingly complex.
+
+PWA Features
+
+Required:
+
+installable
+offline cache
+notifications
+mobile responsive
+
+Good choice.
+
+Account Page
+Name
+
+Role
+
+Email
+
+Password
+
+Theme
+
+Future:
+
+Profile photo
+Features I Would Add
+Activity Feed
+
+Shows:
+
+Riya uploaded artifact
+
+Aman published template
+
+Harsh completed deadline
+
+Makes team feel alive.
+
+Global Search
+
+Search:
+
+artifact names
+text content
+tags
+owners
+
+This will become the most used feature.
+
+Tags
+
+Examples:
+
+marketing
+
+client-a
+
+urgent
+
+social-media
+
+Much better than folder-only organization.
+
+Artifact Templates
+
+Create:
+
+Email Template
+
+Marketing Analysis
+
+Meeting Notes
+
+Client Proposal
+
+One click creation.
+
+Huge productivity boost.
+
+Organizational Wiki
+
+Separate from archives.
+
+Store:
+
+Brand Guidelines
+
+Discord Rules
+
+Client SOPs
+
+Team Processes
+
+This becomes your institutional memory.
+
+Recommended Development Phases
+V1 (Launch)
+Authentication
+Archive
+Sets
+Artifacts
+Versioning
+Library
+Search
+Dashboard
+PWA
+V2
+Messaging
+Bulletin
+Deadlines
+Activity feed
+V3
+Mail Hub
+Tool integrations
+Graph view
+Advanced permissions
+V4
+AI assistant
+Smart search
+Automatic artifact tagging
+Semantic knowledge graph
+
+If built this way, WorkDesk becomes much more than a website. It becomes the central knowledge and collaboration platform for the entire Prayagraj chapter, while remaining realistic enough to actually finish and maintain.
+
+well no AI assistant needed in it bro,
+okay, so now you have all the context so... create the PRD for the versions you have classified this into
+
+This should actually be split into 4 PRDs, not one. Otherwise scope creep will make the project impossible to estimate and build.
+
+The architecture naturally divides into:
+
+WorkDesk Core (V1)
+Collaboration & Workflow (V2)
+Communication Suite (V3)
+Ecosystem & Integrations (V4)
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+WorkDesk V1 — Knowledge & Archive Platform
+Product Name
+
+WorkDesk
+
+Product Vision
+
+WorkDesk is the central knowledge repository of GoBitsNBytes Prayagraj. It enables members to create, organize, version, archive, search, and publish organizational work while preserving ownership and historical records.
+
+Problem Statement
+
+Organizational work is currently distributed across multiple platforms including Discord, Google Drive, chats, emails, and personal devices.
+
+This results in:
+
+Knowledge loss when members leave
+Difficulty locating previous work
+Duplicate effort
+Poor discoverability
+Lack of version history
+No unified archive
+
+WorkDesk V1 solves this by creating a structured archival system.
+
+Goals
+Centralize organizational knowledge
+Create long-term archives
+Preserve version history
+Enable artifact discovery
+Allow controlled public sharing
+Provide fast access through a PWA
+User Roles
+Member
+
+Can:
+
+Create sets
+Create artifacts
+Upload files
+Create text artifacts
+Edit artifacts
+Manage versions
+Publish artifacts
+Search archives
+Manage profile
+Administrator
+
+Can:
+
+Manage users
+Suspend users
+Manage platform settings
+View audit logs
+Core Concepts
+Artifact
+
+Smallest unit of work.
+
+Examples:
+
+Marketing Analysis
+Proposal
+Email Template
+Design Asset
+Source Code Archive
+
+Artifact Types:
+
+Text
+PDF
+DOCX
+PPTX
+Images
+ZIP
+Other uploaded files
+Set
+
+Container for artifacts.
+
+Equivalent to folders.
+
+Functions:
+
+Create
+Rename
+Delete
+Nesting support
+Search support
+Authentication
+Login
+
+Fields:
+
+Email
+Password
+
+Features:
+
+Remember Me
+Forgot Password
+Dashboard
+
+Sections:
+
+Recent Artifacts
+Recent Activity
+Published Artifacts
+Pending Notifications
+Archive Module
+Explorer View
+
+Tree-based navigation.
+
+Interactions:
+
+Single Click:
+
+Select
+
+Double Click:
+
+Open
+Artifact Editor
+
+Supports:
+
+Rich Text Editing
+File Uploads
+Metadata Editing
+
+Metadata:
+
+Title
+Description
+Tags
+Owner
+Created Date
+Last Modified Date
+Versioning System
+
+Every artifact maintains versions.
+
+Example:
+
+Draft 1
+Draft 2
+Draft 3
+Final
+
+Features:
+
+Create Version
+Restore Version
+Compare Versions
+Commit Final Version
+
+No version may be permanently overwritten.
+
+Search
+
+Search Scope:
+
+Artifact Names
+Descriptions
+Tags
+Set Names
+
+Filters:
+
+Owner
+Date
+Type
+Published Status
+Library
+
+Public organizational repository.
+
+Features:
+
+Publish Artifact
+Remove Artifact
+Browse Public Artifacts
+Search Public Artifacts
+
+Ownership remains with original creator.
+
+Library stores references only.
+
+No file duplication.
+
+Library Sections
+
+Users may:
+
+Create Sections
+Delete Sections
+
+Deletion Workflow:
+
+When section deletion is requested:
+
+All artifact owners are notified.
+Owners choose:
+Move Artifact
+Remove from Public Library
+
+Artifacts remain in personal archives regardless.
+
+Account Management
+
+Users can:
+
+Change Email
+Change Password
+Update Profile Information
+Change Theme Preferences
+PWA Requirements
+Installable
+Mobile Responsive
+Offline Asset Cache
+Push Notifications Support
+Success Metrics
+100% organizational work archived through WorkDesk
+Less than 30 seconds average retrieval time
+Zero loss of historical organizational assets
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+WorkDesk V2 — Collaboration & Workflow
+Objective
+
+Transform WorkDesk from an archive into a collaborative workspace.
+
+Internal Messaging
+
+Users can:
+
+Send Messages
+Receive Messages
+Search Conversations
+Artifact Sharing
+
+Users may send artifacts directly.
+
+Shared artifacts are transmitted as references.
+
+System behavior:
+
+No file duplication
+Original ownership preserved
+Permission-based access
+Bulletin Board
+
+Central organizational notice board.
+
+Types:
+
+Announcement
+
+Examples:
+
+Client Updates
+Team Updates
+Meeting Notices
+Countdown
+
+Examples:
+
+Project Deadlines
+Submission Deadlines
+Countdown System
+
+Fields:
+
+Title
+Description
+Due Date
+Target Members
+
+Multiple targets supported.
+
+Completion Workflow
+
+Assigned members must:
+
+Mark Complete
+
+before countdown expiration.
+
+System statuses:
+
+Pending
+Completed
+Overdue
+Incomplete
+Activity Feed
+
+Tracks:
+
+Artifact Creation
+Publishing
+Version Commits
+Deadline Completion
+
+Visible on dashboard.
+
+Notifications
+
+Triggers:
+
+Shared Artifact
+Bulletin Update
+Deadline Assignment
+Deadline Reminder
+Library Requests
+
+Delivery:
+
+In-App
+Push Notification
+Permissions
+
+Visibility Levels:
+
+Private
+Shared
+Public
+
+Artifact owners control visibility.
+
+Success Metrics
+All internal coordination happens within WorkDesk
+Reduced dependency on external messaging for organizational assets
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+WorkDesk V3 & V4 — Communication Hub & Ecosystem
+Objective
+
+Create a unified operational environment connecting communication channels and productivity tools.
+
+Mail Hub
+
+Users may connect:
+
+Gmail
+Outlook
+
+Capabilities:
+
+Unified Inbox
+Multi-Mailbox View
+Sender Tags
+Color Coding
+Search
+Filtering
+Tool Dock
+
+Persistent shortcut bar.
+
+Supported Services:
+
+ChatGPT
+Claude
+Stitch
+Canva
+Figma
+GitHub
+
+Functions:
+
+Quick Launch
+Open in New Tab
+Artifact Workspace Flow
+
+User creates artifact.
+
+User launches external tool.
+
+User works externally.
+
+User returns to WorkDesk.
+
+User imports or pastes results.
+
+User versions and commits work.
+
+Graph View
+
+Alternative archive visualization.
+
+Requirements:
+
+Node-Based Visualization
+Set Clustering
+Search
+Zoom
+Filtering
+
+Nodes:
+
+Sets
+Artifacts
+
+Relationships:
+
+Belongs To
+Published In
+Discord Integration
+
+Users may:
+
+Connect Discord Account
+
+Capabilities:
+
+Share Artifact References
+Post WorkDesk Links
+Generate Share Links
+
+Files remain stored in WorkDesk.
+
+External systems receive references only.
+
+Future Integrations
+
+Potential:
+
+Google Drive
+GitHub Repositories
+Figma Import
+Stitch Import
+Canva Import
+Non-Goals
+
+The platform will NOT:
+
+Contain AI assistants
+Automatically generate content
+Replace specialized external tools
+
+WorkDesk remains an organizational operating system, not an AI platform.
+
+Success Metrics
+Single-entry point for organizational work
+Reduced context switching
+Increased artifact reuse
+Faster team onboarding
+Complete organizational knowledge retention
+
+After this, the next thing I'd produce is a System Design Document (SDD). That would define the actual database schema (Users, Artifacts, Versions, Sets, Messages, Bulletins, Deadlines, LibrarySections, etc.), API structure, permissions model, and frontend page map before any coding starts. That document will save far more development time than refining the PRD further.
+
+btw does any thing like this already exists? can we present it as a startup too?
+
+Yes, things like this exist, but your specific combination is unusual.
+
+The important question is not "Does it exist?" but "Does someone solve this exact problem in this exact way?"
+
+Existing Products That Overlap
+Product	What it does
+Notion	Documents, wiki, databases, collaboration
+Confluence	Organizational knowledge management
+Google Drive	File storage and sharing
+Microsoft SharePoint	Enterprise document management
+Obsidian	Knowledge graph and linking
+Slack	Team communication
+Discord	Community collaboration
+ClickUp	Tasks, docs, communication
+Monday.com	Work management
+Linear	Workflow and project tracking
+What Is Different About Your Idea
+
+Most tools are built around:
+
+documents
+chats
+tasks
+projects
+
+Your idea is built around:
+
+Artifacts.
+
+That sounds small, but it's actually a major difference.
+
+In your system:
+
+User
+    ↓
+Creates Artifact
+    ↓
+Versions Artifact
+    ↓
+Publishes Artifact
+    ↓
+Shares Artifact
+    ↓
+Moves Artifact
+    ↓
+Archives Artifact
+
+The artifact remains the central object.
+
+Not the project.
+
+Not the chat.
+
+Not the document.
+
+The artifact.
+
+This is closer to how:
+
+research organizations work
+creative agencies work
+student organizations work
+open-source teams work
+Where I Think The Real Opportunity Is
+
+I would not pitch it as:
+
+"A better Notion."
+
+That market is extremely crowded.
+
+Instead I'd pitch it as:
+
+"A knowledge-retention and work-preservation platform for student organizations, clubs, NGOs, startups, and creative teams."
+
+Example:
+
+Every year:
+
+club leaders graduate
+organizers leave
+startup interns leave
+volunteers disappear
+
+And then:
+
+Where is last year's sponsorship proposal?
+
+Where is the old marketing strategy?
+
+Who designed this poster?
+
+Where is the client onboarding SOP?
+
+Nobody knows.
+
+Knowledge dies.
+
+Your system solves that.
+
+Startup Potential
+
+Could it be a startup?
+
+Yes.
+
+Would I start by building it as a startup?
+
+No.
+
+I would first deploy it inside GoBitsNBytes.
+
+Because then you get:
+
+Stage 1
+
+Internal Use
+
+GBN Prayagraj
+
+Measure:
+
+active users
+artifacts created
+searches performed
+library usage
+Stage 2
+
+Other Student Chapters
+
+GBN Kanpur
+
+GBN Lucknow
+
+GBN Delhi
+
+Now you have validation.
+
+Stage 3
+
+College Clubs
+
+Coding Clubs
+Robotics Clubs
+Entrepreneurship Cells
+NGOs
+Student Councils
+
+Now it starts becoming a business.
+
+One Feature I Think Is Genuinely Strong
+
+The "reference not copy" philosophy.
+
+Most platforms duplicate content:
+
+Discord Upload
+Google Drive Upload
+Email Attachment
+Slack Upload
+
+4 copies.
+
+Your idea:
+
+Artifact
+    ↓
+Reference
+    ↓
+Reference
+    ↓
+Reference
+
+One source of truth.
+
+That is a very clean architecture.
+
+One Thing I'd Change
+
+I would introduce an Artifact Relationship System.
+
+Example:
+
+Marketing Analysis
+    ↓ inspired
+Email Campaign
+
+Email Campaign
+    ↓ generated
+Social Media Post
+
+Social Media Post
+    ↓ used in
+Client Report
+
+Now the graph view becomes genuinely useful instead of just looking cool.
+
+You can trace how organizational knowledge evolved over time.
+
+That becomes a powerful differentiator.
+
+If I were evaluating this as a startup judge at a hackathon, I would rate it much higher as:
+
+"An organizational memory platform that prevents knowledge loss"
+
+than as
+
+"A Drive + Notion + Discord replacement."
+
+The first has a very clear problem and customer. The second sounds like it's trying to replace half the internet.

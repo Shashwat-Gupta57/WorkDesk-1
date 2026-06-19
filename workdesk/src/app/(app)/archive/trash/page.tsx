@@ -32,7 +32,7 @@ function TrashIcon() {
   );
 }
 
-function FolderIcon() {
+function SetIcon() {
   return (
     <svg className="h-5 w-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
       <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
@@ -111,13 +111,13 @@ export default function TrashPage() {
               return (
                 <div key={`${item.kind}-${item.id}`} className="flex items-center gap-3 px-4 py-3">
                   <span className="shrink-0">
-                    {item.kind === "set" ? <FolderIcon /> : <FileIcon />}
+                    {item.kind === "set" ? <SetIcon /> : <FileIcon />}
                   </span>
 
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-text-primary">{item.title}</p>
                     <p className="text-xs text-text-secondary">
-                      {item.kind === "set" ? "Folder" : item.type ?? "Artifact"}
+                      {item.kind === "set" ? "Set" : item.type ?? "Artifact"}
                       {" · "}Deleted {formatDate(item.deletedAt)}
                     </p>
                   </div>

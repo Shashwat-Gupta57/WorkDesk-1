@@ -56,7 +56,7 @@ export function AdminOwnershipPanel() {
             onChange={(e) => setKind(e.target.value as "artifact" | "set")}
           >
             <option value="artifact">Artifact</option>
-            <option value="set">Set (folder)</option>
+            <option value="set">Set</option>
           </Select>
         </Field>
 

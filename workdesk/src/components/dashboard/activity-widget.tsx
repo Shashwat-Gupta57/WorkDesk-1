@@ -12,10 +12,10 @@ const EVENT_LABELS: Record<string, string> = {
   ARTIFACT_RESTORED: "Restored artifact",
   VERSION_COMMITTED: "Committed new version",
   VERSION_RESTORED: "Restored version",
-  SET_CREATED: "Created folder",
-  SET_UPDATED: "Updated folder",
-  SET_DELETED: "Deleted folder",
-  SET_RESTORED: "Restored folder",
+  SET_CREATED: "Created Set",
+  SET_UPDATED: "Updated Set",
+  SET_DELETED: "Deleted Set",
+  SET_RESTORED: "Restored Set",
 };
 
 const EVENT_COLORS: Record<string, string> = {

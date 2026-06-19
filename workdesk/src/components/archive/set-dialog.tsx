@@ -8,7 +8,7 @@ import { ApiError } from "@/lib/api-client";
 import { useCreateSet, useUpdateSet } from "@/modules/archive/hooks";
 import type { SetSummary } from "@/modules/archive/types";
 
-// Create a folder under `parentId`, or rename `editing`.
+// Create a Set under `parentId`, or rename `editing`.
 export function SetDialog({
   open,
   onClose,
@@ -46,7 +46,7 @@ export function SetDialog({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title={isEdit ? "Rename folder" : "New folder"}>
+    <Modal open={open} onClose={onClose} title={isEdit ? "Rename Set" : "New Set"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Field label="Name" htmlFor="set-name">
           <Input

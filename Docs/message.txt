@@ -1,0 +1,38 @@
+okay, then i need to plan out an upgrade to our organisation's site
+
+it is currently prayagraj.gobitsnbytes.org
+
+we want to add an archive section in it, where the team members can sign in and sdave their work, like for example our marketing lead can save his marketing analysis there,t he creatives lead can save her templates there, and etc..
+
+now we ar going very drive-like stuff in the start, meaning that they can create a txt fiel to store text content, or can upload a file or stuff and then that can be there content for the archival, and like they can create a set of stuffs, or like search through sets and everything
+
+okay? and this will have a dark color theme to it, so... first we need it's PRD, so... like create it to first have auth page, mmeaning upon going workdesk.prayagraj.gobitsnbytes.org the workdesk page should come up, there the first thing would be a login page, where we can login to our workdesk, then upon entering we will see our archives, and there like yeah you need to imagine how all thsi is going to look and function
+
+then like also there will be an option to connect our socials to it, so that we can directly send the stuff to the official discord server etc.. ok?
+
+then like also connect a few tools with it, like stitch, claude, etc.. and there can be shortcuts in it for us to diretly go there, work, and then import our work from whatever serviices appplicable else we can obviously also copy paste iit back to here, ready for going to other place (now this will happen when we choose to start working on an artifact)|
+
+for example the social media lead came, started working on an email template, chose to start an artifact chose the shortcut option ot GPT given on the top of the page like a bookmark hanging on a notebook, then it opens GPT ina  new window, where she can work, then when she comes back she can paste her draft here in the artifact, prepare drafts-N of it meaning draft-1, draft-2 etc.. for Versioning, and then she can commit it too for finalising, then all the artifacts will be viewable in two view modals, one is the normal explorer view where a set will act like a folder and the artifcats wil onviously act like items, and then like anothger view would be graphs, where same set items would be clustered together, ok?
+
+
+and then like yeah simply double clicking them opens them, and single clikcing them just selects them
+
+and then like this is all to rahega hi rahgea, each team member can choose to make a afew files public, and when made public they will also be available to other team members as well, like there would be a "library" tab in the sidebar where we can choose to see the artifacts published by others there, the workdesk would also have an internal messaging system, where people can directly send artifacts to others (basically this means value even after discord as some meber created an artifact there and sent it there only, now the workdesk is no public platform so that one file put in ou rserver won't be copied or anything to be sent but just it's local address on the server would be attached and the workdesk site would treat it like an artifact, you are undertsanding it right? like in java an array when passed to a function only it's addrtess is sent over there, but it's not copied and sent over like pre defined data types like int and all
+
+so.... somethign like this that i am trying to say that other platfirms treat our media as int, double , etc.. and copy the stuff, but we will treat it like user defined types and won't copy the files here and there, ok?
+
+and then there will be other creative features as well, like for the coders we will be attaching sticth and all for the memebrs to directlly import their designs unto here, this is an extreme,y useful and productive place, and btw from the sidebar it will alsoo have a tab of mail, where each team meber can connect their emails with it, and there they can see the incoming mails in their different multiple mailboxes in one place, where they can also color code the mails of different mailboxes differently, add tags to specific senders and a lot more, ok?
+
+then this place would also have a tab in the sidebar as the "guilloutine" or the buletin, id what that announcement board is called that was in our school but anyways, so... yeah there would be a place llike this where the team members can put up notices and all, ok? like this client wants this that client want that and etc.. the most importnat feature it would have that team members can choose if it's an announcement or a countdown, if it's a countdown they can choose who is it's target there can be multiple targets too, then before the countdown runs to zero, they have to report it done, else it would be marked incomplete ,ok?
+
+and this needs to be a pwa, so... it can also be installled for even quicker checkups and enhanced usability too, ok?
+
+and it alos needs obviously the accounts section where the users can change theri emails, password, and other details too
+
+
+and also also also, it needs to have ths feature that the library would be in sections that members can create or delete, ok? so... like upon deletion a request will go to all the members who have their artifacts loaded up there in that section that this request has been made by so and so team memebr and choose to either move this artifact to somewhere else or let it delete from the public srchive, in case if an artifact gets deleted from the public srchive it still remains by the local archive on the artifact owner's workdesk ok?
+
+also memebrs can create new sections in the library without any permits needed
+
+
+so.... now ig you get it a little too good maybe? any suggestions too?
